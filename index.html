@@ -182,17 +182,11 @@
         </div>
     </section>
 
-    <!-- Pengumuman & Berita -->
-    <section class="section-info">
+    <!-- Pengumuman & Berita (Dinamis dari Sheets) -->
+    <section class="section-info" id="tempat-pengumuman">
         <h2>Kabar & Informasi</h2>
-        <div class="info-card">
-            <h3>Peringatan Hari Pendidikan</h3>
-            <p>Rangkaian kegiatan edukatif dan pameran karya siswa. Mari saksikan kreasi tanpa batas dari anak-anak hebat kita.</p>
-        </div>
-        <div class="info-card">
-            <h3>Hasil Lomba Desain Pojok Baca Kelas (2 Mei 2026)</h3>
-            <p>Selamat kepada kelas yang telah mengubah sudut ruangannya menjadi area literasi yang sangat estetik dan nyaman!</p>
-        </div>
+        <p id="teks-loading" style="color: #666; font-style: italic;">Sedang memuat kabar terbaru dari sekolah...</p>
+        <!-- Data dari Google Sheets akan otomatis muncul di bawah sini -->
     </section>
 
     <!-- Guru Seru -->
@@ -242,5 +236,48 @@
         </div>
     </section>
 
+<!-- Script Penghubung Google Sheets -->
+    <script>
+        // URL API dari Google Apps Script (Web App URL)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzA-ClBDroHNiNZ_Cj6T0Flq4vWJyTJtvpapVigOBF6aI2SmCyu2qBe87vvS4ifRUTBWQ/exec';
+        
+        const tempatPengumuman = document.getElementById('tempat-pengumuman');
+        const teksLoading = document.getElementById('teks-loading');
+
+        // Fungsi menarik data dari Sheets
+        fetch(scriptURL)
+            .then(response => response.json())
+            .then(data => {
+                teksLoading.style.display = 'none'; // Hilangkan tulisan loading jika berhasil
+                
+                // Looping data dan buat desain kotaknya
+                data.forEach(item => {
+                    // Buat elemen kotak info (info-card)
+                    const card = document.createElement('div');
+                    card.className = 'info-card';
+                    
+                    // Rapikan format tanggal jika berupa teks panjang bawaan sistem
+                    let tanggalTampil = item.tanggal;
+                    if(tanggalTampil.includes('T')) {
+                        let dateObj = new Date(item.tanggal);
+                        tanggalTampil = dateObj.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                    }
+
+                    // Susun isi tulisan di dalam kotak
+                    card.innerHTML = `
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold;">📅 ${tanggalTampil}</p>
+                        <h3>${item.judul}</h3>
+                        <p style="margin-bottom: 0;">${item.isi}</p>
+                    `;
+                    
+                    // Masukkan kotak ke dalam web
+                    tempatPengumuman.appendChild(card);
+                });
+            })
+            .catch(error => {
+                teksLoading.innerText = 'Ups, gagal memuat kabar. Coba muat ulang halaman.';
+                console.error('Error!', error.message);
+            });
+    </script>    
 </body>
 </html>
