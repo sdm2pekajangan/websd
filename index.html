@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SD Muhammadiyah 2 Pekajangan - SD MUTU</title>
+    <style>
+        /* Pengaturan Dasar & Palet Warna */
+        :root {
+            --hijau: #2D6A4F;
+            --gold: #D4AF37;
+            --charcoal: #2F3E46;
+            --putih: #F8F9FA;
+            --putih-murni: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--putih);
+            color: var(--charcoal);
+        }
+
+        /* Navigasi */
+        nav {
+            background-color: var(--charcoal);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav h2 { margin: 0; color: var(--putih-murni); font-size: 1.5rem; }
+        nav h2 span { color: var(--gold); }
+        .nav-links a {
+            color: var(--putih-murni);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+
+        /* Hero Section (Beranda) */
+        .hero {
+            background-color: var(--hijau);
+            color: var(--putih-murni);
+            padding: 60px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+        .hero-teks { flex: 1; min-width: 300px; max-width: 500px; }
+        .hero-teks h1 { font-size: 2.8rem; color: var(--gold); margin-bottom: 10px; }
+        .hero-teks p { font-size: 1.2rem; line-height: 1.6; }
+        .btn-gold {
+            display: inline-block;
+            background-color: var(--gold);
+            color: var(--charcoal);
+            padding: 12px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 30px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* Placeholder Gambar Kartun */
+        .hero-gambar {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            height: 350px;
+            background-color: rgba(255,255,255,0.1);
+            border: 3px dashed var(--gold);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Bagian Informasi & Pengumuman */
+        .section-info { padding: 50px 20px; text-align: center; }
+        .section-info h2 { color: var(--hijau); font-size: 2rem; margin-bottom: 30px; }
+        .info-card {
+            background: var(--putih-murni);
+            border-left: 5px solid var(--gold);
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+        .info-card h3 { margin-top: 0; color: var(--charcoal); }
+
+        /* Jajaran Guru Seru */
+        .guru-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 0 20px 50px 20px;
+        }
+        .guru-card {
+            background: var(--putih-murni);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            width: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border-bottom: 5px solid var(--hijau);
+        }
+        .guru-avatar {
+            width: 100px; height: 100px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--charcoal);
+        }
+
+        /* Form PPDB */
+        .section-ppdb { background-color: var(--charcoal); padding: 50px 20px; color: var(--putih-murni); }
+        .ppdb-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--putih-murni);
+            padding: 30px;
+            border-radius: 15px;
+            color: var(--charcoal);
+        }
+        .ppdb-box h2 { text-align: center; color: var(--hijau); margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--charcoal); }
+        .form-group input {
+            width: 100%; padding: 10px;
+            border: 1px solid #ccc; border-radius: 5px;
+            box-sizing: border-box; font-size: 1rem;
+        }
+        .btn-submit {
+            width: 100%; background-color: var(--hijau); color: var(--putih-murni);
+            padding: 12px; border: none; border-radius: 5px;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background-color: var(--gold); color: var(--charcoal); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi -->
+    <nav>
+        <h2>SD <span>MUTU</span></h2>
+        <div class="nav-links">
+            <a href="#beranda">Beranda</a>
+            <a href="#guru">Guru Seru</a>
+            <a href="#ppdb">PPDB</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="beranda" class="hero">
+        <div class="hero-teks">
+            <h1>Belajar Jadi Petualangan Seru!</h1>
+            <p>Selamat datang di portal SD Muhammadiyah 2 Pekajangan. Kami membentuk karakter tangguh melalui pendidikan yang menyenangkan, kreatif, dan inovatif.</p>
+            <a href="#ppdb" class="btn-gold">Daftar Sekarang</a>
+        </div>
+        <div class="hero-gambar">
+            [Ruang untuk ilustrasi kartun anak-anak sekolah dengan visual hangat bergaya cat air/animasi klasik]
+        </div>
+    </section>
+
+    <!-- Pengumuman & Berita -->
+    <section class="section-info">
+        <h2>Kabar & Informasi</h2>
+        <div class="info-card">
+            <h3>Peringatan Hari Pendidikan</h3>
+            <p>Rangkaian kegiatan edukatif dan pameran karya siswa. Mari saksikan kreasi tanpa batas dari anak-anak hebat kita.</p>
+        </div>
+        <div class="info-card">
+            <h3>Hasil Lomba Desain Pojok Baca Kelas (2 Mei 2026)</h3>
+            <p>Selamat kepada kelas yang telah mengubah sudut ruangannya menjadi area literasi yang sangat estetik dan nyaman!</p>
+        </div>
+    </section>
+
+    <!-- Guru Seru -->
+    <section id="guru" class="section-info" style="padding-top: 0;">
+        <h2>Kenalan Sama Guru Seru Kita!</h2>
+        <div class="guru-container">
+            <div class="guru-card">
+                <div class="guru-avatar">[Kartun Guru 1]</div>
+                <h3 style="color: var(--hijau); margin: 10px 0 5px 0;">Pak Budi</h3>
+                <p style="margin: 0; font-size: 0.9rem;">Jago Matematika Seru</p>
+            </div>
+            <div class="guru-card">
+                <div class="guru-avatar">[Kartun Guru 2]</div>
+                <h3 style="color: var(--hijau); margin: 10px 0 5px 0;">Bu Rina</h3>
+                <p style="margin: 0; font-size: 0.9rem;">Seni & Kreativitas</p>
+            </div>
+            <div class="guru-card">
+                <div class="guru-avatar">[Kartun Guru 3]</div>
+                <h3 style="color: var(--hijau); margin: 10px 0 5px 0;">Pak Andi</h3>
+                <p style="margin: 0; font-size: 0.9rem;">Olahraga & Petualang</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form PPDB -->
+    <section id="ppdb" class="section-ppdb">
+        <div class="ppdb-box">
+            <h2>Pendaftaran PPDB Online</h2>
+            <p style="text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px;">Data akan tersimpan secara aman.</p>
+            
+            <!-- Form ini nanti akan kita hubungkan ke Apps Script -->
+            <form id="form-ppdb">
+                <div class="form-group">
+                    <label>Nama Lengkap Anak</label>
+                    <input type="text" id="nama" placeholder="Contoh: Budi Santoso" required>
+                </div>
+                <div class="form-group">
+                    <label>Asal TK / PAUD</label>
+                    <input type="text" id="asal_sekolah" placeholder="Masukkan nama sekolah..." required>
+                </div>
+                <div class="form-group">
+                    <label>Nomor WhatsApp (Aktif)</label>
+                    <input type="tel" id="no_wa" placeholder="0812-XXXX-XXXX" required>
+                </div>
+                <button type="submit" class="btn-submit">KIRIM DATA</button>
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>
