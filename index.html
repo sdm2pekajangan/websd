@@ -244,38 +244,51 @@
         const tempatPengumuman = document.getElementById('tempat-pengumuman');
         const teksLoading = document.getElementById('teks-loading');
 
-        // Fungsi menarik data dari Sheets
+      // Fungsi menarik data Pengumuman & Guru dari Sheets
         fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
-                teksLoading.style.display = 'none'; // Hilangkan tulisan loading jika berhasil
+                // --- 1. MENCETAK PENGUMUMAN ---
+                teksLoading.style.display = 'none'; 
                 
-                // Looping data dan buat desain kotaknya
-                data.forEach(item => {
-                    // Buat elemen kotak info (info-card)
+                // Perhatikan: sekarang kita menggunakan data.pengumuman
+                data.pengumuman.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'info-card';
                     
-                    // Rapikan format tanggal jika berupa teks panjang bawaan sistem
                     let tanggalTampil = item.tanggal;
                     if(tanggalTampil.includes('T')) {
                         let dateObj = new Date(item.tanggal);
                         tanggalTampil = dateObj.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
                     }
 
-                    // Susun isi tulisan di dalam kotak
                     card.innerHTML = `
                         <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold;">📅 ${tanggalTampil}</p>
                         <h3>${item.judul}</h3>
                         <p style="margin-bottom: 0;">${item.isi}</p>
                     `;
-                    
-                    // Masukkan kotak ke dalam web
                     tempatPengumuman.appendChild(card);
+                });
+
+                // --- 2. MENCETAK KARTU GURU ---
+                const tempatGuru = document.getElementById('tempat-guru');
+                tempatGuru.innerHTML = ''; // Hapus teks "Sedang memanggil..."
+                
+                // Perhatikan: sekarang kita menggunakan data.guru
+                data.guru.forEach(item => {
+                    const guruCard = document.createElement('div');
+                    guruCard.className = 'guru-card';
+                    
+                    guruCard.innerHTML = `
+                        <div class="guru-avatar" style="font-size: 3rem; background: var(--putih); border: 3px solid var(--gold);">${item.avatar}</div>
+                        <h3 style="color: var(--hijau); margin: 10px 0 5px 0;">${item.nama}</h3>
+                        <p style="margin: 0; font-size: 0.9rem;">${item.deskripsi}</p>
+                    `;
+                    tempatGuru.appendChild(guruCard);
                 });
             })
             .catch(error => {
-                teksLoading.innerText = 'Ups, gagal memuat kabar. Coba muat ulang halaman.';
+                teksLoading.innerText = 'Ups, gagal memuat data. Coba muat ulang halaman.';
                 console.error('Error!', error.message);
             });
         // --- LOGIKA PENGIRIMAN FORM PPDB ---
