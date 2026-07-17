@@ -278,6 +278,38 @@
                 teksLoading.innerText = 'Ups, gagal memuat kabar. Coba muat ulang halaman.';
                 console.error('Error!', error.message);
             });
+        // --- LOGIKA PENGIRIMAN FORM PPDB ---
+        const formPPDB = document.getElementById('form-ppdb');
+        const tombolSubmit = document.querySelector('.btn-submit');
+
+        formPPDB.addEventListener('submit', e => {
+            // Mencegah halaman reload saat tombol ditekan
+            e.preventDefault(); 
+            
+            // Ubah teks tombol jadi loading
+            tombolSubmit.innerHTML = 'Sedang Mengirim Data... ⏳';
+            tombolSubmit.disabled = true;
+
+            // Kumpulkan data dari kolom isian
+            const dataPendaftaran = new FormData();
+            dataPendaftaran.append('nama', document.getElementById('nama').value);
+            dataPendaftaran.append('asal_sekolah', document.getElementById('asal_sekolah').value);
+            dataPendaftaran.append('no_wa', document.getElementById('no_wa').value);
+
+            // Kirim data ke URL Google Apps Script yang sama
+            fetch(scriptURL, { method: 'POST', body: dataPendaftaran })
+                .then(response => {
+                    alert('Hore! Data pendaftaran berhasil terkirim ke panitia.');
+                    formPPDB.reset(); // Kosongkan formulir
+                    tombolSubmit.innerHTML = 'KIRIM DATA PENDAFTARAN';
+                    tombolSubmit.disabled = false;
+                })
+                .catch(error => {
+                    alert('Maaf, terjadi kesalahan jaringan. Silakan coba lagi.');
+                    tombolSubmit.innerHTML = 'KIRIM DATA PENDAFTARAN';
+                    tombolSubmit.disabled = false;
+                });
+        });
     </script>    
 </body>
 </html>
