@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — SD Muhammadiyah 2 Pekajangan</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#1B4332;--g2:#2D6A4F;--g3:#52B788;--gold:#D4A017;--gold-l:#F0C040;--red:#C0392B;--blue:#2D6A9F;--purple:#6B2FAA;--orange:#E67E22;--cream:#FFF8EE;--text:#2C3E50;--text2:#5D6D7E;--border:#e2e8f0;--sh:0 4px 20px rgba(27,67,50,.12);--r:14px;--tr:.25s ease}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#f0f4f8;color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--g2);border-radius:3px}
+
+/* SETUP PAGE */
+#setupPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a1f12,var(--blue));padding:1.5rem}
+.setup-card{background:white;border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:500px;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:fadeIn .5s ease}
+.setup-card h2{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.3rem;color:var(--g1);margin-bottom:.3rem}
+.setup-card p{font-size:.82rem;color:var(--text2);margin-bottom:1.5rem;line-height:1.6}
+.setup-steps{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.5rem}
+.step{background:var(--cream);border-radius:12px;padding:1rem;border-left:4px solid var(--g2)}
+.step-num{font-family:'Poppins',sans-serif;font-weight:900;font-size:.7rem;color:var(--g2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.3rem}
+.step-text{font-size:.83rem;color:var(--text);line-height:1.6}
+.step-text b{color:var(--g1)}
+.step-text a{color:var(--blue);font-weight:700}
+.setup-form{display:flex;flex-direction:column;gap:.8rem}
+.sf-group{display:flex;flex-direction:column;gap:5px}
+.sf-group label{font-weight:800;font-size:.73rem;color:var(--g1);text-transform:uppercase;letter-spacing:.5px}
+.sf-group input{border:2px solid var(--border);border-radius:10px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:.92rem;background:var(--cream);transition:.2s}
+.sf-group input:focus{outline:none;border-color:var(--g2);background:white}
+.sf-hint{font-size:.72rem;color:var(--text2);margin-top:2px}
+.btn-setup{background:linear-gradient(135deg,var(--g1),var(--g2));color:white;border:none;padding:13px;border-radius:12px;font-family:'Poppins',sans-serif;font-weight:800;font-size:.97rem;cursor:pointer;transition:.2s;margin-top:.4rem}
+.btn-setup:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(27,67,50,.3)}
+.setup-err{background:#fde8e8;color:#c53030;border:1px solid #feb2b2;border-radius:10px;padding:10px 14px;font-size:.82rem;font-weight:700;display:none;text-align:center}
+.setup-err.show{display:block}
+
+/* LOGIN */
+#loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--g1),var(--blue));padding:1.5rem}
+.login-card{background:white;border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:1.5rem}
+.l-emblem{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-l));display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto .7rem;box-shadow:0 0 0 6px rgba(212,160,23,.2)}
+.l-title{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.05rem;color:var(--g1);line-height:1.3}
+.l-sub{font-size:.75rem;color:var(--text2);margin-top:.2rem}
+.l-form{display:flex;flex-direction:column;gap:.9rem}
+.l-field{display:flex;flex-direction:column;gap:5px}
+.l-field label{font-weight:800;font-size:.73rem;color:var(--g1);text-transform:uppercase;letter-spacing:.5px}
+.l-field input{border:2px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'Nunito',sans-serif;font-size:.95rem;transition:.2s;background:var(--cream)}
+.l-field input:focus{outline:none;border-color:var(--g2)}
+.l-err{background:#fde8e8;color:#c53030;border:1px solid #feb2b2;border-radius:10px;padding:10px 14px;font-size:.82rem;font-weight:700;display:none;text-align:center}
+.l-err.show{display:block}
+.btn-login{background:linear-gradient(135deg,var(--g1),var(--g2));color:white;border:none;padding:13px;border-radius:12px;font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:.2s;margin-top:.2rem}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(27,67,50,.3)}
+.l-config-link{text-align:center;font-size:.75rem;color:var(--text2);margin-top:.8rem}
+.l-config-link a{color:var(--blue);font-weight:700;cursor:pointer;text-decoration:none}
+
+/* ADMIN */
+#adminPage{display:none;min-height:100vh}
+.a-wrap{display:flex;min-height:100vh}
+.sidebar{width:255px;background:var(--g1);color:white;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+.sb-brand{padding:1.4rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-em{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-l));display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:.4rem}
+.sb-t{font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;line-height:1.3}
+.sb-s{font-size:.63rem;color:rgba(255,255,255,.45);margin-top:.1rem}
+.sb-nav{padding:.7rem 0;flex:1}
+.sb-sec{font-size:.58rem;font-weight:800;color:rgba(255,255,255,.32);text-transform:uppercase;letter-spacing:1.5px;padding:.5rem 1.2rem .2rem}
+.sb-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 1.2rem;cursor:pointer;transition:.2s;font-weight:700;font-size:.83rem;color:rgba(255,255,255,.72);border:none;background:none;width:100%;text-align:left}
+.sb-item:hover{background:rgba(255,255,255,.08);color:white}
+.sb-item.active{background:rgba(255,255,255,.14);color:white;border-right:3px solid var(--gold-l)}
+.sb-ic{font-size:1.05rem;width:22px;text-align:center}
+.sb-foot{padding:.9rem 1.2rem;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:.4rem}
+.btn-preview{display:flex;align-items:center;gap:.5rem;background:rgba(212,160,23,.18);border:1px solid rgba(212,160,23,.38);color:var(--gold-l);padding:.55rem .9rem;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:.2s;text-decoration:none}
+.btn-preview:hover{background:rgba(212,160,23,.28)}
+.btn-logout{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.7);padding:.55rem .9rem;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:.2s;width:100%}
+.btn-logout:hover{background:rgba(255,255,255,.14);color:white}
+.a-main{margin-left:255px;flex:1;padding:1.8rem;min-height:100vh}
+.a-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;flex-wrap:gap;gap:.8rem}
+.tb-title h1{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.4rem;color:var(--g1)}
+.tb-title p{font-size:.8rem;color:var(--text2);margin-top:.1rem}
+.tb-right{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+.a-badge{background:linear-gradient(135deg,var(--g1),var(--g2));color:white;padding:5px 13px;border-radius:20px;font-size:.73rem;font-weight:800}
+.gh-status{font-size:.73rem;font-weight:700;padding:5px 12px;border-radius:20px}
+.gh-ok{background:#d4edda;color:#155724}
+.gh-err{background:#fde8e8;color:#c53030}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.8rem}
+.s-box{background:white;border-radius:var(--r);padding:1.1rem 1.3rem;box-shadow:var(--sh);display:flex;align-items:center;gap:.9rem;border-left:4px solid var(--bc,var(--g2))}
+.s-icon{font-size:1.9rem}
+.s-v{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:900;color:var(--g1);line-height:1}
+.s-l{font-size:.68rem;color:var(--text2);margin-top:2px}
+
+/* PANEL */
+.panel{background:white;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;display:none}
+.panel.active{display:block}
+.p-hdr{padding:1.2rem 1.4rem;border-bottom:2px solid #f0f4f8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+.p-hdr h2{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.05rem;color:var(--g1);display:flex;align-items:center;gap:.5rem}
+.p-body{padding:1.4rem}
+
+/* SAVING INDICATOR */
+.saving-bar{height:3px;background:linear-gradient(90deg,var(--g2),var(--g3),var(--gold));background-size:200%;animation:shimmer 1.5s linear infinite;display:none}
+.saving-bar.show{display:block}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:7px 15px;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:.2s;border:none}
+.btn-primary{background:var(--g1);color:white}.btn-primary:hover{background:var(--g2);transform:translateY(-1px)}
+.btn-success{background:#38a169;color:white}.btn-success:hover{background:#2f855a}
+.btn-danger{background:var(--red);color:white}.btn-danger:hover{background:#922B21}
+.btn-warning{background:var(--gold);color:var(--g1)}.btn-warning:hover{background:var(--gold-l)}
+.btn-sm{padding:5px 10px;font-size:.7rem}
+.btn-outline{background:none;border:2px solid var(--g2);color:var(--g2)}.btn-outline:hover{background:var(--g2);color:white}
+
+/* TABLE */
+.dtbl{width:100%;border-collapse:collapse;font-size:.83rem}
+.dtbl th{background:#f8fafc;color:var(--g1);font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;padding:.65rem .9rem;text-align:left;border-bottom:2px solid var(--border)}
+.dtbl td{padding:.7rem .9rem;border-bottom:1px solid #f0f4f8;vertical-align:middle}
+.dtbl tr:hover td{background:#fafffe}
+.dtbl tr:last-child td{border-bottom:none}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-weight:800;font-size:.7rem;color:var(--g1);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{border:2px solid var(--border);border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:.88rem;color:var(--text);background:var(--cream);transition:.2s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--g2);background:white}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fcol2{grid-column:1/-1}
+.f-actions{display:flex;gap:.6rem;margin-top:1.1rem;padding-top:1.1rem;border-top:2px solid #f0f4f8}
+
+/* BADGE */
+.badge{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.bg-green{background:#e8f5e9;color:var(--g2)}.bg-red{background:#fde8e8;color:var(--red)}
+.bg-gold{background:#fff3e0;color:#E65100}.bg-blue{background:#e3f2fd;color:var(--blue)}
+.bg-purple{background:#f3e5f5;color:var(--purple)}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.mo.open{display:flex}
+.m-box{background:white;border-radius:20px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.28);animation:fadeIn .3s ease;max-height:90vh;overflow-y:auto}
+.m-hdr{padding:1.2rem 1.4rem;border-bottom:2px solid #f0f4f8;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:1}
+.m-hdr h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:.97rem;color:var(--g1)}
+.m-cls{background:#f0f4f8;border:none;width:30px;height:30px;border-radius:50%;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.m-cls:hover{background:#e2e8f0}
+.m-body{padding:1.4rem}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:11px 18px;border-radius:12px;font-weight:700;font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.22);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:.5rem;max-width:320px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{background:var(--g1);color:white}
+#toast.err{background:var(--red);color:white}
+#toast.info{background:var(--blue);color:white}
+
+/* COLOR OPTS */
+.c-opts{display:flex;gap:.45rem;flex-wrap:wrap}
+.c-opt{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
+.c-opt.sel{border-color:var(--g1);transform:scale(1.2)}
+
+/* EMPTY */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text2)}
+.empty .ei{font-size:3rem;margin-bottom:.6rem}
+.empty h3{font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.3rem;color:var(--g1)}
+.empty p{font-size:.8rem}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .a-main{margin-left:0;padding:1rem}.fgrid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP PAGE: Konfigurasi GitHub Token -->
+<div id="setupPage">
+  <div class="setup-card">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">⚙️</div>
+    <h2>Pengaturan Awal Admin Panel</h2>
+    <p>Sebelum mulai, masukkan informasi GitHub kamu agar data tersimpan langsung ke repository GitHub — gratis dan permanen!</p>
+
+    <div class="setup-steps">
+      <div class="step">
+        <div class="step-num">Langkah 1 — Buat Token GitHub</div>
+        <div class="step-text">
+          Buka <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br>
+          → Beri nama token: <b>SDMuh2Token</b><br>
+          → Centang <b>repo</b> (full control)<br>
+          → Klik <b>Generate token</b> → Copy token-nya
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">Langkah 2 — Isi Form di Bawah</div>
+        <div class="step-text">Masukkan username GitHub, nama repository, dan token yang sudah dibuat.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">Langkah 3 — Selesai!</div>
+        <div class="step-text">Data akan tersimpan ke file <b>data.json</b> di repository GitHub kamu secara otomatis setiap kali kamu menyimpan konten.</div>
+      </div>
+    </div>
+
+    <div class="setup-form">
+      <div class="setup-err" id="setupErr"></div>
+      <div class="sf-group">
+        <label>Username GitHub</label>
+        <input type="text" id="ghUser" placeholder="Contoh: sdmuh2pekajangan">
+        <span class="sf-hint">Username akun GitHub kamu</span>
+      </div>
+      <div class="sf-group">
+        <label>Nama Repository</label>
+        <input type="text" id="ghRepo" placeholder="Contoh: website-sekolah">
+        <span class="sf-hint">Nama repo tempat file index.html & data.json disimpan</span>
+      </div>
+      <div class="sf-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <span class="sf-hint">Token disimpan di browser, tidak dikirim ke server lain</span>
+      </div>
+      <div class="sf-group">
+        <label>Password Admin Panel</label>
+        <input type="password" id="setupPass" placeholder="Buat password admin (min 6 karakter)">
+        <span class="sf-hint">Password untuk login ke admin panel ini</span>
+      </div>
+      <button class="btn-setup" onclick="doSetup()">✅ Simpan Konfigurasi & Mulai</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="l-emblem">☪</div>
+      <div class="l-title">Panel Admin<br>SD Muhammadiyah 2 Pekajangan</div>
+      <div class="l-sub">Masuk untuk mengelola konten website sekolah</div>
+    </div>
+    <div class="l-form">
+      <div class="l-err" id="loginErr">❌ Password salah, coba lagi!</div>
+      <div class="l-field"><label>Password Admin</label><input type="password" id="loginPass" placeholder="Masukkan password admin"></div>
+      <button class="btn-login" onclick="doLogin()">🔐 Masuk ke Panel Admin</button>
+      <div class="l-config-link"><a onclick="resetSetup()">⚙️ Ubah konfigurasi GitHub</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div id="adminPage">
+  <div class="a-wrap">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-brand">
+        <div class="sb-em">☪</div>
+        <div class="sb-t">Panel Admin</div>
+        <div class="sb-s">SD Muhammadiyah 2 Pekajangan</div>
+      </div>
+      <div class="sb-nav">
+        <div class="sb-sec">Utama</div>
+        <button class="sb-item active" onclick="showP('dashboard',this)"><span class="sb-ic">📊</span>Dashboard</button>
+        <div class="sb-sec">Kelola Konten</div>
+        <button class="sb-item" onclick="showP('berita',this)"><span class="sb-ic">📰</span>Berita & Pengumuman</button>
+        <button class="sb-item" onclick="showP('ekskul',this)"><span class="sb-ic">⭐</span>Ekstrakurikuler</button>
+        <button class="sb-item" onclick="showP('guru',this)"><span class="sb-ic">👨‍🏫</span>Data Guru</button>
+        <button class="sb-item" onclick="showP('galeri',this)"><span class="sb-ic">🖼️</span>Galeri Foto</button>
+        <button class="sb-item" onclick="showP('kuis',this)"><span class="sb-ic">🌙</span>Soal Kuis Islami</button>
+        <button class="sb-item" onclick="showP('doa',this)"><span class="sb-ic">🤲</span>Do'a Harian</button>
+        <button class="sb-item" onclick="showP('kamus',this)"><span class="sb-ic">📚</span>Kamus Arab</button>
+        <button class="sb-item" onclick="showP('agenda',this)"><span class="sb-ic">📅</span>Agenda Kalender</button>
+        <button class="sb-item" onclick="showP('profil',this)"><span class="sb-ic">🏫</span>Profil Sekolah</button>
+        <div class="sb-sec">Sistem</div>
+        <button class="sb-item" onclick="showP('sandi',this)"><span class="sb-ic">🔐</span>Ganti Password</button>
+        <button class="sb-item" onclick="showP('github',this)"><span class="sb-ic">⚙️</span>Konfigurasi GitHub</button>
+      </div>
+      <div class="sb-foot">
+        <a href="index.html" target="_blank" class="btn-preview">🌐 Lihat Website</a>
+        <button class="btn-logout" onclick="doLogout()">🚪 Keluar</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="a-main">
+      <div class="saving-bar" id="savingBar"></div>
+      <div class="a-topbar">
+        <div class="tb-title">
+          <h1 id="panelTitle">Dashboard</h1>
+          <p id="panelDesc">Selamat datang di Panel Admin SD Muhammadiyah 2 Pekajangan</p>
+        </div>
+        <div class="tb-right">
+          <span class="a-badge">👤 Admin</span>
+          <span class="gh-status gh-ok" id="ghStatus">🔗 GitHub Terhubung</span>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="p-dashboard">
+        <div class="stats-row">
+          <div class="s-box" style="--bc:#2D6A4F"><span class="s-icon">📰</span><div><div class="s-v" id="sB">0</div><div class="s-l">Berita</div></div></div>
+          <div class="s-box" style="--bc:#D4A017"><span class="s-icon">⭐</span><div><div class="s-v" id="sE">0</div><div class="s-l">Ekskul</div></div></div>
+          <div class="s-box" style="--bc:#2D6A9F"><span class="s-icon">👨‍🏫</span><div><div class="s-v" id="sG">0</div><div class="s-l">Guru</div></div></div>
+          <div class="s-box" style="--bc:#6B2FAA"><span class="s-icon">🌙</span><div><div class="s-v" id="sK">0</div><div class="s-l">Soal Kuis</div></div></div>
+          <div class="s-box" style="--bc:#C0392B"><span class="s-icon">🤲</span><div><div class="s-v" id="sD">0</div><div class="s-l">Do'a</div></div></div>
+          <div class="s-box" style="--bc:#E67E22"><span class="s-icon">📚</span><div><div class="s-v" id="sKm">0</div><div class="s-l">Kosakata</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="p-hdr"><h2>🔗 Status GitHub & Panduan</h2></div>
+          <div class="p-body">
+            <div id="ghInfo" style="background:#e8f5e9;border-radius:12px;padding:1.1rem;margin-bottom:1.2rem;border:1px solid #c3e6cb">
+              <div style="font-family:'Poppins',sans-serif;font-weight:800;color:var(--g1);margin-bottom:.3rem">✅ Tersambung ke GitHub</div>
+              <div style="font-size:.82rem;color:var(--text2)" id="ghInfoText">Memuat info...</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+              <div style="background:#e8f5e9;border-radius:12px;padding:1rem"><div style="font-size:1.4rem;margin-bottom:.3rem">📝</div><div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;color:var(--g1);margin-bottom:.25rem">Cara Edit Konten</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6">Pilih menu di sidebar, klik Tambah atau Edit. Setelah simpan, data langsung tersimpan ke GitHub dan website otomatis terupdate.</div></div>
+              <div style="background:#e3f2fd;border-radius:12px;padding:1rem"><div style="font-size:1.4rem;margin-bottom:.3rem">☁️</div><div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;color:var(--g1);margin-bottom:.25rem">Data di GitHub</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6">Semua data tersimpan di file <b>data.json</b> di repository GitHub kamu — bisa diedit dari HP, laptop, atau komputer mana saja.</div></div>
+              <div style="background:#fff3e0;border-radius:12px;padding:1rem"><div style="font-size:1.4rem;margin-bottom:.3rem">⚡</div><div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;color:var(--g1);margin-bottom:.25rem">Update Real-time</div><div style="font-size:.78rem;color:var(--text2);line-height:1.6">Website publik (index.html) membaca data.json langsung dari GitHub. Perubahan terlihat dalam hitungan detik setelah disimpan.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BERITA -->
+      <div class="panel" id="p-berita">
+        <div class="p-hdr"><h2>📰 Berita & Pengumuman</h2><button class="btn btn-primary" onclick="openM('berita')">➕ Tambah Berita</button></div>
+        <div class="p-body"><div id="tBerita"></div></div>
+      </div>
+
+      <!-- EKSKUL -->
+      <div class="panel" id="p-ekskul">
+        <div class="p-hdr"><h2>⭐ Ekstrakurikuler</h2><button class="btn btn-primary" onclick="openM('ekskul')">➕ Tambah Ekskul</button></div>
+        <div class="p-body"><div id="tEkskul"></div></div>
+      </div>
+
+      <!-- GURU -->
+      <div class="panel" id="p-guru">
+        <div class="p-hdr"><h2>👨‍🏫 Data Guru & Staff</h2><button class="btn btn-primary" onclick="openM('guru')">➕ Tambah Guru</button></div>
+        <div class="p-body"><div id="tGuru"></div></div>
+      </div>
+
+      <!-- GALERI -->
+      <div class="panel" id="p-galeri">
+        <div class="p-hdr"><h2>🖼️ Galeri Foto</h2><button class="btn btn-primary" onclick="openM('galeri')">➕ Tambah Item</button></div>
+        <div class="p-body"><div id="tGaleri"></div></div>
+      </div>
+
+      <!-- KUIS -->
+      <div class="panel" id="p-kuis">
+        <div class="p-hdr"><h2>🌙 Soal Kuis Islami</h2><button class="btn btn-primary" onclick="openM('kuis')">➕ Tambah Soal</button></div>
+        <div class="p-body"><div id="tKuis"></div></div>
+      </div>
+
+      <!-- DOA -->
+      <div class="panel" id="p-doa">
+        <div class="p-hdr"><h2>🤲 Do'a Harian Anak</h2><button class="btn btn-primary" onclick="openM('doa')">➕ Tambah Do'a</button></div>
+        <div class="p-body"><div id="tDoa"></div></div>
+      </div>
+
+      <!-- KAMUS -->
+      <div class="panel" id="p-kamus">
+        <div class="p-hdr"><h2>📚 Kamus Bahasa Arab</h2><button class="btn btn-primary" onclick="openM('kamus')">➕ Tambah Kosakata</button></div>
+        <div class="p-body"><div id="tKamus"></div></div>
+      </div>
+
+      <!-- AGENDA -->
+      <div class="panel" id="p-agenda">
+        <div class="p-hdr"><h2>📅 Agenda Kalender</h2><button class="btn btn-primary" onclick="openM('agenda')">➕ Tambah Agenda</button></div>
+        <div class="p-body"><div id="tAgenda"></div></div>
+      </div>
+
+      <!-- PROFIL -->
+      <div class="panel" id="p-profil">
+        <div class="p-hdr"><h2>🏫 Profil Sekolah</h2></div>
+        <div class="p-body">
+          <div class="fgrid">
+            <div class="fg"><label>Nama Sekolah</label><input type="text" id="pNama"></div>
+            <div class="fg"><label>NPSN</label><input type="text" id="pNpsn"></div>
+            <div class="fg"><label>Akreditasi</label><select id="pAkred"><option>A</option><option>B</option><option>C</option></select></div>
+            <div class="fg"><label>Kurikulum</label><input type="text" id="pKur"></div>
+            <div class="fg"><label>Kecamatan</label><input type="text" id="pKec"></div>
+            <div class="fg"><label>Kabupaten</label><input type="text" id="pKab"></div>
+            <div class="fg"><label>Jumlah Rombel</label><input type="text" id="pRombel"></div>
+            <div class="fg"><label>Jumlah Siswa</label><input type="text" id="pSiswa"></div>
+            <div class="fg fcol2"><label>Alamat Lengkap</label><input type="text" id="pAlamat"></div>
+            <div class="fg"><label>No. WhatsApp (format: 628xxx)</label><input type="text" id="pWa"></div>
+            <div class="fg"><label>Email Sekolah</label><input type="email" id="pEmail"></div>
+            <div class="fg fcol2"><label>Visi Sekolah</label><textarea id="pVisi" rows="3"></textarea></div>
+            <div class="fg fcol2"><label>Misi (satu baris = satu misi)</label><textarea id="pMisi" rows="5"></textarea></div>
+            <div class="fg fcol2"><label>Program Unggulan (satu baris = satu program)</label><textarea id="pUnggulan" rows="5"></textarea></div>
+          </div>
+          <div class="f-actions">
+            <button class="btn btn-success" onclick="saveProfil()">💾 Simpan & Upload ke GitHub</button>
+            <button class="btn btn-outline" onclick="loadProfil()">🔄 Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SANDI -->
+      <div class="panel" id="p-sandi">
+        <div class="p-hdr"><h2>🔐 Ganti Password Admin</h2></div>
+        <div class="p-body" style="max-width:400px">
+          <div style="display:flex;flex-direction:column;gap:.9rem">
+            <div class="fg"><label>Password Lama</label><input type="password" id="sLama"></div>
+            <div class="fg"><label>Password Baru (min 6 karakter)</label><input type="password" id="sBaru"></div>
+            <div class="fg"><label>Konfirmasi Password Baru</label><input type="password" id="sKonfirm"></div>
+            <div id="sErr" style="display:none;background:#fde8e8;color:#c53030;padding:9px 12px;border-radius:10px;font-size:.8rem;font-weight:700"></div>
+            <button class="btn btn-success" onclick="gantiSandi()">🔐 Simpan Password Baru</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GITHUB CONFIG -->
+      <div class="panel" id="p-github">
+        <div class="p-hdr"><h2>⚙️ Konfigurasi GitHub</h2></div>
+        <div class="p-body" style="max-width:480px">
+          <div style="background:#fff3e0;border-radius:12px;padding:1rem;margin-bottom:1.2rem;border:1px solid #fbd38d">
+            <div style="font-weight:800;font-size:.82rem;color:#E65100;margin-bottom:.3rem">⚠️ Perhatian</div>
+            <div style="font-size:.78rem;color:var(--text2);line-height:1.6">Mengubah konfigurasi akan mempengaruhi semua koneksi ke GitHub. Pastikan data yang dimasukkan benar.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.9rem">
+            <div class="fg"><label>Username GitHub</label><input type="text" id="cfgUser" placeholder="username GitHub"></div>
+            <div class="fg"><label>Nama Repository</label><input type="text" id="cfgRepo" placeholder="nama-repository"></div>
+            <div class="fg"><label>Personal Access Token</label><input type="password" id="cfgToken" placeholder="ghp_xxxxxxxx"></div>
+            <button class="btn btn-success" onclick="saveConfig()">💾 Simpan Konfigurasi</button>
+            <button class="btn btn-danger" onclick="resetSetup()">🗑️ Reset & Setup Ulang</button>
+          </div>
+          <div style="margin-top:1.5rem;background:var(--cream);border-radius:12px;padding:1rem">
+            <div style="font-weight:800;font-size:.82rem;color:var(--g1);margin-bottom:.5rem">📋 Cara Buat Token Baru</div>
+            <ol style="font-size:.78rem;color:var(--text2);line-height:1.8;padding-left:1.2rem">
+              <li>Buka <b>github.com → Settings → Developer settings</b></li>
+              <li>Klik <b>Personal access tokens → Tokens (classic)</b></li>
+              <li>Klik <b>Generate new token (classic)</b></li>
+              <li>Beri nama, centang <b>repo</b>, klik Generate</li>
+              <li>Copy token (hanya tampil sekali!)</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mo" id="mo"><div class="m-box">
+  <div class="m-hdr"><h3 id="mTitle">Form</h3><button class="m-cls" onclick="closeM()">✕</button></div>
+  <div class="m-body" id="mBody"></div>
+</div></div>
+
+<!-- TOAST -->
+<div id="toast">✅</div>
+
+<script>
+// ===== CONFIG & AUTH =====
+const CFG_KEY='sdmuh_cfg', AUTH_KEY='sdmuh_auth';
+function getCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY)||'{}')}catch(e){return{}}}
+function saveCfgData(d){localStorage.setItem(CFG_KEY,JSON.stringify(d))}
+function isSetup(){const c=getCfg();return!!(c.user&&c.repo&&c.token&&c.pass)}
+
+function doSetup(){
+  const user=gv('ghUser'),repo=gv('ghRepo'),token=gv('ghToken'),pass=gv('setupPass');
+  const err=document.getElementById('setupErr');
+  if(!user||!repo||!token||!pass){err.textContent='⚠️ Semua field harus diisi!';err.classList.add('show');return;}
+  if(pass.length<6){err.textContent='⚠️ Password minimal 6 karakter!';err.classList.add('show');return;}
+  saveCfgData({user,repo,token,pass});
+  err.classList.remove('show');
+  showLoginPage();
+  showToast('✅ Konfigurasi berhasil disimpan!','ok');
+}
+
+function showLoginPage(){
+  document.getElementById('setupPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('adminPage').style.display='none';
+}
+
+function doLogin(){
+  const p=document.getElementById('loginPass').value;
+  const cfg=getCfg();
+  if(p===cfg.pass){
+    localStorage.setItem(AUTH_KEY,'1');
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').classList.add('show');
+    setTimeout(()=>document.getElementById('loginErr').classList.remove('show'),3000);
+  }
+}
+
+function doLogout(){
+  if(!confirm('Yakin ingin keluar?'))return;
+  localStorage.removeItem(AUTH_KEY);
+  document.getElementById('adminPage').style.display='none';
+  showLoginPage();
+}
+
+function resetSetup(){
+  if(!confirm('Reset konfigurasi? Kamu harus setup ulang.'))return;
+  localStorage.removeItem(CFG_KEY);localStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  if(!isSetup()){
+    document.getElementById('setupPage').style.display='flex';
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='none';
+  } else if(localStorage.getItem(AUTH_KEY)==='1'){
+    document.getElementById('setupPage').style.display='none';
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminPage').style.display='block';
+    initAdmin();
+  } else {
+    showLoginPage();
+  }
+  document.getElementById('loginPass').addEventListener('keydown',e=>e.key==='Enter'&&doLogin());
+});
+
+// ===== GITHUB API =====
+let DB={};
+const BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+async function ghFetch(path,method='GET',body=null){
+  const cfg=getCfg();
+  const url=`https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${path}`;
+  const opts={method,headers:{'Authorization':`token ${cfg.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(url,opts);
+  if(!r.ok){const e=await r.json();throw new Error(e.message||r.status);}
+  return r.json();
+}
+
+async function loadFromGH(){
+  try{
+    const res=await ghFetch('data.json');
+    const content=atob(res.content.replace(/\n/g,''));
+    DB=JSON.parse(content);
+    DB._sha=res.sha;
+    document.getElementById('ghStatus').className='gh-status gh-ok';
+    document.getElementById('ghStatus').textContent='🔗 GitHub Terhubung';
+    const cfg=getCfg();
+    document.getElementById('ghInfoText').textContent=`Repository: ${cfg.user}/${cfg.repo} · File: data.json · SHA: ${res.sha.substring(0,8)}...`;
+  } catch(e){
+    console.warn('Gagal load dari GitHub:',e.message);
+    document.getElementById('ghStatus').className='gh-status gh-err';
+    document.getElementById('ghStatus').textContent='⚠️ '+e.message;
+    document.getElementById('ghInfo').style.background='#fde8e8';
+    document.getElementById('ghInfo').style.borderColor='#feb2b2';
+    document.getElementById('ghInfoText').textContent='Error: '+e.message+'. Periksa konfigurasi GitHub di menu Konfigurasi GitHub.';
+    // fallback ke data default
+    DB=getDefaultData();
+  }
+}
+
+async function saveToGH(){
+  document.getElementById('savingBar').classList.add('show');
+  try{
+    const cfg=getCfg();
+    const sha=DB._sha;
+    const dataToSave={...DB};delete dataToSave._sha;
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(dataToSave,null,2))));
+    const body={message:`Update data.json via Admin Panel — ${new Date().toLocaleString('id')}`,content,committer:{name:'Admin SD Muh 2',email:'admin@sdmuh2.sch.id'}};
+    if(sha) body.sha=sha;
+    const res=await ghFetch('data.json','PUT',body);
+    DB._sha=res.content.sha;
+    showToast('✅ Tersimpan ke GitHub!','ok');
+  } catch(e){
+    showToast('❌ Gagal simpan: '+e.message,'err');
+  }
+  document.getElementById('savingBar').classList.remove('show');
+}
+
+function getDefaultData(){
+  return{berita:[],ekskul:[],guru:[],galeri:[],kuis:[],doa:[],kamus:[],agenda:[],profil:{nama:'SD Muhammadiyah 2 Pekajangan',npsn:'20323948',akred:'A',kurikulum:'Merdeka Belajar',kecamatan:'Kedungwuni',kabupaten:'Pekalongan',rombel:'12 Rombongan',siswa:'±200 Siswa',alamat:'Jl. Pekajangan, Kedungwuni, Kab. Pekalongan',visi:'Visi sekolah...',misi:'Misi 1\nMisi 2',unggulan:'Program 1\nProgram 2',wa:'6285xxx',email:'sdmuh2pkj@gmail.com'}};
+}
+
+// ===== INIT =====
+async function initAdmin(){
+  showToast('⏳ Memuat data dari GitHub...','info');
+  await loadFromGH();
+  updateStats();
+  renderAll();
+  loadProfil();
+  loadCfgForm();
+}
+
+function updateStats(){
+  document.getElementById('sB').textContent=DB.berita?.length||0;
+  document.getElementById('sE').textContent=DB.ekskul?.length||0;
+  document.getElementById('sG').textContent=DB.guru?.length||0;
+  document.getElementById('sK').textContent=DB.kuis?.length||0;
+  document.getElementById('sD').textContent=DB.doa?.length||0;
+  document.getElementById('sKm').textContent=DB.kamus?.length||0;
+}
+
+function renderAll(){
+  renderBerita();renderEkskul();renderGuru();renderGaleri();renderKuis();renderDoa();renderKamus();renderAgenda();
+}
+
+// ===== PANEL NAV =====
+const PM={dashboard:{t:'Dashboard',d:'Ringkasan konten dan status koneksi GitHub'},berita:{t:'Berita & Pengumuman',d:'Kelola berita dan pengumuman yang tampil di website'},ekskul:{t:'Ekstrakurikuler',d:'Tambah, edit, dan hapus data kegiatan ekstrakurikuler'},guru:{t:'Data Guru & Staff',d:'Kelola informasi tenaga pendidik dan kependidikan'},galeri:{t:'Galeri Foto',d:'Manajemen koleksi foto dan dokumentasi kegiatan'},kuis:{t:'Soal Kuis Islami',d:'Tambah dan edit pertanyaan kuis islami untuk siswa'},doa:{t:"Do'a Harian Anak",d:"Kelola koleksi do'a harian dengan teks Arab, Latin, dan artinya"},kamus:{t:'Kamus Bahasa Arab',d:'Kelola kosakata Bahasa Arab–Indonesia dalam kamus digital'},agenda:{t:'Agenda Kalender',d:'Atur agenda dan jadwal penting di kalender akademik'},profil:{t:'Profil Sekolah',d:'Edit informasi dasar, visi misi, dan program unggulan sekolah'},sandi:{t:'Ganti Password',d:'Ubah password login untuk keamanan panel admin'},github:{t:'Konfigurasi GitHub',d:'Atur koneksi ke repository GitHub untuk penyimpanan data'}};
+
+function showP(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const m=PM[id]||{};
+  document.getElementById('panelTitle').textContent=m.t||id;
+  document.getElementById('panelDesc').textContent=m.d||'';
+  if(id==='profil') loadProfil();
+  if(id==='github') loadCfgForm();
+}
+
+// ===== RENDER =====
+const empty=(ic,t,d)=>`<div class="empty"><div class="ei">${ic}</div><h3>${t}</h3><p>${d}</p></div>`;
+
+function renderBerita(){
+  const el=document.getElementById('tBerita');
+  if(!DB.berita?.length){el.innerHTML=empty('📰','Belum ada berita','Klik Tambah Berita untuk menambahkan.');return;}
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Icon</th><th>Judul</th><th>Kategori</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${DB.berita.map(b=>`<tr><td style="font-size:1.3rem">${b.icon}</td><td><b>${b.judul}</b><br><small style="color:var(--text2)">${b.ringkasan?.substring(0,55)}…</small></td><td><span class="badge bg-green">${b.kategori}</span></td><td>${b.tanggal}</td><td><span class="badge ${b.status==='aktif'?'bg-green':'bg-red'}">${b.status}</span></td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('berita',${b.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('berita',${b.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderEkskul(){
+  const el=document.getElementById('tEkskul');
+  if(!DB.ekskul?.length){el.innerHTML=empty('⭐','Belum ada ekskul','Klik Tambah Ekskul untuk menambahkan.');return;}
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Icon</th><th>Nama</th><th>Hari</th><th>Keterangan</th><th>Aksi</th></tr></thead><tbody>${DB.ekskul.map(e=>`<tr><td style="font-size:1.3rem">${e.icon}</td><td><b>${e.nama}</b></td><td><span class="badge bg-blue">${e.hari}</span></td><td>${e.keterangan}</td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('ekskul',${e.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('ekskul',${e.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderGuru(){
+  const el=document.getElementById('tGuru');
+  if(!DB.guru?.length){el.innerHTML=empty('👨‍🏫','Belum ada data guru','Klik Tambah Guru untuk menambahkan.');return;}
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Icon</th><th>Nama Lengkap</th><th>Jabatan</th><th>Mata Pelajaran</th><th>Aksi</th></tr></thead><tbody>${DB.guru.map(g=>`<tr><td style="font-size:1.3rem">${g.icon}</td><td><b>${g.nama}</b></td><td><span class="badge bg-gold">${g.jabatan}</span></td><td>${g.mapel}</td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('guru',${g.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('guru',${g.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderGaleri(){
+  const el=document.getElementById('tGaleri');
+  if(!DB.galeri?.length){el.innerHTML=empty('🖼️','Belum ada galeri','Klik Tambah Item untuk menambahkan.');return;}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem">${DB.galeri.map(g=>`<div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)"><div style="height:80px;background:${g.bg};display:flex;align-items:center;justify-content:center;font-size:2.2rem">${g.emoji}</div><div style="padding:.65rem"><div style="font-weight:800;font-size:.82rem;margin-bottom:.2rem">${g.label}</div><span class="badge bg-purple">${g.kategori}</span><div style="display:flex;gap:.3rem;margin-top:.5rem"><button class="btn btn-warning btn-sm" onclick="editItem('galeri',${g.id})" style="flex:1">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('galeri',${g.id})" style="flex:1">🗑️</button></div></div></div>`).join('')}</div>`;
+}
+
+function renderKuis(){
+  const el=document.getElementById('tKuis');
+  if(!DB.kuis?.length){el.innerHTML=empty('🌙','Belum ada soal kuis','Klik Tambah Soal untuk menambahkan.');return;}
+  el.innerHTML=`<div style="display:flex;flex-direction:column;gap:.8rem">${DB.kuis.map((k,i)=>`<div style="background:var(--cream);border-radius:12px;padding:.9rem;border:2px solid #e2e8f0"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem"><div style="font-weight:800;font-size:.85rem;color:var(--g1)">Soal #${i+1}: ${k.pertanyaan}</div><div style="display:flex;gap:.3rem;flex-shrink:0;margin-left:.8rem"><button class="btn btn-warning btn-sm" onclick="editItem('kuis',${k.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('kuis',${k.id})">🗑️</button></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.4rem">${k.opsi.map((o,j)=>`<div style="padding:4px 9px;border-radius:7px;font-size:.78rem;font-weight:700;${j===k.jawaban?'background:#d4edda;color:#155724':'background:white;border:1px solid #e2e8f0'}">${String.fromCharCode(65+j)}. ${o}${j===k.jawaban?' ✓':''}</div>`).join('')}</div><div style="font-size:.72rem;color:var(--text2);background:white;padding:5px 9px;border-radius:7px">💡 ${k.penjelasan}</div></div>`).join('')}</div>`;
+}
+
+function renderDoa(){
+  const el=document.getElementById('tDoa');
+  if(!DB.doa?.length){el.innerHTML=empty('🤲',"Belum ada do'a","Klik Tambah Do'a untuk menambahkan.");return;}
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Icon</th><th>Judul Do'a</th><th>Latin</th><th>Aksi</th></tr></thead><tbody>${DB.doa.map(d=>`<tr><td style="font-size:1.3rem">${d.icon}</td><td><b>${d.judul}</b><br><small style="font-family:'Amiri',serif;font-size:.95rem;color:var(--g1)">${(d.arab||'').substring(0,25)}…</small></td><td><small style="font-style:italic;color:var(--text2)">${(d.latin||'').substring(0,40)}…</small></td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('doa',${d.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('doa',${d.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderKamus(){
+  const el=document.getElementById('tKamus');
+  if(!DB.kamus?.length){el.innerHTML=empty('📚','Belum ada kosakata','Klik Tambah Kosakata untuk menambahkan.');return;}
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Arab</th><th>Latin</th><th>Indonesia</th><th>Aksi</th></tr></thead><tbody>${DB.kamus.map(k=>`<tr><td style="font-family:'Amiri',serif;font-size:1.3rem;color:var(--g1)">${k.arab}</td><td><em style="color:var(--text2)">${k.latin}</em></td><td><b>${k.indonesia}</b></td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('kamus',${k.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('kamus',${k.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderAgenda(){
+  const el=document.getElementById('tAgenda');
+  if(!DB.agenda?.length){el.innerHTML=empty('📅','Belum ada agenda','Klik Tambah Agenda untuk menambahkan.');return;}
+  const s=[...DB.agenda].sort((a,b)=>a.bulan-b.bulan||a.tanggal-b.tanggal);
+  el.innerHTML=`<table class="dtbl"><thead><tr><th>Warna</th><th>Tanggal</th><th>Agenda</th><th>Aksi</th></tr></thead><tbody>${s.map(a=>`<tr><td><div style="width:16px;height:16px;border-radius:50%;background:${a.warna}"></div></td><td><b>${a.tanggal} ${BULAN[a.bulan]}</b></td><td>${a.label}</td><td><div style="display:flex;gap:.3rem"><button class="btn btn-warning btn-sm" onclick="editItem('agenda',${a.id})">✏️</button><button class="btn btn-danger btn-sm" onclick="delItem('agenda',${a.id})">🗑️</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+
+// ===== MODAL FORMS =====
+let curType=null,editMode=false,editId=null;
+
+const FORMS={
+  berita:`<div class="fgrid"><div class="fg fcol2"><label>Judul Berita</label><input type="text" id="fJudul" placeholder="Judul berita yang menarik"></div><div class="fg"><label>Kategori</label><select id="fKategori"><option value="akademik">Akademik</option><option value="prestasi">Prestasi</option><option value="kegiatan">Kegiatan</option><option value="program">Program</option><option value="fasilitas">Fasilitas</option></select></div><div class="fg"><label>Tanggal</label><input type="date" id="fTanggal"></div><div class="fg"><label>Icon Emoji</label><input type="text" id="fIcon" placeholder="📚" maxlength="2"></div><div class="fg"><label>Status</label><select id="fStatus"><option value="aktif">Aktif</option><option value="arsip">Arsip</option></select></div><div class="fg fcol2"><label>Ringkasan</label><textarea id="fRingkasan" rows="4" placeholder="Tulis ringkasan berita..."></textarea></div></div>`,
+  ekskul:`<div class="fgrid"><div class="fg"><label>Nama Ekskul</label><input type="text" id="fNama" placeholder="Nama ekstrakurikuler"></div><div class="fg"><label>Icon Emoji</label><input type="text" id="fIcon" placeholder="⭐" maxlength="2"></div><div class="fg fcol2"><label>Hari Pelaksanaan</label><input type="text" id="fHari" placeholder="Contoh: Senin & Rabu"></div><div class="fg fcol2"><label>Keterangan</label><input type="text" id="fKet" placeholder="Keterangan singkat kegiatan"></div></div>`,
+  guru:`<div class="fgrid"><div class="fg fcol2"><label>Nama Lengkap + Gelar</label><input type="text" id="fNama" placeholder="Contoh: Budi Santoso, S.Pd"></div><div class="fg"><label>Jabatan</label><input type="text" id="fJabatan" placeholder="Contoh: Guru Kelas 5A"></div><div class="fg"><label>Icon</label><select id="fIcon"><option value="👨‍🏫">👨‍🏫 Guru Laki-laki</option><option value="👩‍🏫">👩‍🏫 Guru Perempuan</option></select></div><div class="fg fcol2"><label>Mata Pelajaran</label><input type="text" id="fMapel" placeholder="Contoh: Matematika & IPA"></div><div class="fg fcol2"><label>Warna Avatar</label><div class="c-opts">${['#e8f5e9','#e3f2fd','#fff3e0','#fce4ec','#f3e5f5','#e8eaf6','#e0f7fa','#fbe9e7'].map(c=>`<div class="c-opt" style="background:${c}" data-c="${c}" onclick="pickColor('${c}')"></div>`).join('')}</div><input type="hidden" id="fWarna" value="#e8f5e9"></div></div>`,
+  galeri:`<div class="fgrid"><div class="fg"><label>Label / Judul</label><input type="text" id="fLabel" placeholder="Judul foto atau kegiatan"></div><div class="fg"><label>Kategori</label><select id="fKategori"><option value="prestasi">Prestasi</option><option value="islami">Islami</option><option value="seni">Seni</option><option value="olahraga">Olahraga</option></select></div><div class="fg"><label>Emoji</label><input type="text" id="fEmoji" placeholder="🏆" maxlength="2"></div><div class="fg"><label>Warna Gradien (CSS)</label><input type="text" id="fBg" placeholder="linear-gradient(135deg,#1B4332,#2D6A4F)"></div></div>`,
+  kuis:`<div class="fgrid"><div class="fg fcol2"><label>Pertanyaan</label><textarea id="fPertanyaan" rows="3" placeholder="Tulis pertanyaan kuis islami..."></textarea></div><div class="fg"><label>Opsi A</label><input type="text" id="fO0" placeholder="Pilihan A"></div><div class="fg"><label>Opsi B</label><input type="text" id="fO1" placeholder="Pilihan B"></div><div class="fg"><label>Opsi C</label><input type="text" id="fO2" placeholder="Pilihan C"></div><div class="fg"><label>Opsi D</label><input type="text" id="fO3" placeholder="Pilihan D"></div><div class="fg fcol2"><label>Jawaban Benar</label><select id="fJawaban"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div><div class="fg fcol2"><label>Penjelasan Jawaban</label><textarea id="fPenjelasan" rows="2" placeholder="Penjelasan mengapa jawaban ini benar..."></textarea></div></div>`,
+  doa:`<div class="fgrid"><div class="fg"><label>Judul Do'a</label><input type="text" id="fJudul" placeholder="Contoh: Do'a Sebelum Makan"></div><div class="fg"><label>Icon Emoji</label><input type="text" id="fIcon" placeholder="🤲" maxlength="2"></div><div class="fg fcol2"><label>Teks Arab</label><textarea id="fArab" rows="3" dir="rtl" placeholder="Teks Arab..." style="font-family:'Amiri',serif;font-size:1.2rem;text-align:right"></textarea></div><div class="fg fcol2"><label>Latin / Transliterasi</label><textarea id="fLatin" rows="2" placeholder="Tulisan latin..."></textarea></div><div class="fg fcol2"><label>Arti / Terjemahan</label><textarea id="fArti" rows="2" placeholder="Arti dalam Bahasa Indonesia..."></textarea></div></div>`,
+  kamus:`<div class="fgrid"><div class="fg fcol2"><label>Tulisan Arab</label><input type="text" id="fArab" placeholder="Teks Arab" dir="rtl" style="font-family:'Amiri',serif;font-size:1.2rem;text-align:right"></div><div class="fg"><label>Latin / Transliterasi</label><input type="text" id="fLatin" placeholder="Contoh: Bismillah"></div><div class="fg"><label>Arti Bahasa Indonesia</label><input type="text" id="fIndonesia" placeholder="Contoh: Dengan nama Allah"></div></div>`,
+  agenda:`<div class="fgrid"><div class="fg fcol2"><label>Nama Agenda</label><input type="text" id="fLabel" placeholder="Nama agenda atau acara sekolah"></div><div class="fg"><label>Bulan</label><select id="fBulan">${BULAN.map((b,i)=>`<option value="${i}">${b}</option>`).join('')}</select></div><div class="fg"><label>Tanggal (1–31)</label><input type="number" id="fTanggal" min="1" max="31" placeholder="Tanggal"></div><div class="fg fcol2"><label>Warna Titik Kalender</label><select id="fWarna"><option value="#2D6A9F">🔵 Biru — Acara Umum</option><option value="#D4A017">🟡 Emas — Hari Besar Islam</option><option value="#C0392B">🔴 Merah — Hari Libur / Ujian</option><option value="#2D6A4F">🟢 Hijau — Kegiatan Sekolah</option><option value="#6B2FAA">🟣 Ungu — Acara Khusus</option><option value="#E67E22">🟠 Oranye — Lainnya</option></select></div></div>`,
+};
+
+function openM(type,id=null){
+  curType=type;editMode=!!id;editId=id;
+  document.getElementById('mTitle').textContent=(id?'Edit ':'Tambah ')+type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('mBody').innerHTML=(FORMS[type]||'')+`<div class="f-actions"><button class="btn btn-success" onclick="saveItem()">💾 Simpan & Upload ke GitHub</button><button class="btn btn-outline" onclick="closeM()">Batal</button></div>`;
+  document.getElementById('mo').classList.add('open');
+  if(id) fillForm(type,id);
+  if(type==='guru'&&!id) pickColor('#e8f5e9');
+}
+function closeM(){document.getElementById('mo').classList.remove('open');}
+
+function fillForm(type,id){
+  const item=(DB[type]||[]).find(i=>i.id===id);
+  if(!item)return;
+  const sv=(fId,val)=>{const e=document.getElementById(fId);if(e)e.value=val??'';};
+  if(type==='berita'){sv('fJudul',item.judul);sv('fKategori',item.kategori);sv('fTanggal',item.tanggal);sv('fIcon',item.icon);sv('fStatus',item.status);sv('fRingkasan',item.ringkasan);}
+  else if(type==='ekskul'){sv('fNama',item.nama);sv('fIcon',item.icon);sv('fHari',item.hari);sv('fKet',item.keterangan);}
+  else if(type==='guru'){sv('fNama',item.nama);sv('fJabatan',item.jabatan);sv('fIcon',item.icon);sv('fMapel',item.mapel);pickColor(item.warna);}
+  else if(type==='galeri'){sv('fLabel',item.label);sv('fKategori',item.kategori);sv('fEmoji',item.emoji);sv('fBg',item.bg);}
+  else if(type==='kuis'){sv('fPertanyaan',item.pertanyaan);item.opsi.forEach((o,i)=>sv('fO'+i,o));sv('fJawaban',item.jawaban);sv('fPenjelasan',item.penjelasan);}
+  else if(type==='doa'){sv('fJudul',item.judul);sv('fIcon',item.icon);sv('fArab',item.arab);sv('fLatin',item.latin);sv('fArti',item.arti);}
+  else if(type==='kamus'){sv('fArab',item.arab);sv('fLatin',item.latin);sv('fIndonesia',item.indonesia);}
+  else if(type==='agenda'){sv('fLabel',item.label);sv('fBulan',item.bulan);sv('fTanggal',item.tanggal);sv('fWarna',item.warna);}
+}
+
+async function saveItem(){
+  const type=curType;
+  let ni={};
+  const gv2=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  if(type==='berita') ni={judul:gv2('fJudul'),kategori:gv2('fKategori'),tanggal:gv2('fTanggal'),icon:gv2('fIcon')||'📰',status:gv2('fStatus'),ringkasan:gv2('fRingkasan')};
+  else if(type==='ekskul') ni={nama:gv2('fNama'),icon:gv2('fIcon')||'⭐',hari:gv2('fHari'),keterangan:gv2('fKet')};
+  else if(type==='guru') ni={nama:gv2('fNama'),jabatan:gv2('fJabatan'),icon:gv2('fIcon')||'👨‍🏫',mapel:gv2('fMapel'),warna:gv2('fWarna')||'#e8f5e9'};
+  else if(type==='galeri') ni={label:gv2('fLabel'),kategori:gv2('fKategori'),emoji:gv2('fEmoji')||'📷',bg:gv2('fBg')||'linear-gradient(135deg,#1B4332,#2D6A4F)'};
+  else if(type==='kuis') ni={pertanyaan:gv2('fPertanyaan'),opsi:[gv2('fO0'),gv2('fO1'),gv2('fO2'),gv2('fO3')],jawaban:+gv2('fJawaban'),penjelasan:gv2('fPenjelasan')};
+  else if(type==='doa') ni={judul:gv2('fJudul'),icon:gv2('fIcon')||'🤲',arab:gv2('fArab'),latin:gv2('fLatin'),arti:gv2('fArti')};
+  else if(type==='kamus') ni={arab:gv2('fArab'),latin:gv2('fLatin'),indonesia:gv2('fIndonesia')};
+  else if(type==='agenda') ni={label:gv2('fLabel'),bulan:+gv2('fBulan'),tanggal:+gv2('fTanggal'),warna:gv2('fWarna')};
+  if(!DB[type]) DB[type]=[];
+  if(editMode){const idx=DB[type].findIndex(i=>i.id===editId);if(idx>-1)DB[type][idx]={...DB[type][idx],...ni};}
+  else{const maxId=DB[type].reduce((m,i)=>Math.max(m,i.id||0),0);DB[type].push({id:maxId+1,...ni});}
+  closeM();renderAll();updateStats();
+  await saveToGH();
+}
+
+function editItem(type,id){openM(type,id);}
+async function delItem(type,id){
+  if(!confirm('Yakin ingin menghapus data ini?'))return;
+  DB[type]=DB[type].filter(i=>i.id!==id);
+  renderAll();updateStats();
+  await saveToGH();
+}
+
+// ===== PROFIL =====
+function loadProfil(){
+  const p=DB.profil||{};
+  const flds={pNama:'nama',pNpsn:'npsn',pAkred:'akred',pKur:'kurikulum',pKec:'kecamatan',pKab:'kabupaten',pRombel:'rombel',pSiswa:'siswa',pAlamat:'alamat',pVisi:'visi',pMisi:'misi',pUnggulan:'unggulan',pWa:'wa',pEmail:'email'};
+  Object.entries(flds).forEach(([id,key])=>{const e=document.getElementById(id);if(e)e.value=p[key]||'';});
+}
+async function saveProfil(){
+  const gp=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  DB.profil={nama:gp('pNama'),npsn:gp('pNpsn'),akred:gp('pAkred'),kurikulum:gp('pKur'),kecamatan:gp('pKec'),kabupaten:gp('pKab'),rombel:gp('pRombel'),siswa:gp('pSiswa'),alamat:gp('pAlamat'),visi:gp('pVisi'),misi:gp('pMisi'),unggulan:gp('pUnggulan'),wa:gp('pWa'),email:gp('pEmail')};
+  await saveToGH();
+}
+
+// ===== SANDI =====
+function gantiSandi(){
+  const lama=document.getElementById('sLama').value,baru=document.getElementById('sBaru').value,konfirm=document.getElementById('sKonfirm').value;
+  const err=document.getElementById('sErr');const cfg=getCfg();
+  if(lama!==cfg.pass){err.textContent='❌ Password lama salah!';err.style.display='block';return;}
+  if(baru.length<6){err.textContent='❌ Password baru minimal 6 karakter!';err.style.display='block';return;}
+  if(baru!==konfirm){err.textContent='❌ Konfirmasi tidak cocok!';err.style.display='block';return;}
+  saveCfgData({...cfg,pass:baru});err.style.display='none';
+  ['sLama','sBaru','sKonfirm'].forEach(id=>document.getElementById(id).value='');
+  showToast('🔐 Password berhasil diubah!','ok');
+}
+
+// ===== GITHUB CONFIG FORM =====
+function loadCfgForm(){
+  const cfg=getCfg();
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||'';};
+  sv('cfgUser',cfg.user);sv('cfgRepo',cfg.repo);sv('cfgToken',cfg.token);
+}
+function saveConfig(){
+  const cfg=getCfg();
+  saveCfgData({...cfg,user:gv('cfgUser'),repo:gv('cfgRepo'),token:gv('cfgToken')});
+  showToast('✅ Konfigurasi GitHub diperbarui!','ok');
+  initAdmin();
+}
+
+// ===== HELPERS =====
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function pickColor(c){document.querySelectorAll('.c-opt').forEach(e=>e.classList.toggle('sel',e.dataset.c===c));const e=document.getElementById('fWarna');if(e)e.value=c;}
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+document.getElementById('mo').addEventListener('click',e=>{if(e.target===document.getElementById('mo'))closeM();});
+</script>
+</body>
+</html>
