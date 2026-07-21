@@ -48,13 +48,6 @@
   ],
   "ekskul": [
     {
-      "id": 2,
-      "nama": "Futsal",
-      "icon": "â½",
-      "hari": "Rabu & Jumat",
-      "keterangan": "Latihan teknik dasar dan tanding"
-    },
-    {
       "id": 3,
       "nama": "Seni Batik",
       "icon": "ð¨",
