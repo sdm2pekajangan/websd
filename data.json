@@ -118,24 +118,7 @@
       "keterangan": "Literasi digital dan coding dasar"
     }
   ],
-  "guru": [
-    {
-      "id": 5,
-      "nama": "Nurul Hidayah, S.Pd",
-      "jabatan": "Guru Mapel",
-      "mapel": "Bahasa Indonesia",
-      "icon": "ð©âð«",
-      "warna": "#f3e5f5"
-    },
-    {
-      "id": 6,
-      "nama": "Supriyanto, S.Pd",
-      "jabatan": "Guru PJOK",
-      "mapel": "Pendidikan Jasmani Olahraga Kesehatan",
-      "icon": "ð¨âð«",
-      "warna": "#e8eaf6"
-    }
-  ],
+  "guru": [],
   "galeri": [
     {
       "id": 1,
