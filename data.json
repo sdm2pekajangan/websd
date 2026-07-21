@@ -120,30 +120,6 @@
   ],
   "guru": [
     {
-      "id": 2,
-      "nama": "Muhamad Ridwan, S.Pd.I",
-      "jabatan": "Guru PAI",
-      "mapel": "Pendidikan Agama Islam & Al-Qur'an",
-      "icon": "ð¨âð«",
-      "warna": "#e3f2fd"
-    },
-    {
-      "id": 3,
-      "nama": "Dra. Fatimah Azzahra",
-      "jabatan": "Guru Kelas 6A",
-      "mapel": "Semua Mata Pelajaran Kelas 6A",
-      "icon": "ð©âð«",
-      "warna": "#fff3e0"
-    },
-    {
-      "id": 4,
-      "nama": "Ahmad Fauzi, S.Pd",
-      "jabatan": "Guru Mapel",
-      "mapel": "Matematika & IPA",
-      "icon": "ð¨âð«",
-      "warna": "#fce4ec"
-    },
-    {
       "id": 5,
       "nama": "Nurul Hidayah, S.Pd",
       "jabatan": "Guru Mapel",
