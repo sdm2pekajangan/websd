@@ -46,15 +46,7 @@
       "status": "aktif"
     }
   ],
-  "ekskul": [
-    {
-      "id": 4,
-      "nama": "Bulu Tangkis",
-      "icon": "ð¸",
-      "hari": "Kamis",
-      "keterangan": "Pembinaan atlet bulu tangkis"
-    }
-  ],
+  "ekskul": [],
   "guru": [
     {
       "id": 1,
