@@ -1,87 +1,442 @@
 {
   "berita": [
-    {"id":1,"judul":"PPDB 2025/2026 Resmi Dibuka","kategori":"akademik","tanggal":"2025-05-01","ringkasan":"SD Muhammadiyah 2 Pekajangan membuka PPDB untuk tahun ajaran baru. Kuota terbatas, daftarkan segera!","icon":"📚","status":"aktif"},
-    {"id":2,"judul":"Juara 1 Olimpiade Matematika Kabupaten","kategori":"prestasi","tanggal":"2025-04-15","ringkasan":"Siswa kami berhasil meraih juara 1 olimpiade matematika tingkat kabupaten Pekalongan.","icon":"🏆","status":"aktif"},
-    {"id":3,"judul":"Isra' Mi'raj 1446 H Berlangsung Meriah","kategori":"kegiatan","tanggal":"2025-01-28","ringkasan":"Peringatan Isra' Mi'raj berlangsung khidmat dan penuh hikmah diikuti seluruh siswa.","icon":"🕌","status":"aktif"},
-    {"id":4,"judul":"Pameran Karya Batik Siswa Kelas 4–6","kategori":"kegiatan","tanggal":"2025-03-10","ringkasan":"Pameran karya batik khas Pekalongan karya siswa kelas 4–6 disambut antusias wali murid.","icon":"🎨","status":"aktif"},
-    {"id":5,"judul":"Program Tahfidz Qur'an Kini Wajib Semua Kelas","kategori":"program","tanggal":"2025-02-02","ringkasan":"Program tahfidz Al-Qur'an kini diwajibkan untuk seluruh jenjang kelas mulai semester ini.","icon":"📖","status":"aktif"}
+    {
+      "id": 1,
+      "judul": "PPDB 2025/2026 Resmi Dibuka",
+      "kategori": "akademik",
+      "tanggal": "2025-05-01",
+      "ringkasan": "SD Muhammadiyah 2 Pekajangan membuka PPDB untuk tahun ajaran baru. Kuota terbatas, daftarkan segera!",
+      "icon": "ð",
+      "status": "aktif"
+    },
+    {
+      "id": 2,
+      "judul": "Juara 1 Olimpiade Matematika Kabupaten",
+      "kategori": "prestasi",
+      "tanggal": "2025-04-15",
+      "ringkasan": "Siswa kami berhasil meraih juara 1 olimpiade matematika tingkat kabupaten Pekalongan.",
+      "icon": "ð",
+      "status": "aktif"
+    },
+    {
+      "id": 3,
+      "judul": "Isra' Mi'raj 1446 H Berlangsung Meriah",
+      "kategori": "kegiatan",
+      "tanggal": "2025-01-28",
+      "ringkasan": "Peringatan Isra' Mi'raj berlangsung khidmat dan penuh hikmah diikuti seluruh siswa.",
+      "icon": "ð",
+      "status": "aktif"
+    },
+    {
+      "id": 4,
+      "judul": "Pameran Karya Batik Siswa Kelas 4â6",
+      "kategori": "kegiatan",
+      "tanggal": "2025-03-10",
+      "ringkasan": "Pameran karya batik khas Pekalongan karya siswa kelas 4â6 disambut antusias wali murid.",
+      "icon": "ð¨",
+      "status": "aktif"
+    },
+    {
+      "id": 5,
+      "judul": "Program Tahfidz Qur'an Kini Wajib Semua Kelas",
+      "kategori": "program",
+      "tanggal": "2025-02-02",
+      "ringkasan": "Program tahfidz Al-Qur'an kini diwajibkan untuk seluruh jenjang kelas mulai semester ini.",
+      "icon": "ð",
+      "status": "aktif"
+    }
   ],
   "ekskul": [
-    {"id":1,"nama":"Tahfidz Qur'an","icon":"📖","hari":"Senin–Jumat","keterangan":"Hafalan Al-Qur'an mulai Juz 30"},
-    {"id":2,"nama":"Futsal","icon":"⚽","hari":"Rabu & Jumat","keterangan":"Latihan teknik dasar dan tanding"},
-    {"id":3,"nama":"Seni Batik","icon":"🎨","hari":"Selasa","keterangan":"Membatik khas Pekalongan"},
-    {"id":4,"nama":"Bulu Tangkis","icon":"🏸","hari":"Kamis","keterangan":"Pembinaan atlet bulu tangkis"},
-    {"id":5,"nama":"Drumband","icon":"🥁","hari":"Sabtu","keterangan":"Marching band dan drumband"},
-    {"id":6,"nama":"Sains Club","icon":"⚗️","hari":"Rabu","keterangan":"Eksperimen IPA menyenangkan"},
-    {"id":7,"nama":"Robotika","icon":"🤖","hari":"Sabtu","keterangan":"Pemrograman dan perakitan robot"},
-    {"id":8,"nama":"Pramuka","icon":"🏕️","hari":"Jumat","keterangan":"Kepanduan dan survival skill"},
-    {"id":9,"nama":"Seni Qasidah","icon":"🎤","hari":"Selasa","keterangan":"Seni musik Islami qasidah"},
-    {"id":10,"nama":"Komputer","icon":"🖥️","hari":"Kamis","keterangan":"Literasi digital dan coding dasar"}
+    {
+      "id": 1,
+      "nama": "Tahfidz Qur'an",
+      "icon": "ð",
+      "hari": "SeninâJumat",
+      "keterangan": "Hafalan Al-Qur'an mulai Juz 30"
+    },
+    {
+      "id": 2,
+      "nama": "Futsal",
+      "icon": "â½",
+      "hari": "Rabu & Jumat",
+      "keterangan": "Latihan teknik dasar dan tanding"
+    },
+    {
+      "id": 3,
+      "nama": "Seni Batik",
+      "icon": "ð¨",
+      "hari": "Selasa",
+      "keterangan": "Membatik khas Pekalongan"
+    },
+    {
+      "id": 4,
+      "nama": "Bulu Tangkis",
+      "icon": "ð¸",
+      "hari": "Kamis",
+      "keterangan": "Pembinaan atlet bulu tangkis"
+    },
+    {
+      "id": 5,
+      "nama": "Drumband",
+      "icon": "ð¥",
+      "hari": "Sabtu",
+      "keterangan": "Marching band dan drumband"
+    },
+    {
+      "id": 6,
+      "nama": "Sains Club",
+      "icon": "âï¸",
+      "hari": "Rabu",
+      "keterangan": "Eksperimen IPA menyenangkan"
+    },
+    {
+      "id": 7,
+      "nama": "Robotika",
+      "icon": "ð¤",
+      "hari": "Sabtu",
+      "keterangan": "Pemrograman dan perakitan robot"
+    },
+    {
+      "id": 8,
+      "nama": "Pramuka",
+      "icon": "ðï¸",
+      "hari": "Jumat",
+      "keterangan": "Kepanduan dan survival skill"
+    },
+    {
+      "id": 9,
+      "nama": "Seni Qasidah",
+      "icon": "ð¤",
+      "hari": "Selasa",
+      "keterangan": "Seni musik Islami qasidah"
+    },
+    {
+      "id": 10,
+      "nama": "Komputer",
+      "icon": "ð¥ï¸",
+      "hari": "Kamis",
+      "keterangan": "Literasi digital dan coding dasar"
+    }
   ],
   "guru": [
-    {"id":1,"nama":"Hj. Siti Nur Khasanah, S.Pd","jabatan":"Kepala Sekolah","mapel":"Manajemen Sekolah","icon":"👩‍🏫","warna":"#e8f5e9"},
-    {"id":2,"nama":"Muhamad Ridwan, S.Pd.I","jabatan":"Guru PAI","mapel":"Pendidikan Agama Islam & Al-Qur'an","icon":"👨‍🏫","warna":"#e3f2fd"},
-    {"id":3,"nama":"Dra. Fatimah Azzahra","jabatan":"Guru Kelas 6A","mapel":"Semua Mata Pelajaran Kelas 6A","icon":"👩‍🏫","warna":"#fff3e0"},
-    {"id":4,"nama":"Ahmad Fauzi, S.Pd","jabatan":"Guru Mapel","mapel":"Matematika & IPA","icon":"👨‍🏫","warna":"#fce4ec"},
-    {"id":5,"nama":"Nurul Hidayah, S.Pd","jabatan":"Guru Mapel","mapel":"Bahasa Indonesia","icon":"👩‍🏫","warna":"#f3e5f5"},
-    {"id":6,"nama":"Supriyanto, S.Pd","jabatan":"Guru PJOK","mapel":"Pendidikan Jasmani Olahraga Kesehatan","icon":"👨‍🏫","warna":"#e8eaf6"}
+    {
+      "id": 1,
+      "nama": "Hj. Siti Nur Khasanah, S.Pd",
+      "jabatan": "Kepala Sekolah",
+      "mapel": "Manajemen Sekolah",
+      "icon": "ð©âð«",
+      "warna": "#e8f5e9"
+    },
+    {
+      "id": 2,
+      "nama": "Muhamad Ridwan, S.Pd.I",
+      "jabatan": "Guru PAI",
+      "mapel": "Pendidikan Agama Islam & Al-Qur'an",
+      "icon": "ð¨âð«",
+      "warna": "#e3f2fd"
+    },
+    {
+      "id": 3,
+      "nama": "Dra. Fatimah Azzahra",
+      "jabatan": "Guru Kelas 6A",
+      "mapel": "Semua Mata Pelajaran Kelas 6A",
+      "icon": "ð©âð«",
+      "warna": "#fff3e0"
+    },
+    {
+      "id": 4,
+      "nama": "Ahmad Fauzi, S.Pd",
+      "jabatan": "Guru Mapel",
+      "mapel": "Matematika & IPA",
+      "icon": "ð¨âð«",
+      "warna": "#fce4ec"
+    },
+    {
+      "id": 5,
+      "nama": "Nurul Hidayah, S.Pd",
+      "jabatan": "Guru Mapel",
+      "mapel": "Bahasa Indonesia",
+      "icon": "ð©âð«",
+      "warna": "#f3e5f5"
+    },
+    {
+      "id": 6,
+      "nama": "Supriyanto, S.Pd",
+      "jabatan": "Guru PJOK",
+      "mapel": "Pendidikan Jasmani Olahraga Kesehatan",
+      "icon": "ð¨âð«",
+      "warna": "#e8eaf6"
+    }
   ],
   "galeri": [
-    {"id":1,"label":"Juara Olimpiade","kategori":"prestasi","emoji":"🏆","bg":"linear-gradient(135deg,#1B4332,#2D6A4F)"},
-    {"id":2,"label":"Isra Mi'raj","kategori":"islami","emoji":"🕌","bg":"linear-gradient(135deg,#1A5276,#2D6A9F)"},
-    {"id":3,"label":"Batik Pekalongan","kategori":"seni","emoji":"🎨","bg":"linear-gradient(135deg,#6B2FAA,#9B59B6)"},
-    {"id":4,"label":"Futsal","kategori":"olahraga","emoji":"⚽","bg":"linear-gradient(135deg,#C0392B,#E74C3C)"},
-    {"id":5,"label":"Lomba Sains","kategori":"prestasi","emoji":"🎖️","bg":"linear-gradient(135deg,#D4A017,#F0C040)"},
-    {"id":6,"label":"Tahfidz Qur'an","kategori":"islami","emoji":"📖","bg":"linear-gradient(135deg,#1B4332,#52B788)"},
-    {"id":7,"label":"Drumband","kategori":"seni","emoji":"🥁","bg":"linear-gradient(135deg,#E67E22,#F39C12)"},
-    {"id":8,"label":"Bulu Tangkis","kategori":"olahraga","emoji":"🏸","bg":"linear-gradient(135deg,#16A085,#1ABC9C)"}
+    {
+      "id": 1,
+      "label": "Juara Olimpiade",
+      "kategori": "prestasi",
+      "emoji": "ð",
+      "bg": "linear-gradient(135deg,#1B4332,#2D6A4F)"
+    },
+    {
+      "id": 2,
+      "label": "Isra Mi'raj",
+      "kategori": "islami",
+      "emoji": "ð",
+      "bg": "linear-gradient(135deg,#1A5276,#2D6A9F)"
+    },
+    {
+      "id": 3,
+      "label": "Batik Pekalongan",
+      "kategori": "seni",
+      "emoji": "ð¨",
+      "bg": "linear-gradient(135deg,#6B2FAA,#9B59B6)"
+    },
+    {
+      "id": 4,
+      "label": "Futsal",
+      "kategori": "olahraga",
+      "emoji": "â½",
+      "bg": "linear-gradient(135deg,#C0392B,#E74C3C)"
+    },
+    {
+      "id": 5,
+      "label": "Lomba Sains",
+      "kategori": "prestasi",
+      "emoji": "ðï¸",
+      "bg": "linear-gradient(135deg,#D4A017,#F0C040)"
+    },
+    {
+      "id": 6,
+      "label": "Tahfidz Qur'an",
+      "kategori": "islami",
+      "emoji": "ð",
+      "bg": "linear-gradient(135deg,#1B4332,#52B788)"
+    },
+    {
+      "id": 7,
+      "label": "Drumband",
+      "kategori": "seni",
+      "emoji": "ð¥",
+      "bg": "linear-gradient(135deg,#E67E22,#F39C12)"
+    },
+    {
+      "id": 8,
+      "label": "Bulu Tangkis",
+      "kategori": "olahraga",
+      "emoji": "ð¸",
+      "bg": "linear-gradient(135deg,#16A085,#1ABC9C)"
+    }
   ],
   "kuis": [
-    {"id":1,"pertanyaan":"Berapa jumlah rukun Islam?","opsi":["3","4","5","6"],"jawaban":2,"penjelasan":"Rukun Islam ada 5: Syahadat, Sholat, Zakat, Puasa, Haji."},
-    {"id":2,"pertanyaan":"Siapakah nabi dan rasul terakhir dalam Islam?","opsi":["Nabi Isa AS","Nabi Ibrahim AS","Nabi Musa AS","Nabi Muhammad SAW"],"jawaban":3,"penjelasan":"Nabi Muhammad SAW adalah nabi dan rasul terakhir (Khatamul Anbiya')."},
-    {"id":3,"pertanyaan":"Kitab suci umat Islam adalah...?","opsi":["Injil","Taurat","Al-Qur'an","Zabur"],"jawaban":2,"penjelasan":"Al-Qur'an adalah kitab suci umat Islam yang diturunkan kepada Nabi Muhammad SAW."},
-    {"id":4,"pertanyaan":"Berapa jumlah surat dalam Al-Qur'an?","opsi":["112","114","116","118"],"jawaban":1,"penjelasan":"Al-Qur'an terdiri dari 114 surat dengan 6.236 ayat."},
-    {"id":5,"pertanyaan":"Total rakaat sholat wajib 5 waktu dalam sehari?","opsi":["15 rakaat","17 rakaat","19 rakaat","21 rakaat"],"jawaban":1,"penjelasan":"Subuh 2 + Dzuhur 4 + Ashar 4 + Maghrib 3 + Isya 4 = 17 rakaat."}
+    {
+      "id": 1,
+      "pertanyaan": "Berapa jumlah rukun Islam?",
+      "opsi": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "jawaban": 2,
+      "penjelasan": "Rukun Islam ada 5: Syahadat, Sholat, Zakat, Puasa, Haji."
+    },
+    {
+      "id": 2,
+      "pertanyaan": "Siapakah nabi dan rasul terakhir dalam Islam?",
+      "opsi": [
+        "Nabi Isa AS",
+        "Nabi Ibrahim AS",
+        "Nabi Musa AS",
+        "Nabi Muhammad SAW"
+      ],
+      "jawaban": 3,
+      "penjelasan": "Nabi Muhammad SAW adalah nabi dan rasul terakhir (Khatamul Anbiya')."
+    },
+    {
+      "id": 3,
+      "pertanyaan": "Kitab suci umat Islam adalah...?",
+      "opsi": [
+        "Injil",
+        "Taurat",
+        "Al-Qur'an",
+        "Zabur"
+      ],
+      "jawaban": 2,
+      "penjelasan": "Al-Qur'an adalah kitab suci umat Islam yang diturunkan kepada Nabi Muhammad SAW."
+    },
+    {
+      "id": 4,
+      "pertanyaan": "Berapa jumlah surat dalam Al-Qur'an?",
+      "opsi": [
+        "112",
+        "114",
+        "116",
+        "118"
+      ],
+      "jawaban": 1,
+      "penjelasan": "Al-Qur'an terdiri dari 114 surat dengan 6.236 ayat."
+    },
+    {
+      "id": 5,
+      "pertanyaan": "Total rakaat sholat wajib 5 waktu dalam sehari?",
+      "opsi": [
+        "15 rakaat",
+        "17 rakaat",
+        "19 rakaat",
+        "21 rakaat"
+      ],
+      "jawaban": 1,
+      "penjelasan": "Subuh 2 + Dzuhur 4 + Ashar 4 + Maghrib 3 + Isya 4 = 17 rakaat."
+    }
   ],
   "doa": [
-    {"id":1,"judul":"Do'a Sebelum Tidur","arab":"بِسْمِكَ اللّٰهُمَّ أَحْيَا وَأَمُوتُ","latin":"Bismika Allaahumma Ahyaa wa Amuut","arti":"Dengan nama-Mu ya Allah aku hidup dan aku mati.","icon":"🌙"},
-    {"id":2,"judul":"Do'a Bangun Tidur","arab":"اَلْحَمْدُ لِلّٰهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا","latin":"Alhamdulillahilladzi ahyaanaa ba'da maa amaatanaa","arti":"Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami.","icon":"☀️"},
-    {"id":3,"judul":"Do'a Sebelum Makan","arab":"اَللّٰهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا","latin":"Allaahumma baarik lanaa fiimaa razaqtanaa wa qinaa 'adzaaban naar","arti":"Ya Allah berkahilah kami dalam rezeki yang Engkau berikan dan peliharalah kami dari siksa api neraka.","icon":"🍽️"},
-    {"id":4,"judul":"Do'a Belajar","arab":"رَبِّ زِدْنِي عِلْمًا وَارْزُقْنِي فَهْمًا","latin":"Rabbi zidnii 'ilmaa warzuqnii fahmaa","arti":"Ya Tuhanku, tambahkanlah ilmuku dan berilah aku pemahaman yang baik.","icon":"📚"}
+    {
+      "id": 1,
+      "judul": "Do'a Sebelum Tidur",
+      "arab": "Ø¨ÙØ³ÙÙÙÙÙ Ø§ÙÙÙÙ°ÙÙÙÙÙ Ø£ÙØ­ÙÙÙØ§ ÙÙØ£ÙÙÙÙØªÙ",
+      "latin": "Bismika Allaahumma Ahyaa wa Amuut",
+      "arti": "Dengan nama-Mu ya Allah aku hidup dan aku mati.",
+      "icon": "ð"
+    },
+    {
+      "id": 2,
+      "judul": "Do'a Bangun Tidur",
+      "arab": "Ø§ÙÙÙØ­ÙÙÙØ¯Ù ÙÙÙÙÙ°ÙÙ Ø§ÙÙÙØ°ÙÙ Ø£ÙØ­ÙÙÙØ§ÙÙØ§ Ø¨ÙØ¹ÙØ¯Ù ÙÙØ§ Ø£ÙÙÙØ§ØªÙÙÙØ§",
+      "latin": "Alhamdulillahilladzi ahyaanaa ba'da maa amaatanaa",
+      "arti": "Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami.",
+      "icon": "âï¸"
+    },
+    {
+      "id": 3,
+      "judul": "Do'a Sebelum Makan",
+      "arab": "Ø§ÙÙÙÙÙ°ÙÙÙÙÙ Ø¨ÙØ§Ø±ÙÙÙ ÙÙÙÙØ§ ÙÙÙÙÙØ§ Ø±ÙØ²ÙÙÙØªÙÙÙØ§",
+      "latin": "Allaahumma baarik lanaa fiimaa razaqtanaa wa qinaa 'adzaaban naar",
+      "arti": "Ya Allah berkahilah kami dalam rezeki yang Engkau berikan dan peliharalah kami dari siksa api neraka.",
+      "icon": "ð½ï¸"
+    },
+    {
+      "id": 4,
+      "judul": "Do'a Belajar",
+      "arab": "Ø±ÙØ¨ÙÙ Ø²ÙØ¯ÙÙÙÙ Ø¹ÙÙÙÙÙØ§ ÙÙØ§Ø±ÙØ²ÙÙÙÙÙÙ ÙÙÙÙÙÙØ§",
+      "latin": "Rabbi zidnii 'ilmaa warzuqnii fahmaa",
+      "arti": "Ya Tuhanku, tambahkanlah ilmuku dan berilah aku pemahaman yang baik.",
+      "icon": "ð"
+    }
   ],
   "kamus": [
-    {"id":1,"arab":"بِسْمِ اللّٰهِ","latin":"Bismillah","indonesia":"Dengan nama Allah"},
-    {"id":2,"arab":"الْحَمْدُ لِلّٰهِ","latin":"Alhamdulillah","indonesia":"Segala puji bagi Allah"},
-    {"id":3,"arab":"سُبْحَانَ اللّٰهِ","latin":"Subhanallah","indonesia":"Maha Suci Allah"},
-    {"id":4,"arab":"اَللّٰهُ أَكْبَرُ","latin":"Allahu Akbar","indonesia":"Allah Maha Besar"},
-    {"id":5,"arab":"كِتَابٌ","latin":"Kitaabun","indonesia":"Buku"},
-    {"id":6,"arab":"قَلَمٌ","latin":"Qalamun","indonesia":"Pena / Bolpoin"},
-    {"id":7,"arab":"مَدْرَسَةٌ","latin":"Madrasatun","indonesia":"Sekolah"},
-    {"id":8,"arab":"مُعَلِّمٌ","latin":"Mu'allimun","indonesia":"Guru (laki-laki)"}
+    {
+      "id": 1,
+      "arab": "Ø¨ÙØ³ÙÙÙ Ø§ÙÙÙÙ°ÙÙ",
+      "latin": "Bismillah",
+      "indonesia": "Dengan nama Allah"
+    },
+    {
+      "id": 2,
+      "arab": "Ø§ÙÙØ­ÙÙÙØ¯Ù ÙÙÙÙÙ°ÙÙ",
+      "latin": "Alhamdulillah",
+      "indonesia": "Segala puji bagi Allah"
+    },
+    {
+      "id": 3,
+      "arab": "Ø³ÙØ¨ÙØ­ÙØ§ÙÙ Ø§ÙÙÙÙ°ÙÙ",
+      "latin": "Subhanallah",
+      "indonesia": "Maha Suci Allah"
+    },
+    {
+      "id": 4,
+      "arab": "Ø§ÙÙÙÙÙ°ÙÙ Ø£ÙÙÙØ¨ÙØ±Ù",
+      "latin": "Allahu Akbar",
+      "indonesia": "Allah Maha Besar"
+    },
+    {
+      "id": 5,
+      "arab": "ÙÙØªÙØ§Ø¨Ù",
+      "latin": "Kitaabun",
+      "indonesia": "Buku"
+    },
+    {
+      "id": 6,
+      "arab": "ÙÙÙÙÙÙ",
+      "latin": "Qalamun",
+      "indonesia": "Pena / Bolpoin"
+    },
+    {
+      "id": 7,
+      "arab": "ÙÙØ¯ÙØ±ÙØ³ÙØ©Ù",
+      "latin": "Madrasatun",
+      "indonesia": "Sekolah"
+    },
+    {
+      "id": 8,
+      "arab": "ÙÙØ¹ÙÙÙÙÙÙ",
+      "latin": "Mu'allimun",
+      "indonesia": "Guru (laki-laki)"
+    }
   ],
   "agenda": [
-    {"id":1,"bulan":0,"tanggal":1,"label":"Tahun Baru Masehi","warna":"#2D6A9F"},
-    {"id":2,"bulan":0,"tanggal":27,"label":"Isra Mi'raj 1446 H","warna":"#D4A017"},
-    {"id":3,"bulan":3,"tanggal":1,"label":"Idul Fitri 1 Syawal 1446 H","warna":"#D4A017"},
-    {"id":4,"bulan":4,"tanggal":2,"label":"Hari Pendidikan Nasional","warna":"#2D6A4F"},
-    {"id":5,"bulan":7,"tanggal":17,"label":"Hari Kemerdekaan RI ke-80","warna":"#C0392B"},
-    {"id":6,"bulan":8,"tanggal":5,"label":"Maulid Nabi Muhammad SAW","warna":"#D4A017"},
-    {"id":7,"bulan":6,"tanggal":15,"label":"Kenaikan Kelas & Pembagian Rapor","warna":"#2D6A4F"}
+    {
+      "id": 1,
+      "bulan": 0,
+      "tanggal": 1,
+      "label": "Tahun Baru Masehi",
+      "warna": "#2D6A9F"
+    },
+    {
+      "id": 2,
+      "bulan": 0,
+      "tanggal": 27,
+      "label": "Isra Mi'raj 1446 H",
+      "warna": "#D4A017"
+    },
+    {
+      "id": 3,
+      "bulan": 3,
+      "tanggal": 1,
+      "label": "Idul Fitri 1 Syawal 1446 H",
+      "warna": "#D4A017"
+    },
+    {
+      "id": 4,
+      "bulan": 4,
+      "tanggal": 2,
+      "label": "Hari Pendidikan Nasional",
+      "warna": "#2D6A4F"
+    },
+    {
+      "id": 5,
+      "bulan": 7,
+      "tanggal": 17,
+      "label": "Hari Kemerdekaan RI ke-80",
+      "warna": "#C0392B"
+    },
+    {
+      "id": 6,
+      "bulan": 8,
+      "tanggal": 5,
+      "label": "Maulid Nabi Muhammad SAW",
+      "warna": "#D4A017"
+    },
+    {
+      "id": 7,
+      "bulan": 6,
+      "tanggal": 15,
+      "label": "Kenaikan Kelas & Pembagian Rapor",
+      "warna": "#2D6A4F"
+    }
   ],
   "profil": {
     "nama": "SD Muhammadiyah 2 Pekajangan",
-    "npsn": "20323948",
+    "npsn": "20323938",
     "akred": "A",
     "kurikulum": "Merdeka Belajar",
     "kecamatan": "Kedungwuni",
     "kabupaten": "Pekalongan",
-    "rombel": "12 Rombongan",
-    "siswa": "±200 Siswa",
-    "alamat": "Jl. Pekajangan, Kedungwuni, Kabupaten Pekalongan, Jawa Tengah 51172",
+    "rombel": "6 Rombongan",
+    "siswa": "54 Siswa",
+    "alamat": "Desa Tangkil Kulon, Kecamatan Kedungwuni, Kabupaten Pekalongan 51173",
     "visi": "Terwujudnya peserta didik yang beriman, berilmu, berakhlak mulia, dan berprestasi dalam bingkai nilai-nilai Islam berkemajuan Muhammadiyah.",
     "misi": "Menanamkan keimanan dan ketakwaan kepada Allah SWT sejak dini\nMenyelenggarakan pembelajaran aktif, kreatif, efektif, dan menyenangkan\nMembangun karakter Islami, nasionalis, dan cinta budaya lokal\nMengembangkan potensi siswa secara akademik dan non-akademik\nMenjalin kerjasama sinergis antara sekolah, keluarga, dan masyarakat",
-    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tua–guru",
-    "wa": "6285xxx",
-    "email": "sdmuh2pkj@gmail.com"
+    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tuaâguru",
+    "wa": "6287818334381",
+    "email": "sdm2pekajangaj@gmail.com"
   }
 }
