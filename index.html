@@ -1,250 +1,244 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SD Muhammadiyah 2 Pekajangan - SD MUTU</title>
-    <style>
-        :root {
-            --hijau: #2D6A4F; --gold: #D4AF37; --charcoal: #2F3E46; --putih: #F8F9FA; --putih-murni: #FFFFFF;
-        }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background-color: var(--putih); color: var(--charcoal); }
-        nav { background-color: var(--charcoal); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        nav h2 { margin: 0; color: var(--putih-murni); font-size: 1.5rem; }
-        nav h2 span { color: var(--gold); }
-        .nav-links a { color: var(--putih-murni); text-decoration: none; margin-left: 15px; font-weight: bold; font-size: 0.9rem;}
-        
-        .hero { background-color: var(--hijau); color: var(--putih-murni); padding: 60px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; text-align: center; }
-        .hero h1 { font-size: 2.8rem; color: var(--gold); margin-bottom: 10px; }
-        .hero p { font-size: 1.2rem; line-height: 1.6; max-width: 600px; margin: 0 auto; }
-        .btn-gold { display: inline-block; background-color: var(--gold); color: var(--charcoal); padding: 12px 25px; text-decoration: none; font-weight: bold; border-radius: 30px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: none; cursor: pointer; }
-        
-        .section-container { padding: 50px 20px; max-width: 1000px; margin: 0 auto; }
-        .section-title { text-align: center; color: var(--hijau); font-size: 2rem; margin-bottom: 30px; }
-        
-        /* Grid Layouts */
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        
-        /* Cards */
-        .card { background: var(--putih-murni); padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        .card-gold { border-top: 5px solid var(--gold); }
-        .card-green { border-top: 5px solid var(--hijau); }
-        .guru-card { text-align: center; border-bottom: 5px solid var(--hijau); }
-        .guru-avatar { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--putih); border: 3px solid var(--gold); }
-        
-        /* Forms */
-        .form-box { background: var(--charcoal); padding: 30px; border-radius: 15px; color: var(--putih-murni); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--gold); }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
-        .btn-submit { width: 100%; background-color: var(--hijau); color: var(--putih-murni); padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--putih); display: flex; justify-content: center; align-items: center; z-index: 1000; font-size: 1.5rem; color: var(--hijau); font-weight: bold; }
-    </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SD Muhammadiyah 2 Pekajangan — Portal Sekolah Digital</title>
+<meta name="description" content="Website resmi SD Muhammadiyah 2 Pekajangan — Portal pendidikan Islam modern di Pekajangan, Kedungwuni, Pekalongan.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g1:#1B4332;--g2:#2D6A4F;--g3:#52B788;
+  --gold:#D4A017;--gold-l:#F0C040;--gold-d:#A07810;
+  --red:#C0392B;--blue:#1A5276;--blue-m:#2D6A9F;--blue-l:#5BA4D4;
+  --purple:#6B2FAA;--orange:#E67E22;
+  --cream:#FFF8EE;--dark:#0D1F17;--text:#2C3E50;--text2:#5D6D7E;
+  --shadow:0 8px 32px rgba(27,67,50,.18);--radius:18px;--tr:.3s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
 
-    <div id="loading-overlay">Memuat data dari server sekolah... ⏳</div>
+/* LOADING */
+#ls{position:fixed;inset:0;z-index:9999;background:var(--g1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .6s,visibility .6s}
+#ls.hide{opacity:0;visibility:hidden}
+.ls-logo{font-size:5rem;animation:pulse 1.2s ease infinite}
+.ls-title{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.4rem;color:white;text-align:center;line-height:1.3}
+.ls-sub{color:rgba(255,255,255,.6);font-size:.82rem}
+.ls-bar{width:220px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.ls-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-l));transition:width .06s}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 
-    <nav>
-        <h2>SD <span>MUTU</span></h2>
-        <div class="nav-links">
-            <a href="#profil">Profil</a>
-            <a href="#akademik">Akademik</a>
-            <a href="#artikel">Artikel</a>
-            <a href="#ppdb">PPDB</a>
-        </div>
-    </nav>
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--g2);border-radius:3px}
 
-    <!-- HERO SECTION -->
-    <header class="hero" id="beranda">
-        <div>
-            <h1 id="hero-judul">Selamat Datang</h1>
-            <p id="hero-desk">Memuat deskripsi sekolah...</p>
-            <a href="#ppdb" class="btn-gold" id="hero-btn">Daftar Sekarang</a>
-        </div>
-    </header>
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:1000;background:rgba(27,67,50,.97);backdrop-filter:blur(16px);height:64px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-emblem{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-l));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:var(--g1);flex-shrink:0;box-shadow:0 0 0 3px rgba(240,192,64,.3)}
+.nav-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;color:white;line-height:1.2}
+.nav-loc{font-size:.64rem;color:rgba(255,255,255,.5)}
+.nav-links{display:flex;gap:3px;list-style:none}
+.nav-links a{color:rgba(255,255,255,.75);font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:20px;transition:.2s;text-decoration:none;display:block}
+.nav-links a:hover,.nav-links a.act{background:var(--gold);color:var(--g1)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn-dm{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;width:34px;height:34px;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.btn-dm:hover{background:rgba(255,255,255,.2)}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:4px;cursor:pointer}
+.hbg span{width:22px;height:2px;background:white;border-radius:2px;display:block;transition:.3s}
+.hbg.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hbg.open span:nth-child(2){opacity:0}
+.hbg.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 
-    <!-- VISI MISI -->
-    <section id="profil" class="section-container">
-        <h2 class="section-title">Visi & Misi</h2>
-        <div class="grid-2">
-            <div class="card card-gold">
-                <h3 style="color: var(--gold);">Visi</h3>
-                <p id="teks-visi">Memuat visi...</p>
-            </div>
-            <div class="card card-green">
-                <h3 style="color: var(--hijau);">Misi</h3>
-                <p id="teks-misi" style="white-space: pre-line;">Memuat misi...</p>
-            </div>
-        </div>
-    </section>
+/* DARK MODE */
+body.dark{background:#0f1f17;color:#d4e8da}
+body.dark nav{background:rgba(8,20,12,.97)}
+body.dark .feat-card,body.dark .app-card,body.dark .ekskul-item,body.dark .testi-card,body.dark .berita-card-sm{background:#162b1e}
+body.dark .berita-card-big{background:#162b1e}
+body.dark .galeri-tab,body.dark .konv-tab,body.dark .ktab{background:#162b1e;color:#d4e8da;border-color:#2a4a35}
+body.dark .form-group input,.form-group select,body.dark .form-group input{background:#162b1e;color:#d4e8da;border-color:#2a4a35}
+body.dark .sholat-item,body.dark .pd-item,body.dark .profil-section,body.dark .kamus-card,body.dark .kuis-opt,body.dark .agenda-item{background:#0f1f17;border-color:#2a4a35}
+body.dark .modal{background:#162b1e;color:#d4e8da}
+body.dark .nilai-result-wrap,body.dark .clock-wrap{background:linear-gradient(135deg,#060f09,#0d1f17)}
+body.dark footer{background:#060f09}
 
-    <!-- PROGRAM & EKSKUL -->
-    <section id="akademik" class="section-container" style="background: var(--putih-murni); max-width: 100%;">
-        <div style="max-width: 1000px; margin: 0 auto;">
-            <h2 class="section-title">Program & Ekstrakurikuler</h2>
-            <div class="grid-2">
-                <div>
-                    <h3 style="color: var(--charcoal); border-bottom: 2px solid var(--gold); padding-bottom: 10px;">Program Unggulan</h3>
-                    <div id="tempat-program"></div>
-                </div>
-                <div>
-                    <h3 style="color: var(--charcoal); border-bottom: 2px solid var(--hijau); padding-bottom: 10px;">Ekstrakurikuler</h3>
-                    <div id="tempat-ekskul" class="grid-2"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+/* HERO */
+.hero{min-height:100vh;position:relative;background:linear-gradient(135deg,#060e07 0%,var(--g1) 50%,var(--blue) 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:80px 1.5rem 5rem;overflow:hidden}
+#hcv{position:absolute;inset:0;pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:820px;margin:0 auto}
+.h-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.45);color:var(--gold-l);padding:7px 18px;border-radius:30px;font-size:.72rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.4rem;animation:fiu .8s ease both}
+.h-icon{width:110px;height:110px;border-radius:50%;margin:0 auto 1.4rem;background:rgba(212,160,23,.12);border:2px solid rgba(212,160,23,.35);display:flex;align-items:center;justify-content:center;font-size:3.2rem;animation:fiu .8s .1s ease both,glow 3s ease infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(212,160,23,.2)}50%{box-shadow:0 0 55px rgba(212,160,23,.55)}}
+.hero h1{font-family:'Poppins',sans-serif;font-size:clamp(1.8rem,5vw,3.2rem);font-weight:900;color:white;line-height:1.15;margin-bottom:.6rem;animation:fiu .8s .2s ease both}
+.hero h1 em{color:var(--gold-l);font-style:normal}
+.h-tagline{font-family:'Amiri',serif;font-size:clamp(.95rem,2.5vw,1.25rem);color:rgba(255,255,255,.82);margin-bottom:.5rem;animation:fiu .8s .28s ease both}
+.h-desc{font-size:clamp(.82rem,1.8vw,.97rem);color:rgba(255,255,255,.62);max-width:500px;margin:0 auto 2.2rem;line-height:1.75;animation:fiu .8s .35s ease both}
+.h-stats{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.2rem;animation:fiu .8s .42s ease both}
+.stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px 20px;text-align:center;backdrop-filter:blur(8px);transition:transform var(--tr)}
+.stat:hover{transform:translateY(-4px)}
+.stat-n{font-family:'Poppins',sans-serif;font-size:1.9rem;font-weight:900;color:var(--gold-l);line-height:1}
+.stat-l{font-size:.68rem;color:rgba(255,255,255,.55);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.h-btns{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;animation:fiu .8s .5s ease both}
+.btn-g{background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--g1);font-weight:800;padding:13px 28px;border-radius:50px;font-family:'Poppins',sans-serif;font-size:.88rem;border:none;display:inline-flex;align-items:center;gap:7px;transition:all .3s;box-shadow:0 4px 18px rgba(212,160,23,.4);cursor:pointer}
+.btn-g:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(212,160,23,.6)}
+.btn-gh{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.28);color:white;font-weight:700;padding:11px 24px;border-radius:50px;font-family:'Poppins',sans-serif;font-size:.88rem;cursor:pointer;transition:all .3s}
+.btn-gh:hover{background:rgba(255,255,255,.2)}
+.scroll-d{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;color:rgba(255,255,255,.35);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;animation:sb 2.5s ease infinite}
+.scroll-arr{width:18px;height:18px;border-right:2px solid rgba(255,255,255,.35);border-bottom:2px solid rgba(255,255,255,.35);transform:rotate(45deg)}
+@keyframes sb{0%,100%{transform:translateX(-50%) translateY(0)}60%{transform:translateX(-50%) translateY(10px)}}
+@keyframes fiu{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
 
-    <!-- ARTIKEL / PENGUMUMAN -->
-    <section id="artikel" class="section-container">
-        <h2 class="section-title">Artikel & Update Terkini</h2>
-        <div id="tempat-artikel" class="grid-2"></div>
-    </section>
+/* MARQUEE */
+.marquee{background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-d));padding:9px 0;overflow:hidden}
+.mq-inner{display:flex;gap:2.5rem;white-space:nowrap;animation:mqs 28s linear infinite;font-family:'Poppins',sans-serif;font-weight:700;font-size:.8rem;color:var(--g1)}
+@keyframes mqs{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-    <!-- GURU -->
-    <section id="guru" class="section-container">
-        <h2 class="section-title">Jajaran Guru Seru</h2>
-        <div id="tempat-guru" class="grid-3"></div>
-    </section>
+/* SECTION */
+section{padding:5rem 1.5rem}
+.container{max-width:1100px;margin:0 auto}
+.eyebrow{display:inline-block;background:linear-gradient(135deg,var(--g1),var(--g2));color:white;font-size:.67rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:5px 15px;border-radius:20px;margin-bottom:.9rem}
+.sec-title{font-family:'Poppins',sans-serif;font-size:clamp(1.4rem,3.5vw,2.3rem);font-weight:800;color:var(--g1);margin-bottom:.4rem;line-height:1.2}
+.sec-title em{color:var(--red);font-style:normal}
+body.dark .sec-title{color:#b7e4c7}
+.sec-desc{color:var(--text2);max-width:520px;line-height:1.75;margin-bottom:2.8rem;font-size:.92rem}
 
-    <!-- PPDB & SARAN -->
-    <section id="ppdb" class="section-container" style="background: var(--charcoal); max-width: 100%; color: var(--putih-murni);">
-        <div style="max-width: 1000px; margin: 0 auto;" class="grid-2">
-            
-            <!-- FORM PPDB -->
-            <div class="form-box" style="background: var(--putih-murni); color: var(--charcoal);">
-                <h2 style="color: var(--hijau); text-align: center; margin-top:0;">Pendaftaran PPDB</h2>
-                <form id="form-ppdb">
-                    <input type="hidden" name="form_type" value="ppdb">
-                    <div class="form-group"><label>Nama Anak</label><input type="text" id="ppdb-nama" required></div>
-                    <div class="form-group"><label>Asal TK/PAUD</label><input type="text" id="ppdb-asal" required></div>
-                    <div class="form-group"><label>No WhatsApp</label><input type="tel" id="ppdb-wa" required></div>
-                    <button type="submit" class="btn-submit" id="btn-submit-ppdb">KIRIM PENDAFTARAN</button>
-                </form>
+/* KEUNGGULAN */
+#keunggulan{background:white}
+body.dark #keunggulan{background:#0f1f17}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.3rem}
+.feat-card{border-radius:var(--radius);padding:1.8rem 1.4rem;background:var(--cream);border:2px solid transparent;transition:all var(--tr);position:relative;overflow:hidden}
+body.dark .feat-card{background:#162b1e}
+.feat-card:hover{transform:translateY(-5px);border-color:var(--fc,var(--g2));box-shadow:var(--shadow)}
+.feat-card::after{content:'';position:absolute;bottom:-25px;right:-25px;width:90px;height:90px;border-radius:50%;background:var(--fc,var(--g2));opacity:.07;transition:all .4s}
+.feat-card:hover::after{transform:scale(2.2);opacity:.13}
+.feat-icon{font-size:2.6rem;margin-bottom:.9rem;display:block}
+.feat-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:.97rem;color:var(--g1);margin-bottom:.4rem}
+body.dark .feat-title{color:#b7e4c7}
+.feat-desc{font-size:.82rem;color:var(--text2);line-height:1.65}
 
-                <!-- TRACKER -->
-                <div style="margin-top: 30px; border-top: 2px dashed #ccc; padding-top: 20px; text-align: center;">
-                    <h3 style="color: var(--hijau); margin-top: 0;">Cek Status</h3>
-                    <input type="tel" id="cek-wa" placeholder="Nomor WA..." style="padding: 10px; width: 65%; border: 1px solid #ccc; border-radius: 5px;">
-                    <button id="btn-cek" style="background: var(--gold); padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">CEK</button>
-                    <div id="hasil-cek" style="margin-top: 15px; font-weight: bold;"></div>
-                </div>
-            </div>
+/* APPS */
+#apps{background:var(--cream)}
+body.dark #apps{background:#0a1a10}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.3rem}
+.app-card{background:white;border-radius:var(--radius);padding:1.7rem;border:2px solid transparent;cursor:pointer;transition:all var(--tr);position:relative;overflow:hidden}
+body.dark .app-card{background:#162b1e}
+.app-card::before{content:'';position:absolute;top:0;left:0;width:5px;height:100%;background:var(--ac,var(--g2));border-radius:0 3px 3px 0;transition:width .3s}
+.app-card:hover{transform:translateY(-6px);border-color:var(--ac,var(--g2));box-shadow:var(--shadow)}
+.app-card:hover::before{width:9px}
+.app-badge{display:inline-block;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:20px;margin-bottom:.7rem;background:rgba(0,0,0,.06);color:var(--ac,var(--g2))}
+body.dark .app-badge{background:rgba(255,255,255,.08)}
+.app-icon{font-size:2.6rem;display:block;margin-bottom:.7rem}
+.app-card h3{font-family:'Poppins',sans-serif;font-weight:800;font-size:1rem;color:var(--g1);margin-bottom:.3rem}
+body.dark .app-card h3{color:#b7e4c7}
+.app-card p{font-size:.82rem;color:var(--text2);line-height:1.6;margin-bottom:1.1rem}
+.app-btn{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:.76rem;color:var(--ac,var(--g2));text-transform:uppercase;letter-spacing:.5px;border:none;background:none;cursor:pointer;transition:gap .2s;padding:0;font-family:'Nunito',sans-serif}
+.app-btn:hover{gap:11px}
 
-            <!-- KOTAK SARAN -->
-            <div class="form-box">
-                <h2 style="color: var(--gold); margin-top:0;">Kotak Saran & Aspirasi</h2>
-                <p style="font-size: 0.9rem; margin-bottom: 20px;">Masukan Anda sangat berarti untuk kemajuan SD Mutu.</p>
-                <form id="form-saran">
-                    <input type="hidden" name="form_type" value="saran">
-                    <div class="form-group"><label>Nama Lengkap / Wali Murid</label><input type="text" id="saran-nama" required></div>
-                    <div class="form-group"><label>Pesan & Saran</label><textarea id="saran-pesan" rows="4" required></textarea></div>
-                    <button type="submit" class="btn-submit" id="btn-submit-saran" style="background: var(--gold); color: var(--charcoal);">KIRIM SARAN</button>
-                </form>
-            </div>
+/* EKSKUL */
+#ekskul{background:white}
+body.dark #ekskul{background:#0f1f17}
+.ekskul-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem}
+.ekskul-item{background:var(--cream);border-radius:var(--radius);padding:1.4rem 1rem;text-align:center;border:2px solid transparent;transition:all var(--tr)}
+body.dark .ekskul-item{background:#162b1e}
+.ekskul-item:hover{border-color:var(--g3);transform:translateY(-4px);box-shadow:var(--shadow)}
+.ek-icon{font-size:2.3rem;margin-bottom:.5rem;display:block}
+.ek-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:.82rem;color:var(--g1);margin-bottom:.2rem}
+body.dark .ek-name{color:#b7e4c7}
+.ek-hari{font-size:.7rem;color:var(--text2)}
 
-        </div>
-    </section>
+/* GURU */
+#guru{background:var(--cream)}
+body.dark #guru{background:#0a1a10}
+.guru-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem}
+.guru-card{background:white;border-radius:var(--radius);padding:1.5rem 1rem;text-align:center;transition:all var(--tr);box-shadow:0 2px 10px rgba(27,67,50,.07)}
+body.dark .guru-card{background:#162b1e}
+.guru-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.guru-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid}
+.guru-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:.88rem;color:var(--g1);margin-bottom:.2rem;line-height:1.3}
+body.dark .guru-name{color:#b7e4c7}
+.guru-mapel{font-size:.72rem;color:var(--text2)}
+.guru-badge{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 9px;border-radius:20px;margin-top:.4rem;text-transform:uppercase;letter-spacing:.3px}
 
-    <!-- SCRIPT UTAMA -->
-    <script>
-        // GANTI URL DI BAWAH INI DENGAN URL APPS SCRIPT BAPAK
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzA-ClBDroHNiNZ_Cj6T0Flq4vWJyTJtvpapVigOBF6aI2SmCyu2qBe87vvS4ifRUTBWQ/exec';
+/* BERITA */
+#berita{background:white}
+body.dark #berita{background:#0f1f17}
+.berita-layout{display:grid;grid-template-columns:1.7fr 1fr;gap:2rem}
+.berita-card-big{background:var(--cream);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(27,67,50,.08);transition:transform var(--tr)}
+body.dark .berita-card-big{background:#162b1e}
+.berita-card-big:hover{transform:translateY(-4px)}
+.b-thumb{height:190px;display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative}
+.b-hot{position:absolute;top:1rem;left:1rem;background:var(--gold);color:var(--g1);font-size:.62rem;font-weight:800;padding:4px 12px;border-radius:20px;text-transform:uppercase}
+.b-body{padding:1.4rem}
+.b-tag{display:inline-block;font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:20px;margin-bottom:.5rem}
+.tag-akademik{background:#e8f5e9;color:var(--g2)}
+.tag-prestasi{background:#fff3e0;color:#E65100}
+.tag-kegiatan{background:#e3f2fd;color:var(--blue-m)}
+.tag-program{background:#f3e5f5;color:var(--purple)}
+.b-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.08rem;color:var(--g1);line-height:1.4;margin-bottom:.5rem}
+body.dark .b-title{color:#b7e4c7}
+.b-excerpt{font-size:.83rem;color:var(--text2);line-height:1.7;margin-bottom:.7rem}
+.b-meta{font-size:.7rem;color:#aaa;display:flex;gap:.8rem}
+.berita-sidebar{display:flex;flex-direction:column;gap:.9rem}
+.bsm{background:var(--cream);border-radius:12px;overflow:hidden;display:flex;gap:.8rem;align-items:center;padding:.85rem;box-shadow:0 2px 8px rgba(27,67,50,.06);transition:transform var(--tr)}
+body.dark .bsm{background:#162b1e}
+.bsm:hover{transform:translateX(4px)}
+.bsm-icon{font-size:1.8rem;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.bsm-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:.8rem;color:var(--g1);line-height:1.4}
+body.dark .bsm-title{color:#b7e4c7}
+.bsm-date{font-size:.68rem;color:#aaa;margin-top:2px}
 
-        // 1. FETCH DATA (GET)
-        fetch(scriptURL)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('loading-overlay').style.display = 'none';
+/* GALERI */
+#galeri{background:var(--cream)}
+body.dark #galeri{background:#0a1a10}
+.gtabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.8rem}
+.gtab{padding:7px 17px;border-radius:20px;border:2px solid #dde;background:white;font-weight:700;font-size:.78rem;transition:.2s;cursor:pointer;color:var(--text2)}
+body.dark .gtab{background:#162b1e;border-color:#2a4a35;color:#8fb09a}
+.gtab.active,.gtab:hover{background:var(--g1);color:white;border-color:var(--g1)}
+.galeri-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.9rem}
+.g-item{border-radius:14px;overflow:hidden;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:3rem;position:relative;cursor:pointer;transition:transform .3s,box-shadow .3s}
+.g-item:hover{transform:scale(1.06);box-shadow:0 14px 32px rgba(0,0,0,.22);z-index:1}
+.g-cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));color:white;font-size:.73rem;font-weight:700;padding:22px 8px 7px;text-align:center;transform:translateY(3px);transition:.3s}
+.g-item:hover .g-cap{transform:translateY(0)}
 
-                // Render Hero
-                if(data.hero.judul) {
-                    document.getElementById('hero-judul').innerText = data.hero.judul;
-                    document.getElementById('hero-desk').innerText = data.hero.deskripsi;
-                    document.getElementById('hero-btn').innerText = data.hero.tombol;
-                }
+/* TESTIMONI */
+#testimoni{background:white}
+body.dark #testimoni{background:#0f1f17}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.3rem}
+.testi-card{background:var(--cream);border-radius:var(--radius);padding:1.7rem;position:relative;transition:transform var(--tr);box-shadow:0 3px 14px rgba(27,67,50,.07)}
+body.dark .testi-card{background:#162b1e}
+.testi-card:hover{transform:translateY(-4px)}
+.tq{font-size:3.5rem;color:var(--g3);opacity:.35;font-family:serif;line-height:.8;margin-bottom:.4rem}
+.t-stars{color:var(--gold);font-size:.82rem;margin-bottom:.6rem}
+.t-text{font-size:.88rem;color:var(--text);line-height:1.72;margin-bottom:1.1rem;font-style:italic}
+body.dark .t-text{color:#b7e4c7}
+.t-author{display:flex;align-items:center;gap:.7rem}
+.t-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.t-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:.85rem;color:var(--g1)}
+body.dark .t-name{color:#b7e4c7}
+.t-role{font-size:.7rem;color:var(--text2)}
 
-                // Render Visi Misi
-                if(data.visimisi.visi) {
-                    document.getElementById('teks-visi').innerText = data.visimisi.visi;
-                    document.getElementById('teks-misi').innerText = data.visimisi.misi;
-                }
+/* KONTAK CTA */
+#cta{background:linear-gradient(135deg,var(--g1),var(--blue));padding:5rem 1.5rem;text-align:center}
+.cta-icon{font-size:3.2rem;margin-bottom:.8rem}
+.cta-title{font-family:'Poppins',sans-serif;font-weight:900;font-size:clamp(1.5rem,3.5vw,2.3rem);color:white;margin-bottom:.7rem}
+.cta-desc{color:rgba(255,255,255,.68);max-width:460px;margin:0 auto 1.8rem;line-height:1.72;font-size:.92rem}
+.cta-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.btn-wa{background:#25D366;color:white;font-weight:800;padding:13px 26px;border-radius:50px;font-family:'Poppins',sans-serif;font-size:.87rem;display:inline-flex;align-items:center;gap:7px;border:none;cursor:pointer;transition:all .3s;box-shadow:0 4px 14px rgba(37,211,102,.4);text-decoration:none}
+.btn-wa:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(37,211,102,.6)}
+.btn-maps{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:white;font-weight:700;padding:11px 22px;border-radius:50px;font-family:'Poppins',sans-serif;font-size:.87rem;display:inline-flex;align-items:center;gap:7px;transition:all .3s;text-decoration:none}
+.btn-maps:hover{background:rgba(255,255,255,.2)}
+.kontak-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;max-width:680px;margin:2.5rem auto 0}
+.k-item{background:rgba(255,255,255,.1);border-radius:14px;padding:1.1rem;text-align:center}
+.k-icon{font-size:1.7rem;margin-bottom:.3rem}
+.k-lbl{font-size:.64rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.2rem}
+.k-val{font-weight:700;color:white;font-size:.85rem}
 
-                // Render Program
-                const tmptProgram = document.getElementById('tempat-program');
-                data.program.forEach(p => {
-                    tmptProgram.innerHTML += `<div style="margin-bottom: 15px;"><strong>${p.nama}</strong><p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">${p.deskripsi}</p></div>`;
-                });
-
-                // Render Ekskul
-                const tmptEkskul = document.getElementById('tempat-ekskul');
-                data.ekskul.forEach(e => {
-                    tmptEkskul.innerHTML += `<div style="background: var(--putih); padding: 10px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><span style="font-size: 1.5rem;">${e.ikon}</span><strong style="font-size: 0.9rem;">${e.nama}</strong></div>`;
-                });
-
-                // Render Artikel
-                const tmptArtikel = document.getElementById('tempat-artikel');
-                data.artikel.forEach(a => {
-                    let tgl = a.tanggal.includes('T') ? new Date(a.tanggal).toLocaleDateString('id-ID') : a.tanggal;
-                    tmptArtikel.innerHTML += `<div class="card card-green"><p style="font-size: 0.8rem; color: #666; font-weight:bold;">📅 ${tgl}</p><h3>${a.judul}</h3><p>${a.isi}</p></div>`;
-                });
-
-                // Render Guru
-                const tmptGuru = document.getElementById('tempat-guru');
-                data.guru.forEach(g => {
-                    tmptGuru.innerHTML += `<div class="card guru-card"><div class="guru-avatar">${g.avatar}</div><h3 style="color: var(--hijau); margin: 0 0 5px 0;">${g.nama}</h3><p style="margin: 0; font-size: 0.9rem;">${g.deskripsi}</p></div>`;
-                });
-            }).catch(err => console.error('Error fetching data:', err));
-
-        // 2. LOGIKA POST DATA (PPDB & SARAN)
-        function tanganiForm(formId, btnId, formType) {
-            const form = document.getElementById(formId);
-            const btn = document.getElementById(btnId);
-            
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-                btn.innerHTML = 'Mengirim... ⏳'; btn.disabled = true;
-
-                const formData = new FormData();
-                formData.append('form_type', formType);
-                
-                if(formType === 'ppdb') {
-                    const wa = document.getElementById('ppdb-wa').value;
-                    if(!/^[0-9]{10,15}$/.test(wa)) { alert('Nomor WA tidak valid!'); btn.innerHTML = 'KIRIM PENDAFTARAN'; btn.disabled = false; return; }
-                    formData.append('nama', document.getElementById('ppdb-nama').value);
-                    formData.append('asal_sekolah', document.getElementById('ppdb-asal').value);
-                    formData.append('no_wa', wa);
-                } else {
-                    formData.append('nama', document.getElementById('saran-nama').value);
-                    formData.append('pesan', document.getElementById('saran-pesan').value);
-                }
-
-                fetch(scriptURL, { method: 'POST', body: formData })
-                    .then(res => { alert('Data berhasil dikirim!'); form.reset(); btn.innerHTML = 'Selesai ✔️'; setTimeout(() => { btn.innerHTML = formType === 'ppdb' ? 'KIRIM PENDAFTARAN' : 'KIRIM SARAN'; btn.disabled = false; }, 2000); })
-                    .catch(err => { alert('Gagal mengirim data.'); btn.disabled = false; });
-            });
-        }
-
-        tanganiForm('form-ppdb', 'btn-submit-ppdb', 'ppdb');
-        tanganiForm('form-saran', 'btn-submit-saran', 'saran');
-
-        // 3. TRACKER STATUS
-        document.getElementById('btn-cek').addEventListener('click', () => {
-            const wa = document.getElementById('cek-wa').value;
-            const btn = document.getElementById('btn-cek');
-            const hasil = document.getElementById('hasil-cek');
-            if(!wa) return alert('Masukkan WA!');
-            
-            btn.innerText = '⏳'; btn.disabled = true;
-            fetch(scriptURL + '?action=cek_status&no_wa=' + wa).then(res => res.json()).then(data => {
-                btn.innerText = 'CEK'; btn.disabled = false;
-                if(data.found) hasil.innerHTML = `<span style="color:var(--hijau)">${data.nama}</span><br><span style="background:var(--gold); padding:2px 8px; border-radius:3px; color:var(--charcoal);">${data.status}</span>`;
-                else { hasil.innerHTML = '<span style="color:red">Data tidak ditemukan</span>'; }
-            });
-        });
-    </script>
-</body>
-</html>
+/* FOOTER */
+footer{background:var(--dark);padding:2.5rem 1.5rem 1.5rem;text-align:center}
+body.dark footer{background:#040d07}
+.f-emblem{font-size:2.8rem;margin-bottom:.4rem}
+.f-name{font-family:'Poppins',sans-serif;font-weight:900;color:white;font-size:1rem;margin-bottom:.3rem}
+.f-addr{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:1.3rem}
+.f-links{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.3rem}
+.f-links a{color:rgba(255,255,255,.45);font-size:.76rem;font-weight:
