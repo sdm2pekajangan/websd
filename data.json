@@ -46,7 +46,15 @@
       "status": "aktif"
     }
   ],
-  "ekskul": [],
+  "ekskul": [
+    {
+      "id": 1,
+      "nama": "Hizbul Wathan",
+      "icon": "⭐",
+      "hari": "Sabtu",
+      "keterangan": "Latihan Kepanduan, Baris berbaris, Temali, Sandi dan berkemah"
+    }
+  ],
   "guru": [
     {
       "id": 1,
