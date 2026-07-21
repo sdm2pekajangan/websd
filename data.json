@@ -48,25 +48,11 @@
   ],
   "ekskul": [
     {
-      "id": 3,
-      "nama": "Seni Batik",
-      "icon": "ð¨",
-      "hari": "Selasa",
-      "keterangan": "Membatik khas Pekalongan"
-    },
-    {
       "id": 4,
       "nama": "Bulu Tangkis",
       "icon": "ð¸",
       "hari": "Kamis",
       "keterangan": "Pembinaan atlet bulu tangkis"
-    },
-    {
-      "id": 5,
-      "nama": "Drumband",
-      "icon": "ð¥",
-      "hari": "Sabtu",
-      "keterangan": "Marching band dan drumband"
     }
   ],
   "guru": [
