@@ -48,13 +48,6 @@
   ],
   "ekskul": [
     {
-      "id": 1,
-      "nama": "Tahfidz Qur'an",
-      "icon": "ð",
-      "hari": "SeninâJumat",
-      "keterangan": "Hafalan Al-Qur'an mulai Juz 30"
-    },
-    {
       "id": 2,
       "nama": "Futsal",
       "icon": "â½",
