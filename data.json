@@ -120,14 +120,6 @@
   ],
   "guru": [
     {
-      "id": 1,
-      "nama": "Hj. Siti Nur Khasanah, S.Pd",
-      "jabatan": "Kepala Sekolah",
-      "mapel": "Manajemen Sekolah",
-      "icon": "ð©âð«",
-      "warna": "#e8f5e9"
-    },
-    {
       "id": 2,
       "nama": "Muhamad Ridwan, S.Pd.I",
       "jabatan": "Guru PAI",
