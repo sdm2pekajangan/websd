@@ -6,7 +6,7 @@
       "kategori": "akademik",
       "tanggal": "2025-05-01",
       "ringkasan": "SD Muhammadiyah 2 Pekajangan membuka PPDB untuk tahun ajaran baru. Kuota terbatas, daftarkan segera!",
-      "icon": "ð",
+      "icon": "Ã°ÂÂÂ",
       "status": "aktif"
     },
     {
@@ -15,7 +15,7 @@
       "kategori": "prestasi",
       "tanggal": "2025-04-15",
       "ringkasan": "Siswa kami berhasil meraih juara 1 olimpiade matematika tingkat kabupaten Pekalongan.",
-      "icon": "ð",
+      "icon": "Ã°ÂÂÂ",
       "status": "aktif"
     },
     {
@@ -24,16 +24,16 @@
       "kategori": "kegiatan",
       "tanggal": "2025-01-28",
       "ringkasan": "Peringatan Isra' Mi'raj berlangsung khidmat dan penuh hikmah diikuti seluruh siswa.",
-      "icon": "ð",
+      "icon": "Ã°ÂÂÂ",
       "status": "aktif"
     },
     {
       "id": 4,
-      "judul": "Pameran Karya Batik Siswa Kelas 4â6",
+      "judul": "Pameran Karya Batik Siswa Kelas 4Ã¢ÂÂ6",
       "kategori": "kegiatan",
       "tanggal": "2025-03-10",
-      "ringkasan": "Pameran karya batik khas Pekalongan karya siswa kelas 4â6 disambut antusias wali murid.",
-      "icon": "ð¨",
+      "ringkasan": "Pameran karya batik khas Pekalongan karya siswa kelas 4Ã¢ÂÂ6 disambut antusias wali murid.",
+      "icon": "Ã°ÂÂÂ¨",
       "status": "aktif"
     },
     {
@@ -42,7 +42,7 @@
       "kategori": "program",
       "tanggal": "2025-02-02",
       "ringkasan": "Program tahfidz Al-Qur'an kini diwajibkan untuk seluruh jenjang kelas mulai semester ini.",
-      "icon": "ð",
+      "icon": "Ã°ÂÂÂ",
       "status": "aktif"
     }
   ],
@@ -50,7 +50,7 @@
     {
       "id": 1,
       "nama": "Hizbul Wathan",
-      "icon": "⭐",
+      "icon": "â­",
       "hari": "Sabtu",
       "keterangan": "Latihan Kepanduan, Baris berbaris, Temali, Sandi dan berkemah"
     }
@@ -60,7 +60,7 @@
       "id": 1,
       "nama": "Muhammad Fatchurrahman",
       "jabatan": "Kepala sekolah",
-      "icon": "👨‍🏫",
+      "icon": "ð¨âð«",
       "mapel": "",
       "warna": "#e8f5e9"
     },
@@ -68,6 +68,14 @@
       "id": 2,
       "nama": "M Febriyanto, S.Pd.SD",
       "jabatan": "Guru Kelas 6",
+      "icon": "ð¨âð«",
+      "mapel": "",
+      "warna": "#e8f5e9"
+    },
+    {
+      "id": 3,
+      "nama": "ekcek",
+      "jabatan": "",
       "icon": "👨‍🏫",
       "mapel": "",
       "warna": "#e8f5e9"
@@ -78,56 +86,56 @@
       "id": 1,
       "label": "Juara Olimpiade",
       "kategori": "prestasi",
-      "emoji": "ð",
+      "emoji": "Ã°ÂÂÂ",
       "bg": "linear-gradient(135deg,#1B4332,#2D6A4F)"
     },
     {
       "id": 2,
       "label": "Isra Mi'raj",
       "kategori": "islami",
-      "emoji": "ð",
+      "emoji": "Ã°ÂÂÂ",
       "bg": "linear-gradient(135deg,#1A5276,#2D6A9F)"
     },
     {
       "id": 3,
       "label": "Batik Pekalongan",
       "kategori": "seni",
-      "emoji": "ð¨",
+      "emoji": "Ã°ÂÂÂ¨",
       "bg": "linear-gradient(135deg,#6B2FAA,#9B59B6)"
     },
     {
       "id": 4,
       "label": "Futsal",
       "kategori": "olahraga",
-      "emoji": "â½",
+      "emoji": "Ã¢ÂÂ½",
       "bg": "linear-gradient(135deg,#C0392B,#E74C3C)"
     },
     {
       "id": 5,
       "label": "Lomba Sains",
       "kategori": "prestasi",
-      "emoji": "ðï¸",
+      "emoji": "Ã°ÂÂÂÃ¯Â¸Â",
       "bg": "linear-gradient(135deg,#D4A017,#F0C040)"
     },
     {
       "id": 6,
       "label": "Tahfidz Qur'an",
       "kategori": "islami",
-      "emoji": "ð",
+      "emoji": "Ã°ÂÂÂ",
       "bg": "linear-gradient(135deg,#1B4332,#52B788)"
     },
     {
       "id": 7,
       "label": "Drumband",
       "kategori": "seni",
-      "emoji": "ð¥",
+      "emoji": "Ã°ÂÂ¥Â",
       "bg": "linear-gradient(135deg,#E67E22,#F39C12)"
     },
     {
       "id": 8,
       "label": "Bulu Tangkis",
       "kategori": "olahraga",
-      "emoji": "ð¸",
+      "emoji": "Ã°ÂÂÂ¸",
       "bg": "linear-gradient(135deg,#16A085,#1ABC9C)"
     }
   ],
@@ -197,82 +205,82 @@
     {
       "id": 1,
       "judul": "Do'a Sebelum Tidur",
-      "arab": "Ø¨ÙØ³ÙÙÙÙÙ Ø§ÙÙÙÙ°ÙÙÙÙÙ Ø£ÙØ­ÙÙÙØ§ ÙÙØ£ÙÙÙÙØªÙ",
+      "arab": "ÃÂ¨ÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂ ÃÂ£ÃÂÃÂ­ÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂªÃÂ",
       "latin": "Bismika Allaahumma Ahyaa wa Amuut",
       "arti": "Dengan nama-Mu ya Allah aku hidup dan aku mati.",
-      "icon": "ð"
+      "icon": "Ã°ÂÂÂ"
     },
     {
       "id": 2,
       "judul": "Do'a Bangun Tidur",
-      "arab": "Ø§ÙÙÙØ­ÙÙÙØ¯Ù ÙÙÙÙÙ°ÙÙ Ø§ÙÙÙØ°ÙÙ Ø£ÙØ­ÙÙÙØ§ÙÙØ§ Ø¨ÙØ¹ÙØ¯Ù ÙÙØ§ Ø£ÙÙÙØ§ØªÙÙÙØ§",
+      "arab": "ÃÂ§ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ÃÂ ÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ°ÃÂÃÂ ÃÂ£ÃÂÃÂ­ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂ§ ÃÂ¨ÃÂÃÂ¹ÃÂÃÂ¯ÃÂ ÃÂÃÂÃÂ§ ÃÂ£ÃÂÃÂÃÂÃÂ§ÃÂªÃÂÃÂÃÂÃÂ§",
       "latin": "Alhamdulillahilladzi ahyaanaa ba'da maa amaatanaa",
       "arti": "Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami.",
-      "icon": "âï¸"
+      "icon": "Ã¢ÂÂÃ¯Â¸Â"
     },
     {
       "id": 3,
       "judul": "Do'a Sebelum Makan",
-      "arab": "Ø§ÙÙÙÙÙ°ÙÙÙÙÙ Ø¨ÙØ§Ø±ÙÙÙ ÙÙÙÙØ§ ÙÙÙÙÙØ§ Ø±ÙØ²ÙÙÙØªÙÙÙØ§",
+      "arab": "ÃÂ§ÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂ ÃÂ¨ÃÂÃÂ§ÃÂ±ÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂ±ÃÂÃÂ²ÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ§",
       "latin": "Allaahumma baarik lanaa fiimaa razaqtanaa wa qinaa 'adzaaban naar",
       "arti": "Ya Allah berkahilah kami dalam rezeki yang Engkau berikan dan peliharalah kami dari siksa api neraka.",
-      "icon": "ð½ï¸"
+      "icon": "Ã°ÂÂÂ½Ã¯Â¸Â"
     },
     {
       "id": 4,
       "judul": "Do'a Belajar",
-      "arab": "Ø±ÙØ¨ÙÙ Ø²ÙØ¯ÙÙÙÙ Ø¹ÙÙÙÙÙØ§ ÙÙØ§Ø±ÙØ²ÙÙÙÙÙÙ ÙÙÙÙÙÙØ§",
+      "arab": "ÃÂ±ÃÂÃÂ¨ÃÂÃÂ ÃÂ²ÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂ§ÃÂ±ÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§",
       "latin": "Rabbi zidnii 'ilmaa warzuqnii fahmaa",
       "arti": "Ya Tuhanku, tambahkanlah ilmuku dan berilah aku pemahaman yang baik.",
-      "icon": "ð"
+      "icon": "Ã°ÂÂÂ"
     }
   ],
   "kamus": [
     {
       "id": 1,
-      "arab": "Ø¨ÙØ³ÙÙÙ Ø§ÙÙÙÙ°ÙÙ",
+      "arab": "ÃÂ¨ÃÂÃÂ³ÃÂÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ°ÃÂÃÂ",
       "latin": "Bismillah",
       "indonesia": "Dengan nama Allah"
     },
     {
       "id": 2,
-      "arab": "Ø§ÙÙØ­ÙÙÙØ¯Ù ÙÙÙÙÙ°ÙÙ",
+      "arab": "ÃÂ§ÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ¯ÃÂ ÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂ",
       "latin": "Alhamdulillah",
       "indonesia": "Segala puji bagi Allah"
     },
     {
       "id": 3,
-      "arab": "Ø³ÙØ¨ÙØ­ÙØ§ÙÙ Ø§ÙÙÙÙ°ÙÙ",
+      "arab": "ÃÂ³ÃÂÃÂ¨ÃÂÃÂ­ÃÂÃÂ§ÃÂÃÂ ÃÂ§ÃÂÃÂÃÂÃÂ°ÃÂÃÂ",
       "latin": "Subhanallah",
       "indonesia": "Maha Suci Allah"
     },
     {
       "id": 4,
-      "arab": "Ø§ÙÙÙÙÙ°ÙÙ Ø£ÙÙÙØ¨ÙØ±Ù",
+      "arab": "ÃÂ§ÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂ ÃÂ£ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ±ÃÂ",
       "latin": "Allahu Akbar",
       "indonesia": "Allah Maha Besar"
     },
     {
       "id": 5,
-      "arab": "ÙÙØªÙØ§Ø¨Ù",
+      "arab": "ÃÂÃÂÃÂªÃÂÃÂ§ÃÂ¨ÃÂ",
       "latin": "Kitaabun",
       "indonesia": "Buku"
     },
     {
       "id": 6,
-      "arab": "ÙÙÙÙÙÙ",
+      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Qalamun",
       "indonesia": "Pena / Bolpoin"
     },
     {
       "id": 7,
-      "arab": "ÙÙØ¯ÙØ±ÙØ³ÙØ©Ù",
+      "arab": "ÃÂÃÂÃÂ¯ÃÂÃÂ±ÃÂÃÂ³ÃÂÃÂ©ÃÂ",
       "latin": "Madrasatun",
       "indonesia": "Sekolah"
     },
     {
       "id": 8,
-      "arab": "ÙÙØ¹ÙÙÙÙÙÙ",
+      "arab": "ÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Mu'allimun",
       "indonesia": "Guru (laki-laki)"
     }
@@ -340,7 +348,7 @@
     "alamat": "Desa Tangkil Kulon, Kecamatan Kedungwuni, Kabupaten Pekalongan 51173",
     "visi": "Terwujudnya peserta didik yang beriman, berilmu, berakhlak mulia, dan berprestasi dalam bingkai nilai-nilai Islam berkemajuan Muhammadiyah.",
     "misi": "Menanamkan keimanan dan ketakwaan kepada Allah SWT sejak dini\nMenyelenggarakan pembelajaran aktif, kreatif, efektif, dan menyenangkan\nMembangun karakter Islami, nasionalis, dan cinta budaya lokal\nMengembangkan potensi siswa secara akademik dan non-akademik\nMenjalin kerjasama sinergis antara sekolah, keluarga, dan masyarakat",
-    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tuaâguru",
+    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tuaÃ¢ÂÂguru",
     "wa": "6287818334381",
     "email": "sdm2pekajangaj@gmail.com"
   }
