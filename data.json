@@ -203,12 +203,12 @@
   ],
   "doa": [
     {
-      "id": 4,
-      "judul": "Do'a Belajar",
-      "arab": "ÃÂÃÂ±ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ ÃÂÃÂ²ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ ÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂ±ÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§",
-      "latin": "Rabbi zidnii 'ilmaa warzuqnii fahmaa",
-      "arti": "Ya Tuhanku, tambahkanlah ilmuku dan berilah aku pemahaman yang baik.",
-      "icon": "ÃÂ°ÃÂÃÂÃÂ"
+      "id": 1,
+      "judul": "Doa untuk kedua orang tua",
+      "icon": "🤲",
+      "arab": "اللَّهُمَّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+      "latin": "",
+      "arti": "\"Ya Allah, ampunilah dosaku dan dosa kedua orang tuaku, sayangilah keduanya, sebagaimana mereka menyayangiku sejak kecil.\""
     }
   ],
   "kamus": [
