@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
-  <!-- Halaman Utama / Home -->
+  <!-- Halaman Utama -->
   <url>
-    <loc>https://sdm2pekajangan.github.io/</loc>
+    <loc>https://sdm2pekajangan.sch.id/</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Halaman Lain (Contoh: Halaman Portofolio/About) -->
+  <!-- Halaman Lain (Jika ada file .html lain, contoh: admin.html) -->
   <url>
-    <loc>https://username.github.io/websd.html</loc>
-    <lastmod>2026-07-25</lastmod>
+    <loc>https://sdm2pekajangan.sch.id/admin.html</loc>
+    <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
