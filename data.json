@@ -152,13 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 4,
-      "label": "Futsal",
-      "kategori": "olahraga",
-      "emoji": "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ½",
-      "bg": "linear-gradient(135deg,#C0392B,#E74C3C)"
-    },
-    {
       "id": 5,
       "label": "Lomba Sains",
       "kategori": "prestasi",
