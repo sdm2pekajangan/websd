@@ -152,13 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 5,
-      "label": "Lomba Sains",
-      "kategori": "prestasi",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",
-      "bg": "linear-gradient(135deg,#D4A017,#F0C040)"
-    },
-    {
       "id": 6,
       "label": "Tahfidz Qur'an",
       "kategori": "islami",
