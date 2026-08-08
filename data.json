@@ -213,16 +213,7 @@
       "penjelasan": "Subuh 2 + Dzuhur 4 + Ashar 4 + Maghrib 3 + Isya 4 = 17 rakaat."
     }
   ],
-  "doa": [
-    {
-      "id": 2,
-      "judul": "Doa sebelum masuk ke kamar mandi/WC",
-      "icon": "ð¤²",
-      "arab": "Ø§ÙÙÙÙÙÙÙÙÙ Ø¥ÙÙÙÙÙ Ø£ÙØ¹ÙÙÙØ°ÙØ¨ÙÙÙ ÙÙÙÙ Ø§ÙÙØ®ÙØ¨ÙØ«Ù ÙÙØ§ÙÙØ®ÙØ¨ÙØ§Ø¨ÙØ«Ù",
-      "latin": "",
-      "arti": "Sesungguhnya aku berlindung kepada-Mu dari segala kotoran dan yang mengotorkan."
-    }
-  ],
+  "doa": [],
   "kamus": [
     {
       "id": 1,
