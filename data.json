@@ -152,13 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 3,
-      "label": "Batik Pekalongan",
-      "kategori": "seni",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨",
-      "bg": "linear-gradient(135deg,#6B2FAA,#9B59B6)"
-    },
-    {
       "id": 4,
       "label": "Futsal",
       "kategori": "olahraga",
