@@ -67,6 +67,13 @@
       "icon": "⭐",
       "hari": "Rabu",
       "keterangan": "Latihan kerja tim melalui musik dalam drumband, perkusi, rythm dan melodi"
+    },
+    {
+      "id": 4,
+      "nama": "Tilawah",
+      "icon": "⭐",
+      "hari": "Selasa",
+      "keterangan": "Belajar Tahsinul Quran dengan nada tilawah dasar untuk anak"
     }
   ],
   "guru": [
