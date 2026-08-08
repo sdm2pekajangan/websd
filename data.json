@@ -60,6 +60,13 @@
       "icon": "⭐",
       "hari": "Rabu",
       "keterangan": "Latihan pengenalan warna dasar, gradasi, menggambar dasar dan finishing"
+    },
+    {
+      "id": 3,
+      "nama": "Drumband",
+      "icon": "⭐",
+      "hari": "Rabu",
+      "keterangan": "Latihan kerja tim melalui musik dalam drumband, perkusi, rythm dan melodi"
     }
   ],
   "guru": [
