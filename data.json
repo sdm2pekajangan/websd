@@ -327,6 +327,13 @@
       "bulan": 9,
       "tanggal": 28,
       "warna": "#2D6A9F"
+    },
+    {
+      "id": 10,
+      "label": "Penyerahan Rapor",
+      "bulan": 11,
+      "tanggal": 19,
+      "warna": "#2D6A4F"
     }
   ],
   "profil": {
