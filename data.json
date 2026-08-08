@@ -152,13 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 2,
-      "label": "Isra Mi'raj",
-      "kategori": "islami",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
-      "bg": "linear-gradient(135deg,#1A5276,#2D6A9F)"
-    },
-    {
       "id": 3,
       "label": "Batik Pekalongan",
       "kategori": "seni",
