@@ -313,6 +313,13 @@
       "tanggal": 13,
       "label": "MPLS",
       "warna": "#2D6A4F"
+    },
+    {
+      "id": 8,
+      "label": "Hari Kesaktian Pancasila",
+      "bulan": 9,
+      "tanggal": 1,
+      "warna": "#2D6A9F"
     }
   ],
   "profil": {
