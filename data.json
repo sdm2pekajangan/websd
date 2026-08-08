@@ -53,6 +53,13 @@
       "icon": "⭐",
       "hari": "Sabtu",
       "keterangan": "Latihan Kepanduan, Baris berbaris, Temali, Sandi dan berkemah"
+    },
+    {
+      "id": 2,
+      "nama": "Seni Lukis",
+      "icon": "⭐",
+      "hari": "Rabu",
+      "keterangan": "Latihan pengenalan warna dasar, gradasi, menggambar dasar dan finishing"
     }
   ],
   "guru": [
