@@ -6,7 +6,7 @@
       "kategori": "akademik",
       "tanggal": "2025-05-01",
       "ringkasan": "SD Muhammadiyah 2 Pekajangan membuka PPDB untuk tahun ajaran baru. Kuota terbatas, daftarkan segera!",
-      "icon": "📰",
+      "icon": "ð°",
       "status": "aktif"
     },
     {
@@ -15,7 +15,7 @@
       "kategori": "prestasi",
       "tanggal": "2025-04-15",
       "ringkasan": "Siswa kami berhasil meraih juara 1 olimpiade matematika tingkat kabupaten Pekalongan.",
-      "icon": "📰",
+      "icon": "ð°",
       "status": "arsip"
     },
     {
@@ -24,7 +24,7 @@
       "kategori": "kegiatan",
       "tanggal": "2025-01-28",
       "ringkasan": "Masa Pengenalan Lingkungan Sekolah Seru dan menyenangkan",
-      "icon": "📰",
+      "icon": "ð°",
       "status": "aktif"
     },
     {
@@ -33,7 +33,7 @@
       "kategori": "kegiatan",
       "tanggal": "2025-03-10",
       "ringkasan": "Pameran karya batik khas Pekalongan karya siswa kelas 4-6 disambut antusias wali murid.",
-      "icon": "📰",
+      "icon": "ð°",
       "status": "aktif"
     },
     {
@@ -42,7 +42,7 @@
       "kategori": "program",
       "tanggal": "2025-02-02",
       "ringkasan": "Program tahfidz Al-Qur'an kini diwajibkan untuk seluruh jenjang kelas mulai semester ini.",
-      "icon": "📰",
+      "icon": "ð°",
       "status": "aktif"
     }
   ],
@@ -60,7 +60,7 @@
       "id": 1,
       "nama": "Muhammad Fatchurrahman",
       "jabatan": "Kepala sekolah",
-      "icon": "👨‍🏫",
+      "icon": "ð¨âð«",
       "mapel": "",
       "warna": "#e8f5e9"
     },
@@ -68,7 +68,7 @@
       "id": 2,
       "nama": "M Febriyanto, S.Pd.SD",
       "jabatan": "Guru Kelas 6",
-      "icon": "👨‍🏫",
+      "icon": "ð¨âð«",
       "mapel": "",
       "warna": "#e8f5e9"
     },
@@ -76,7 +76,7 @@
       "id": 3,
       "nama": "ekcek",
       "jabatan": "",
-      "icon": "ð¨âð«",
+      "icon": "Ã°ÂÂÂ¨Ã¢ÂÂÃ°ÂÂÂ«",
       "mapel": "",
       "warna": "#e8f5e9"
     }
@@ -86,56 +86,56 @@
       "id": 1,
       "label": "Juara Olimpiade",
       "kategori": "prestasi",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂ",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
       "bg": "linear-gradient(135deg,#1B4332,#2D6A4F)"
     },
     {
       "id": 2,
       "label": "Isra Mi'raj",
       "kategori": "islami",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂ",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
       "bg": "linear-gradient(135deg,#1A5276,#2D6A9F)"
     },
     {
       "id": 3,
       "label": "Batik Pekalongan",
       "kategori": "seni",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂ¨",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¨",
       "bg": "linear-gradient(135deg,#6B2FAA,#9B59B6)"
     },
     {
       "id": 4,
       "label": "Futsal",
       "kategori": "olahraga",
-      "emoji": "ÃÂ¢ÃÂÃÂ½",
+      "emoji": "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ½",
       "bg": "linear-gradient(135deg,#C0392B,#E74C3C)"
     },
     {
       "id": 5,
       "label": "Lomba Sains",
       "kategori": "prestasi",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂÃÂ¯ÃÂ¸ÃÂ",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ",
       "bg": "linear-gradient(135deg,#D4A017,#F0C040)"
     },
     {
       "id": 6,
       "label": "Tahfidz Qur'an",
       "kategori": "islami",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂ",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
       "bg": "linear-gradient(135deg,#1B4332,#52B788)"
     },
     {
       "id": 7,
       "label": "Drumband",
       "kategori": "seni",
-      "emoji": "ÃÂ°ÃÂÃÂ¥ÃÂ",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ",
       "bg": "linear-gradient(135deg,#E67E22,#F39C12)"
     },
     {
       "id": 8,
       "label": "Bulu Tangkis",
       "kategori": "olahraga",
-      "emoji": "ÃÂ°ÃÂÃÂÃÂ¸",
+      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸",
       "bg": "linear-gradient(135deg,#16A085,#1ABC9C)"
     }
   ],
@@ -205,16 +205,16 @@
     {
       "id": 1,
       "judul": "Doa untuk kedua orang tua",
-      "icon": "🤲",
-      "arab": "اللَّهُمَّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+      "icon": "ð¤²",
+      "arab": "Ø§ÙÙÙÙÙÙÙÙÙ Ø§ØºÙÙÙØ±Ù ÙÙÙ ÙÙÙÙÙÙØ§ÙÙØ¯ÙÙÙÙ ÙÙØ§Ø±ÙØ­ÙÙÙÙÙÙÙØ§ ÙÙÙÙØ§ Ø±ÙØ¨ÙÙÙÙØ§ÙÙÙ ØµÙØºÙÙØ±ÙØ§",
       "latin": "",
       "arti": "\"Ya Allah, ampunilah dosaku dan dosa kedua orang tuaku, sayangilah keduanya, sebagaimana mereka menyayangiku sejak kecil.\""
     },
     {
       "id": 2,
       "judul": "Doa sebelum masuk ke kamar mandi/WC",
-      "icon": "🤲",
-      "arab": "اللَّهُمَّ إِنِّي أَعُوْذُبِكَ مِنَ الْخُبُثِ وَالْخَبَابِثِ",
+      "icon": "ð¤²",
+      "arab": "Ø§ÙÙÙÙÙÙÙÙÙ Ø¥ÙÙÙÙÙ Ø£ÙØ¹ÙÙÙØ°ÙØ¨ÙÙÙ ÙÙÙÙ Ø§ÙÙØ®ÙØ¨ÙØ«Ù ÙÙØ§ÙÙØ®ÙØ¨ÙØ§Ø¨ÙØ«Ù",
       "latin": "",
       "arti": "Sesungguhnya aku berlindung kepada-Mu dari segala kotoran dan yang mengotorkan."
     }
@@ -222,49 +222,49 @@
   "kamus": [
     {
       "id": 1,
-      "arab": "ÃÂÃÂ¨ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Bismillah",
       "indonesia": "Dengan nama Allah"
     },
     {
       "id": 2,
-      "arab": "ÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Alhamdulillah",
       "indonesia": "Segala puji bagi Allah"
     },
     {
       "id": 3,
-      "arab": "ÃÂÃÂ³ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ ÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Subhanallah",
       "indonesia": "Maha Suci Allah"
     },
     {
       "id": 4,
-      "arab": "ÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂ ÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ±ÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ",
       "latin": "Allahu Akbar",
       "indonesia": "Allah Maha Besar"
     },
     {
       "id": 5,
-      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂ§ÃÂÃÂ¨ÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂªÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¨ÃÂÃÂÃÂÃÂ",
       "latin": "Kitaabun",
       "indonesia": "Buku"
     },
     {
       "id": 6,
-      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Qalamun",
       "indonesia": "Pena / Bolpoin"
     },
     {
       "id": 7,
-      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂ©ÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ©ÃÂÃÂÃÂÃÂ",
       "latin": "Madrasatun",
       "indonesia": "Sekolah"
     },
     {
       "id": 8,
-      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
+      "arab": "ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¹ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ",
       "latin": "Mu'allimun",
       "indonesia": "Guru (laki-laki)"
     }
@@ -332,7 +332,7 @@
     "alamat": "Desa Tangkil Kulon, Kecamatan Kedungwuni, Kabupaten Pekalongan 51173",
     "visi": "Terwujudnya peserta didik yang beriman, berilmu, berakhlak mulia, dan berprestasi dalam bingkai nilai-nilai Islam berkemajuan Muhammadiyah.",
     "misi": "Menanamkan keimanan dan ketakwaan kepada Allah SWT sejak dini\nMenyelenggarakan pembelajaran aktif, kreatif, efektif, dan menyenangkan\nMembangun karakter Islami, nasionalis, dan cinta budaya lokal\nMengembangkan potensi siswa secara akademik dan non-akademik\nMenjalin kerjasama sinergis antara sekolah, keluarga, dan masyarakat",
-    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tuaÃÂ¢ÃÂÃÂguru",
+    "unggulan": "Tahfidz Al-Qur'an mulai kelas 1 (target Juz 30 di kelas 3)\nPembelajaran seni batik khas Pekalongan setiap minggu\nLiterasi digital dengan lab komputer modern terbaru\nEkstrakurikuler robotika, sains club, dan drumband\nParenting aktif dan komunikasi real-time orang tuaÃÂÃÂ¢ÃÂÃÂÃÂÃÂguru",
     "wa": "6287818334381",
     "email": "sdm2pekajangan@gmail.com"
   }
