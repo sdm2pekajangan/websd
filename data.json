@@ -152,13 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 1,
-      "label": "Juara Olimpiade",
-      "kategori": "prestasi",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
-      "bg": "linear-gradient(135deg,#1B4332,#2D6A4F)"
-    },
-    {
       "id": 2,
       "label": "Isra Mi'raj",
       "kategori": "islami",
