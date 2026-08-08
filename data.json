@@ -150,15 +150,7 @@
       "warna": "#fff3e0"
     }
   ],
-  "galeri": [
-    {
-      "id": 8,
-      "label": "Bulu Tangkis",
-      "kategori": "olahraga",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¸",
-      "bg": "linear-gradient(135deg,#16A085,#1ABC9C)"
-    }
-  ],
+  "galeri": [],
   "kuis": [
     {
       "id": 1,
