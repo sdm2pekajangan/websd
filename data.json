@@ -152,20 +152,6 @@
   ],
   "galeri": [
     {
-      "id": 6,
-      "label": "Tahfidz Qur'an",
-      "kategori": "islami",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ",
-      "bg": "linear-gradient(135deg,#1B4332,#52B788)"
-    },
-    {
-      "id": 7,
-      "label": "Drumband",
-      "kategori": "seni",
-      "emoji": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ",
-      "bg": "linear-gradient(135deg,#E67E22,#F39C12)"
-    },
-    {
       "id": 8,
       "label": "Bulu Tangkis",
       "kategori": "olahraga",
