@@ -30,7 +30,7 @@ nav{position:sticky;top:0;z-index:20;background:var(--g1);color:#fff;padding-top
 nav .wrap{display:flex;align-items:center;gap:14px;height:58px}
 .br{font-weight:800;display:flex;gap:10px;align-items:center;flex:1;min-width:0}
 .br img{width:36px;height:36px;border-radius:50%;flex:none;background:#fff}
-.br span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem}
+.br span{white-space:normal;line-height:1.2;font-size:.95rem}
 nav ul{display:flex;gap:4px;list-style:none}
 nav li a{padding:8px 12px;border-radius:10px;font-size:.88rem;opacity:.85;transition:background-color .15s ease,opacity .15s ease}
 nav li a.on{background:rgba(255,255,255,.14);opacity:1}
@@ -185,8 +185,8 @@ const lg=$(".lg").src;$(".hl").src=lg;{const l=document.createElement("link");l.
 /* ===== KONFIGURASI — edit di sini saja ===== */
 const CFG={
   api:"https://script.google.com/macros/s/AKfycbxvRnrNt2snlhgnq1uesmv9vjj5-LOxTxdFQSWSYpO_48xBAI4Q1Qtm4wqtGajtAbai/exec",            // URL Web App Apps Script (…/exec). Kosong = papan tampil data contoh
-  btq:"",            // URL BTQ Tracker
-  induk:"",          // URL aplikasi Induk Siswa
+  btq:"https://sdm2pekajangan.github.io/btq-tracker/",            // URL BTQ Tracker
+  induk:"https://mpropology.github.io/bukuinduk/",          // URL aplikasi Induk Siswa
   wa:"6287818334381",
   dataJson:"data.json"  // sumber berita/guru/agenda dari admin.html (opsional)
 };
