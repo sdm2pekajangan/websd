@@ -128,7 +128,7 @@ footer{text-align:center;color:var(--tx2);font-size:.8rem;padding:26px 18px 40px
 <img class="hl" alt="" width="88" height="88"><span class="chip">MAJELIS DIKDASMEN &amp; PNF · PCM PEKAJANGAN</span>
 <h1>Genius School,<br><em>Semua Anak Bintang</em></h1>
 <p class="tag">Sekolah Islam berkemajuan di Tangkil Kulon, Kedungwuni — iman kuat, ilmu bermanfaat, akhlak mulia.</p>
-<div><a class="btn b1" href="#papan">Lihat Papan Informasi</a><a class="btn b2" href="#kontak">Hubungi Kami</a></div>
+<div><a class="btn b1" href="#papan">Lihat Papan Informasi</a><a class="btn b2" href="belajar.html">Belajar Al-Islam</a><a class="btn b2" href="#kontak">Hubungi Kami</a></div>
 <div class="stats" id="hs"></div>
 <div></div></div></header>
 
@@ -197,7 +197,7 @@ const SEED={
  guru:[],
  agenda:[{bulan:9,tanggal:28,label:"Hari Sumpah Pemuda",warna:"#2D6A9F"},{bulan:10,tanggal:10,label:"Hari Pahlawan",warna:"#C0392B"},{bulan:11,tanggal:19,label:"Penyerahan Rapor",warna:"#2D6A4F"}]
 };
-const DEMO={demo:true,siswa:{total:54,L:28,P:26},jilid:{"Jilid 1":9,"Jilid 2":12,"Jilid 3":14,"Jilid 4":11,"Jilid 5":8},setoran:{minggu:76,hafalanPct:62}};
+const DEMO={demo:true,siswa:{total:54,L:28,P:26},jilid:{"Jilid 1":9,"Jilid 2":12,"Jilid 3":14,"Jilid 4":11,"Jilid 5":8},setoran:{minggu:76,hafalanPct:0},bupeng:{terhubung:18,ditandai:143,minggu:31,jenis:{juz:48,doa:36,hadis:29,shalat:18,ibadah:12}}};
 const KC={akademik:"#2D6A9F",prestasi:"#D4A017",kegiatan:"#2D6A4F",program:"#6B2FAA"};
 const EM={hizbul:"⛺",lukis:"🎨",drum:"🥁",tilawah:"📖",batik:"🎨",futsal:"⚽",robot:"🤖"};
 /* perbaiki teks rusak (UTF-8 yang terbaca ganda) dari data.json lama */
@@ -221,17 +221,17 @@ function render(D){
  $("#ag").innerHTML=rvl(A.map(a=>{const n=Math.round((a.d-new Date(y,now.getMonth(),now.getDate()))/864e5);return`<div class="card ag" style="--c:${a.warna||"#2D6A4F"}"><div class="dt"><b>${a.d.getDate()}</b><small>${MON[a.d.getMonth()]}</small></div><div><h3>${esc(a.label)}</h3><p>${n?n+" hari lagi":"Hari ini"}</p></div></div>`}).join(""));
  $("#ek").innerHTML=rvl((D.ekskul||[]).map(e=>{const k=Object.keys(EM).find(k=>e.nama.toLowerCase().includes(k));return`<div class="card"><div class="ic">${EM[k]||"✦"}</div><h3>${esc(e.nama)}</h3><span class="pill">${esc(e.hari)}</span><p style="margin-top:8px">${esc(e.keterangan)}</p></div>`}).join(""));
  $("#gr").innerHTML=rvl((D.guru||[]).map(g=>`<div class="card"><div class="av" style="--bg2:${esc(g.warna||"#e8f5e9")}">${ini(g.nama)}</div><h3>${esc(g.nama)}</h3><p>${esc(g.jabatan)}${g.mapel?" · "+esc(g.mapel):""}</p></div>`).join(""));
- const ap=[["BTQ & Hafalan Tracker","Setoran harian, jilid BTQ, dan progres hafalan Juz 30.",CFG.btq||p.btq_url,"📖","#2D6A4F"],["Induk Siswa Digital","Buku induk & klapper siswa — untuk guru dan admin.",CFG.induk||p.induk_url,"🗂️","#D4A017"]];
- $("#apps").innerHTML=rvl(ap.map(([t,d,u,i,c])=>`<a class="card" style="--c:${c}" ${u?`href="${esc(u)}" target="_blank" rel="noopener"`:'aria-disabled="true"'}><div class="ic">${i}</div><h3>${t}</h3><p>${d}${u?"":" (tautan belum diatur)"}</p></a>`).join(""));
+ const ap=[["Belajar Al-Islam (BUPENG)","Juz Amma, doa, hadis, bacaan shalat & praktik ibadah per kelas — pendamping belajar untuk orang tua.","belajar.html","🕌","#2D6A9F"],["BTQ & Hafalan Tracker","Setoran harian, jilid BTQ, dan progres hafalan Juz 30.",CFG.btq||p.btq_url,"📖","#2D6A4F"],["Induk Siswa Digital","Buku induk & klapper siswa — untuk guru dan admin.",CFG.induk||p.induk_url,"🗂️","#D4A017"]];
+ $("#apps").innerHTML=rvl(ap.map(([t,d,u,i,c])=>`<a class="card" style="--c:${c}" ${u?`href="${esc(u)}"${/^http/.test(u)?' target="_blank" rel="noopener"':""}`:'aria-disabled="true"'}><div class="ic">${i}</div><h3>${t}</h3><p>${d}${u?"":" (tautan belum diatur)"}</p></a>`).join(""));
  $("#al").textContent=p.alamat||"";$("#wa").href="https://wa.me/"+(p.wa||CFG.wa);
  $("#ft").textContent="© "+y+" SD Muhammadiyah 2 Pekajangan · NPSN 20323938";
  watch()}
 function papan(P){
- const s=P.siswa,mx=Math.max(...Object.values(P.jilid),1),c=251.3,lp=s.total?s.P/s.total:0;
+ const bp=P.bupeng,bm=bp?Math.max(...Object.values(bp.jenis),1):1,s=P.siswa,mx=Math.max(...Object.values(P.jilid),1),c=251.3,lp=s.total?s.P/s.total:0;
  $("#pb").innerHTML=`<div class="card"><span class="live">${P.demo?"DATA CONTOH":"LIVE"}</span><p style="margin-top:8px">Siswa aktif</p><div class="big" data-t="${s.total}">0</div>
  <div class="ring" style="margin-top:14px"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="bg" cx="50" cy="50" r="40"/><circle class="fg" cx="50" cy="50" r="40" style="--o:${c*(1-lp)}"/></svg><div><b>${s.L}</b> putra<br><b>${s.P}</b> putri</div></div></div>
  <div class="card"><h3>Sebaran Jilid BTQ</h3>${Object.entries(P.jilid).map(([k,v],i)=>`<div class="bar" style="--i:${i}"><span>${esc(k)} · <b>${v}</b></span><div><i style="--v:${v/mx}"></i></div></div>`).join("")}</div>
- <div class="card"><h3>Pekan Ini</h3><div class="big" data-t="${P.setoran.minggu}">0</div><p>setoran tercatat</p><div class="bar"><span>Rata-rata progres Juz 30 · <b>${P.setoran.hafalanPct}%</b></span><div><i style="--v:${P.setoran.hafalanPct/100}"></i></div></div>${P.demo?'<p class="note">Isi CFG.api agar angka ini otomatis dari Google Sheet.</p>':""}</div>`;
+ <div class="card"><h3>Pekan Ini</h3><div class="big" data-t="${P.setoran.minggu}">0</div><p>setoran tercatat</p>${P.setoran.hafalanPct?`<div class="bar"><span>Rata-rata progres Juz 30 · <b>${P.setoran.hafalanPct}%</b></span><div><i style="--v:${P.setoran.hafalanPct/100}"></i></div></div>`:""}${P.demo?'<p class="note">Isi CFG.api agar angka ini otomatis dari Google Sheet.</p>':""}</div>${bp?`<div class="card"><h3>Hafalan di Rumah</h3><div class="big" data-t="${bp.terhubung}">0</div><p>siswa terhubung · <b>${bp.minggu}</b> materi ditandai pekan ini</p>${Object.entries(bp.jenis).map(([k,v],i)=>`<div class="bar" style="--i:${i}"><span>${{juz:"Juz Amma",doa:"Doa",hadis:"Hadis",shalat:"Bacaan shalat",ibadah:"Praktik ibadah"}[k]} · <b>${v}</b></span><div><i style="--v:${v/bm}"></i></div></div>`).join("")}<p class="note"><a href="belajar.html" style="text-decoration:underline">Buka Belajar Al-Islam →</a></p></div>`:""}`;
  $("#pb").classList.remove("in");watch()}
 const get=(u,t=6000)=>{const c=new AbortController();setTimeout(()=>c.abort(),t);return fetch(u,{signal:c.signal}).then(r=>{if(!r.ok)throw 0;return r.json()})};
 const cache=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
