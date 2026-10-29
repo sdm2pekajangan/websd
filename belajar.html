@@ -87,7 +87,7 @@ dialog input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid va
 <script>
 const $=s=>document.querySelector(s),R=document.documentElement,esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const TABS=[["juz","Juz Amma","juz_amma","hafalan_juz_amma"],["doa","Doa","doa_harian","doa_harian"],["hadis","Hadis","hadis","hadis"],["shalat","Bacaan Shalat","bacaan_shalat","bacaan_shalat"],["ibadah","Praktik Ibadah","praktek_ibadah","praktek_ibadah"]];
-const API="https://script.google.com/macros/s/AKfycbxvRnrNt2snlhgnq1uesmv9vjj5-LOxTxdFQSWSYpO_48xBAI4Q1Qtm4wqtGajtAbai/exec";/* tempel URL Apps Script (…/exec) — sama dengan CFG.api di index.html */
+const API="https://script.google.com/macros/s/AKfycbwd_wzJvsPwyP8_Ex6rnwUtXj4MN1dGKpPO07kziYTPR0o5_VlxWXEsx3h0L4LyBbgK4Q/exec";/* tempel URL Apps Script (…/exec) — sama dengan CFG.api di index.html */
 let D,MAP={},ST={k:1,s:1,t:"juz",ok:{},fs:1.9,tm:{},dz:[],ak:null};
 try{Object.assign(ST,JSON.parse(localStorage.getItem("bp")))}catch(e){}
 const save=()=>{try{localStorage.setItem("bp",JSON.stringify(ST))}catch(e){}};
