@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1B4332">
+<title>Belajar Al-Islam — SD Muhammadiyah 2 Pekajangan</title>
+<style>
+:root{--g1:#1B4332;--g2:#2D6A4F;--g3:#52B788;--gold:#D4A017;--gold2:#F0C040;--bg:#FFF8EE;--card:#fff;--tx:#1d2b25;--tx2:#5c6b63;--ln:rgba(27,67,50,.13);--out:cubic-bezier(.23,1,.32,1);--sh:0 6px 22px rgba(27,67,50,.1);--af:1.9rem;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+:root[data-t=dark]{--bg:#0c1a14;--card:#14271e;--tx:#eaf3ee;--tx2:#9db3a8;--ln:rgba(255,255,255,.12);--sh:0 6px 22px rgba(0,0,0,.4)}
+@media(prefers-color-scheme:dark){:root:not([data-t=light]){--bg:#0c1a14;--card:#14271e;--tx:#eaf3ee;--tx2:#9db3a8;--ln:rgba(255,255,255,.12);--sh:0 6px 22px rgba(0,0,0,.4)}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);line-height:1.55;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:760px;margin:auto;padding:0 16px}
+.top{position:sticky;top:0;z-index:10;background:var(--g1);color:#fff;padding-top:env(safe-area-inset-top)}
+.top .wrap{display:flex;align-items:center;gap:12px;height:58px}
+.top div{flex:1;line-height:1.2}.top small{opacity:.75;font-size:.72rem}
+.top a,.top button{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.13);display:grid;place-items:center;color:#fff;text-decoration:none;transition:transform .12s ease-out}
+.top a:active,.top button:active,.sg button:active,.act button:active{transform:scale(.96)}
+.warn{margin:14px 0;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--gold) 16%,var(--card));font-size:.82rem;display:flex;gap:10px;align-items:flex-start;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent)}
+.warn button{flex:none;font-weight:700;color:var(--gold);padding:2px 6px}
+.ctl{display:grid;gap:10px;margin:14px 0}
+.sg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.sg button{flex:none;padding:9px 16px;border-radius:99px;background:var(--card);border:1px solid var(--ln);font-weight:600;font-size:.9rem;transition:background-color .2s ease,color .2s ease,transform .12s ease-out}
+.sg button[aria-pressed=true]{background:var(--g2);color:#fff;border-color:transparent}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:20px;padding:16px;box-shadow:var(--sh)}
+.tg h3{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.tg li{list-style:none;font-size:.86rem;color:var(--tx2)}.tg b{color:var(--tx)}
+.pb{height:9px;border-radius:9px;background:var(--ln);overflow:hidden;margin:10px 0 4px}
+.pb i{display:block;height:100%;width:100%;transform-origin:left;background:linear-gradient(90deg,var(--g3),var(--gold));transition:transform .7s var(--out)}
+input[type=search]{width:100%;padding:11px 16px;border-radius:99px;border:1px solid var(--ln);background:var(--card);margin:6px 0 14px}
+#ls{display:grid;gap:14px}
+.it{animation:up .5s var(--out) both;animation-delay:calc(var(--i)*50ms)}
+@keyframes up{from{opacity:0;transform:translate3d(0,18px,0)}}
+.it h2{font-size:1.08rem;line-height:1.3}.it .mt{font-size:.8rem;color:var(--tx2);margin:2px 0 10px}
+.pill{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:99px;background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold);margin-left:6px;vertical-align:middle}
+.ay{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px dashed var(--ln)}
+.ay:first-of-type{border-top:0}
+.no{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.74rem;font-weight:700;background:var(--ln);margin-top:10px;transition:background-color .2s ease}
+.pp .no{background:var(--gold2);color:#1B4332}
+.ar{flex:1;direction:rtl;text-align:right;font-family:"Scheherazade New","Amiri","Noto Naskh Arabic","Traditional Arabic",serif;font-size:var(--af);line-height:2.25;transition:color .25s ease}
+.hide .ay:not(.rev) .ar{color:transparent;text-shadow:0 0 14px var(--tx2)}
+.pl{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ln);margin-top:8px;font-size:.7rem}
+.lt{font-style:italic;color:var(--tx2);margin-top:8px}.tr{margin-top:8px;font-size:.92rem}
+.it h4{margin:14px 0 4px;font-size:.84rem;color:var(--g2)}:root[data-t=dark] .it h4{color:var(--g3)}
+.it ol{padding-left:22px;font-size:.92rem}.it ol li{margin:3px 0}
+.ck{display:flex;gap:10px;align-items:center;padding:7px 0;font-size:.92rem;cursor:pointer}
+.ck input{width:20px;height:20px;accent-color:var(--g2)}
+.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.act button{padding:9px 14px;border-radius:12px;background:var(--ln);font-size:.84rem;font-weight:600;transition:background-color .2s ease,color .2s ease,transform .12s ease-out}
+.act .hf.on{background:var(--g2);color:#fff}.act .hf.on:before{content:"✓ ";display:inline-block;animation:pop .3s var(--out)}
+@keyframes pop{from{transform:scale(0)}}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--g1);color:#fff;padding:10px 18px;border-radius:99px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .3s var(--out)}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+dialog{border:0;border-radius:22px;padding:22px;width:min(380px,92vw);background:var(--card);color:var(--tx);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+dialog[open]{animation:up .35s var(--out)}dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h3{margin-bottom:4px}dialog p{font-size:.84rem;color:var(--tx2);margin-bottom:12px}
+dialog input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);margin-bottom:10px;font-size:1rem}
+#kd{text-transform:uppercase;letter-spacing:.18em}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}.row button{padding:10px 16px;border-radius:12px;background:var(--ln);font-weight:600}.row .go{background:var(--g2);color:#fff}
+#de{color:#c0392b;min-height:1.2em;margin:0}
+.ac{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.88rem}.ac b{display:block}.ac small{color:var(--tx2)}.ac button{margin-left:auto;padding:9px 14px;border-radius:12px;background:var(--g2);color:#fff;font-weight:700;font-size:.84rem}
+.ac button.lt2{background:var(--ln);color:var(--tx)}
+.sk{height:120px;border-radius:20px;background:linear-gradient(90deg,var(--ln),transparent,var(--ln));background-size:200% 100%;animation:sh 1.4s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.em{text-align:center;color:var(--tx2);padding:30px 0}
+@media(hover:hover) and (pointer:fine){.sg button:hover,.act button:hover,.pl:hover{background:color-mix(in srgb,var(--g3) 25%,var(--card))}}
+@media(prefers-reduced-motion:reduce){*,*:before{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a href="index.html" aria-label="Kembali ke portal">←</a><div><b>Belajar Al-Islam</b><br><small>BUPENG · SD Muhammadiyah 2 Pekajangan</small></div><button id="fm" aria-label="Perkecil huruf Arab">A−</button><button id="fp" aria-label="Perbesar huruf Arab">A+</button></div></header>
+<main class="wrap">
+<div class="warn" id="warn"><span>Teks Arab disalin dari buku BUPENG dan harakatnya <b>belum diverifikasi otomatis</b>. Untuk hafalan, pastikan sudah dicek guru/ustadz atau dibandingkan dengan mushaf. Buku tidak mencantumkan latin &amp; terjemah Juz Amma, jadi tidak ditampilkan.</span><button id="wx">OK</button></div>
+<div class="card" id="ac" hidden></div>
+<div class="ctl"><div class="sg" id="kl" role="group" aria-label="Kelas"></div><div class="sg" id="sm" role="group" aria-label="Semester"></div></div>
+<div class="card tg" id="tg"></div>
+<div class="sg" id="tb" style="margin:14px 0 4px" role="tablist"></div>
+<input id="q" type="search" placeholder="Cari judul, mis. wudlu, an-Nas, masuk masjid" aria-label="Cari materi">
+<div id="ls"><div class="sk"></div><div class="sk"></div></div>
+</main><dialog id="dg"><h3>Hubungkan dengan sekolah</h3><p>Masukkan NIS ananda dan kode wali dari guru kelas. Yang tersimpan di sekolah hanya centang hafalan &amp; praktik ananda.</p>
+<input id="nis" placeholder="NIS ananda" autocomplete="off" inputmode="numeric"><input id="kd" placeholder="KODE WALI" autocomplete="off" autocapitalize="characters" maxlength="10"><p id="de" role="alert"></p>
+<div class="row"><button id="dgx">Batal</button><button class="go" id="dgo">Hubungkan</button></div></dialog>
+<div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s),R=document.documentElement,esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const TABS=[["juz","Juz Amma","juz_amma","hafalan_juz_amma"],["doa","Doa","doa_harian","doa_harian"],["hadis","Hadis","hadis","hadis"],["shalat","Bacaan Shalat","bacaan_shalat","bacaan_shalat"],["ibadah","Praktik Ibadah","praktek_ibadah","praktek_ibadah"]];
+const API="";/* tempel URL Apps Script (…/exec) — sama dengan CFG.api di index.html */
+let D,MAP={},ST={k:1,s:1,t:"juz",ok:{},fs:1.9,tm:{},dz:[],ak:null};
+try{Object.assign(ST,JSON.parse(localStorage.getItem("bp")))}catch(e){}
+const save=()=>{try{localStorage.setItem("bp",JSON.stringify(ST))}catch(e){}};
+{const t=localStorage.getItem("sd_t");if(t)R.dataset.t=t}
+R.style.setProperty("--af",ST.fs+"rem");
+let tt;const toast=m=>{const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),2400)};
+const SM=()=>(D.kelas.find(k=>k.kelas==ST.k)||{semester:[]}).semester.find(s=>s.semester==ST.s)||{};
+const pg=it=>{const u=(it.dipakai_di||[]).find(x=>x.kelas==ST.k&&[].concat(x.semester).includes(ST.s));return u?u.halaman_buku:""};
+const seg=(el,arr,cur,fn)=>{el.innerHTML=arr.map(([v,l])=>`<button aria-pressed="${v==cur}" data-v="${v}">${l}</button>`).join("");el.onclick=e=>{const b=e.target.closest("button");if(b){el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));fn(b.dataset.v)}}};
+function ctl(){seg($("#kl"),[1,2,3,4,5,6].map(k=>[k,"Kelas "+k]),ST.k,v=>{ST.k=+v;save();draw()});
+ seg($("#sm"),[[1,"Semester 1"],[2,"Semester 2"]],ST.s,v=>{ST.s=+v;save();draw()});
+ seg($("#tb"),TABS.map(t=>[t[0],t[1]]),ST.t,v=>{ST.t=v;save();list()})}
+function target(){const s=SM(),m=s.kemampuan_minimal_diagram||{},L={juz_amma:"Juz Amma",doa:"Doa",bacaan_shalat:"Bacaan shalat",praktek_ibadah:"Praktik ibadah"};
+ const ids=TABS.flatMap(t=>s[t[2]]||[]),done=ids.filter(i=>ST.ok[i]).length;
+ $("#tg").innerHTML=`<h3>Target Kelas ${ST.k} · Semester ${ST.s}</h3>${s.bacaan_utama?`<li><b>Bacaan utama:</b> ${esc(s.bacaan_utama)}</li>`:""}${Object.keys(L).filter(k=>m[k]).map(k=>`<li><b>${L[k]}:</b> ${esc(m[k])}</li>`).join("")}<div class="pb"><i style="transform:scaleX(${ids.length?done/ids.length:0})"></i></div><small style="color:var(--tx2)">${done} dari ${ids.length} materi ditandai hafal/bisa di perangkat ini</small>`}
+function items(){const q=$("#q").value.trim().toLowerCase(),T=TABS.find(t=>t[0]==ST.t);
+ if(q)return D[T[3]].filter(i=>((i.judul||"")+" "+(i.nama||"")+" "+(i.arti||"")).toLowerCase().includes(q));
+ return(SM()[T[2]]||[]).map(id=>MAP[id]).filter(Boolean)}
+const ayat=(it,sn)=>(it.ayat||[]).map(a=>`<div class="ay" data-s="${sn}" data-n="${a.no}"><span class="no">${a.no}</span><div class="ar" dir="rtl">${esc(a.arab)}</div>${sn?`<button class="pl" aria-label="Putar ayat ${a.no}">▶</button>`:""}</div>`).join("");
+const ar1=t=>`<div class="ay"><div class="ar" dir="rtl">${esc(t)}</div></div>`;
+function card(it,i){const sn=it.nomor_surat||(it.ref==="pembuka-01"?1:0),p=pg(it),ttl=it.judul||("QS. "+it.nama),
+ meta=[it.arti&&"“"+it.arti+"”",it.jumlah_ayat&&it.jumlah_ayat+" ayat",it.golongan,it.riwayat,p&&"hal. "+p].filter(Boolean).join(" · "),L=it.lembar_praktek;
+ let b=it.ayat?ayat(it,sn):it.arab?ar1(it.arab):"";
+ if(it.latin)b+=`<p class="lt">${esc(it.latin)}</p>`;if(it.terjemah)b+=`<p class="tr">${esc(it.terjemah)}</p>`;
+ if(it.pengertian)b+=`<p class="tr">${esc(it.pengertian)}</p>`;if(typeof it.hukum==="string")b+=`<p class="tr">${esc(it.hukum)}</p>`;
+ if(it.petunjuk)b+=`<p class="tr">${esc([].concat(it.petunjuk).join(" "))}</p>`;
+ if(Array.isArray(it.syarat_sah_shalat))b+=`<h4>Syarat sah shalat</h4><ol>${it.syarat_sah_shalat.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`;
+ if(Array.isArray(it.tata_cara))b+=`<h4>Tata cara</h4><ol>${it.tata_cara.map(t=>`<li>${esc(t.langkah)}${t.penjelasan?`<br><small style="color:var(--tx2)">${esc(t.penjelasan)}</small>`:""}</li>`).join("")}</ol>`;
+ if(it.doa_sesudah_wudlu_arab)b+=`<h4>Doa sesudah wudlu</h4>`+ar1(it.doa_sesudah_wudlu_arab);
+ if(L&&L.gerakan)b+=`<h4>Lembar praktik di rumah — centang yang sudah benar</h4>`+L.gerakan.map(g=>`<label class="ck"><input type="checkbox" data-c="${it.id}.${g.no}" ${ST.ok[it.id+"."+g.no]?"checked":""}><span>${esc(g.gerakan)}</span></label>`).join("");
+ const hasAr=!!(it.ayat||it.arab);
+ return`<article class="card it" style="--i:${Math.min(i,8)}" data-id="${it.id}"><h2>${esc(ttl)}${it.catatan_verifikasi?`<span class="pill" title="${esc(it.catatan_verifikasi)}">verifikasi guru</span>`:""}</h2><p class="mt">${esc(meta)}</p>${b}
+ <div class="act"><button class="hf ${ST.ok[it.id]?"on":""}">${it.kategori==="praktek_ibadah"?"Sudah bisa":"Sudah hafal"}</button>${hasAr?`<button class="hd">Tutup teks</button>`:""}${it.ayat&&sn?`<button class="pa">▶ Putar semua</button>`:""}</div></article>`}
+function list(){const a=items();$("#ls").innerHTML=a.length?a.map(card).join(""):`<p class="em">${$("#q").value?"Tidak ditemukan.":"Tidak ada materi di bagian ini untuk kelas &amp; semester ini."}</p>`}
+function draw(){target();list()}
+/* audio murottal per ayat (EveryAyah, Mishary Alafasy) — dimuat hanya saat ▶ ditekan */
+const au=new Audio(),p3=n=>String(n).padStart(3,"0");au.preload="none";let cur;
+function stop(){au.pause();cur&&cur.classList.remove("pp");cur=null}
+function play(row,chain){stop();cur=row;row.classList.add("pp");au.src=`https://everyayah.com/data/Alafasy_128kbps/${p3(row.dataset.s)}${p3(row.dataset.n)}.mp3`;
+ au.onerror=()=>{stop();toast("Audio tidak tersedia. Cek koneksi internet.")};au.onended=()=>{const n=row.nextElementSibling;stop();if(chain&&n&&n.dataset.s)play(n,true)};au.play().catch(()=>{})}
+$("#ls").onclick=e=>{const c=e.target.closest(".it");if(!c)return;const id=c.dataset.id,b=e.target.closest("button");
+ if(b&&b.classList.contains("hf")){setOk(id,!ST.ok[id]);b.classList.toggle("on",!!ST.ok[id]);target();if(ST.ok[id])toast("Alhamdulillah, tercatat ✓")}
+ else if(b&&b.classList.contains("hd")){const h=c.classList.toggle("hide");b.textContent=h?"Tampilkan teks":"Tutup teks";c.querySelectorAll(".rev").forEach(r=>r.classList.remove("rev"))}
+ else if(b&&b.classList.contains("pl"))play(b.parentElement,false);
+ else if(b&&b.classList.contains("pa"))play(c.querySelector(".ay[data-s]"),true);
+ else if(c.classList.contains("hide")){const r=e.target.closest(".ay");r&&r.classList.toggle("rev")}};
+$("#ls").onchange=e=>{const k=e.target.dataset.c;if(k)setOk(k,e.target.checked)};
+$("#q").oninput=list;
+const fs=d=>{ST.fs=Math.min(3.2,Math.max(1.3,+(ST.fs+d).toFixed(1)));R.style.setProperty("--af",ST.fs+"rem");save()};
+$("#fm").onclick=()=>fs(-.2);$("#fp").onclick=()=>fs(.2);
+if(localStorage.getItem("bp_w"))$("#warn").remove();else $("#wx").onclick=()=>{$("#warn").remove();try{localStorage.setItem("bp_w","1")}catch(e){}};
+/* ===== sinkron ke Google Sheet (opsional, aktif bila API diisi) ===== */
+const call=b=>fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)}).then(r=>r.json());
+const stat=m=>{const e=$("#as");if(e)e.textContent=m};
+function setOk(id,v){if(v)ST.ok[id]=1;else delete ST.ok[id];ST.tm[id]=Date.now();if(ST.ak&&!ST.dz.includes(id))ST.dz.push(id);save();sync()}
+function merge(sv){for(const id in sv){const[v,t]=sv[id];if(t>(ST.tm[id]||0)){ST.tm[id]=t;if(v)ST.ok[id]=1;else delete ST.ok[id]}}}
+let sy;function sync(now){if(!ST.ak||!API||!ST.dz.length)return;clearTimeout(sy);stat("Menyimpan…");
+ sy=setTimeout(async()=>{const d={};ST.dz.forEach(id=>d[id]=[ST.ok[id]?1:0,ST.tm[id]||Date.now()]);
+  try{const r=await call({a:"push",nis:ST.ak.nis,kode:ST.ak.kode,d});if(!r.ok)throw r.err;ST.dz=ST.dz.filter(id=>!(id in d&&ST.tm[id]===d[id][1]));merge(r.d);save();stat("Tersimpan di sekolah ✓")}catch(e){stat("Belum tersimpan — dicoba lagi saat ada perubahan/koneksi")}},now?0:1500)}
+addEventListener("online",()=>sync(1));
+function acct(){const a=$("#ac");if(!API){a.hidden=true;return}a.hidden=false;
+ a.innerHTML=ST.ak?`<div class="ac"><div><b>✓ Terhubung: ${esc(ST.ak.nama)}</b><small>Kelas ${esc(ST.ak.kelas)} · <span id="as">Tersimpan di sekolah ✓</span></small></div><button class="lt2" id="dc">Putuskan</button></div>`
+ :`<div class="ac"><div><b>Simpan progres di sekolah</b><small>Guru bisa ikut memantau hafalan ananda.</small></div><button id="cn">Hubungkan</button></div>`}
+$("#ac").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.id==="cn"){$("#de").textContent="";$("#dg").showModal();$("#nis").focus()}
+ if(b.id==="dc"&&confirm("Putuskan sambungan? Progres di perangkat ini tetap ada.")){ST.ak=null;ST.dz=[];save();acct()}};
+$("#dgx").onclick=()=>$("#dg").close();
+$("#dgo").onclick=async()=>{const nis=$("#nis").value.trim(),kode=$("#kd").value.trim().toUpperCase();if(!nis||!kode)return;$("#de").textContent="Memeriksa…";
+ try{const r=await call({a:"login",nis,kode});if(!r.ok){$("#de").textContent=r.err||"Gagal.";return}
+  ST.ak={nis,kode,nama:r.nama,kelas:r.kelas};merge(r.d);const m=String(r.kelas).match(/[1-6]/);if(m){ST.k=+m[0];seg($("#kl"),[1,2,3,4,5,6].map(k=>[k,"Kelas "+k]),ST.k,kv=>{ST.k=+kv;save();draw()})}
+  ST.dz=Object.keys(ST.ok).filter(id=>!r.d[id]||(ST.tm[id]||0)>r.d[id][1]);ST.dz.forEach(id=>ST.tm[id]=ST.tm[id]||Date.now());
+  save();$("#dg").close();acct();draw();sync(1);toast("Terhubung dengan "+r.nama)}
+ catch(e){$("#de").textContent="Tidak bisa terhubung. Cek internet."}};
+ctl();acct();
+fetch("bupeng.json?v=1").then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{D=d;["hafalan_juz_amma","doa_harian","hadis","bacaan_shalat","praktek_ibadah"].forEach(c=>d[c].forEach(i=>MAP[i.id]=i));draw()})
+ .catch(()=>{$("#ls").innerHTML='<p class="em">Materi belum bisa dimuat. Periksa koneksi lalu <button onclick="location.reload()" style="color:var(--gold);font-weight:700">coba lagi</button>.</p>'});
+</script>
+</body>
+</html>
