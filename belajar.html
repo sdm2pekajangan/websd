@@ -182,7 +182,7 @@ let sy;function sync(now){if(!ST.ak||!API||!ST.dz.length)return;clearTimeout(sy)
   try{const r=await call({a:"push",nis:ST.ak.nis,kode:ST.ak.kode,d});if(!r.ok)throw r.err;ST.dz=ST.dz.filter(id=>!(id in d&&ST.tm[id]===d[id][1]));merge(r.d);save();stat("Tersimpan di sekolah ✓")}catch(e){stat("Belum tersimpan — dicoba lagi saat ada perubahan/koneksi")}},now?0:1500)}
 addEventListener("online",()=>sync(1));
 function acct(){const a=$("#ac");if(!API){a.hidden=true;return}a.hidden=false;
- a.innerHTML=ST.ak?`<div class="ac"><div><b>✓ Terhubung: ${esc(ST.ak.nama)}</b><small>Kelas ${esc(ST.ak.kelas)} · <span id="as">Tersimpan di sekolah ✓</span></small></div><button class="lt2" id="dc">Putuskan</button></div>`
+ a.innerHTML=ST.ak?`<div class="ac"><div><b>✓ Terhubung: ${esc(ST.ak.nama)}</b><small>Kelas ${esc(ST.ak.kelas)} · <span id="as">Terhubung ke sekolah ✓</span></small></div><button class="lt2" id="dc">Putuskan</button></div>`
  :`<div class="ac"><div><b>Simpan progres di sekolah</b><small>Guru bisa ikut memantau hafalan ananda.</small></div><button id="cn">Hubungkan</button><button class="lt2" id="rqk">Minta kode</button></div>`;const f=ST.ak?String(ST.ak.nama).split(" ")[0]:"";$("#hn").innerHTML=f?`Belajar bersama<br><em>${esc(f)}</em>`:"Belajar Al-Islam<br><em>bersama ananda</em>"}
 $("#ac").onclick=e=>{const b=e.target.closest("button");if(!b)return;
  if(b.id==="cn"||b.id==="rqk")openDg(b.id==="rqk"?2:1);
@@ -194,7 +194,7 @@ $("#rs").onclick=()=>{const n=$("#rn").value.trim(),k=$("#rk").value.trim(),o=$(
  const t=`Assalamu'alaikum. Saya ${o?o+", ":""}orang tua/wali dari ananda *${n}*${k?" kelas "+k:""} SD Muhammadiyah 2 Pekajangan. Mohon dikirimkan *kode wali* untuk aplikasi Belajar Al-Islam. Terima kasih 🙏`;
  window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(t),"_blank","noopener")};
 $("#dgo").onclick=async()=>{const nis=$("#nis").value.trim(),kode=$("#kd").value.trim().toUpperCase();if(!nis||!kode)return;$("#de").textContent="Memeriksa…";
- try{const r=await call({a:"login",nis,kode});if(!r.ok){$("#de").textContent=r.err||"Gagal.";return}
+ try{const r=await call({a:"login",nis,kode});if(!r.ok){$("#de").textContent=r.err||(r.error?"Layanan sekolah belum siap, hubungi admin. ("+r.error+")":"Gagal.");return}
   ST.ak={nis,kode,nama:r.nama,kelas:r.kelas};merge(r.d);const m=String(r.kelas).match(/[1-6]/);if(m){ST.k=+m[0];seg($("#kl"),[1,2,3,4,5,6].map(k=>[k,"Kelas "+k]),ST.k,kv=>{ST.k=+kv;save();draw()})}
   ST.dz=Object.keys(ST.ok).filter(id=>!r.d[id]||(ST.tm[id]||0)>r.d[id][1]);ST.dz.forEach(id=>ST.tm[id]=ST.tm[id]||Date.now());
   save();$("#dg").close();acct();draw();sync(1);toast("Terhubung dengan "+r.nama)}
