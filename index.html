@@ -568,17 +568,56 @@ dialog h3{font-size:1.15rem;margin-bottom:2px}
 <script>
 'use strict';
 /* ============================================================================
- * KONFIGURASI TERPADU — Tempel URL Web App (/exec) dari Code.gs di bawah ini.
- * Jika kosong (""), aplikasi berjalan otomatis dalam Mode Demo lengkap.
+ * KONFIGURASI TERPADU
+ * ----------------------------------------------------------------------------
+ * API_URL = alamat Web App (/exec) dari Gerbang.gs. Gerbang-lah yang membaca
+ *           semua Google Sheet (RPP, BTQ, Induk, Absensi) lewat ID di dalam
+ *           skripnya, jadi ID sheet diatur di Gerbang.gs, bukan di sini.
+ * SUMBER_DATA = (opsional) arahkan SATU modul ke Web App lain. Kosongkan "api"
+ *           agar modul memakai API_URL. Jika API_URL kosong, aplikasi berjalan
+ *           Mode Demo (data lokal di browser).
  * ============================================================================ */
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwoFDqMkCY9KRmH0mRZ--saBEmyGpF4_2lW8ioewN80PpZpvXp0BJLuoasSPf5RPSCP/exec", // <-- TEMPEL URL WEB APP APPS SCRIPT BARU DI SINI
+  API_URL: "",   // <-- TEMPEL URL /exec GERBANG di sini
   SEKOLAH: "SD Muhammadiyah 2 Pekajangan",
   KOTA: "Pekalongan",
   WA: "6287818334381",
   JAM_MASUK: "07:00",
   JAM_TARGET: 7,
-  HARI_KERJA: [1,2,3,4,5,6]
+  HARI_KERJA: [1,2,3,4,5,6],
+  TIMEOUT_MS: 25000   // Apps Script kadang lambat saat "cold start"
+};
+
+const SUMBER_DATA = {
+  portal:  { label:"Portal Sekolah",                       api:"" },
+  akun:    { label:"Akun Guru & Admin",                    api:"" },
+  jadwal:  { label:"Jadwal & Piket",                       api:"" },
+  btq:     { label:"BTQ (Siswa & Setoran)",                api:"" },
+  belajar: { label:"Belajar (BUPENG/AHE/GASING & Wali)",   api:"" },
+  rpp:     { label:"RPP & Jurnal Mengajar",                api:"" },
+  absen:   { label:"Absensi Guru",                         api:"" },
+  induk:   { label:"Buku Induk & Klapper",                 api:"" }
+};
+
+/* Tiap aksi API otomatis diarahkan ke modul yang memilikinya. */
+const AKSI_MODUL = {
+  konten_save:'portal',
+  guru_login:'akun', logout:'akun',
+  btq_save:'btq', siswa_add:'btq',
+  wali_login:'belajar', wali_sync:'belajar',
+  rpp_my:'rpp', rpp_save:'rpp', rpp_delete:'rpp', rpp_rekap:'rpp',
+  absen_read:'absen', absen_save:'absen',
+  klapper:'induk', klapper_save:'induk'
+};
+/* Kunci data pada "bootstrap" yang dimiliki tiap modul. */
+const KUNCI_BOOTSTRAP = {
+  portal:['profil','konten','papan'],
+  akun:['guru_publik'],
+  jadwal:['jam','slot','piket','btq'],
+  btq:['siswa','setoran','hafalan'],
+  belajar:['capaian'],
+  rpp:['rpp_publik'],
+  absen:[], induk:[]
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -669,24 +708,71 @@ const APP = {
 };
 
 const API = {
+  /* Konfigurasi efektif sebuah modul (URL + spreadsheet + tab). */
+  cfg(modul) {
+    const m = SUMBER_DATA[modul] || {};
+    return { modul, api: m.api || CONFIG.API_URL || '' };
+  },
+  modulOf(action, params) { return (params && params.modul) || AKSI_MODUL[action] || 'portal'; },
+  async _fetch(url, opt) {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), CONFIG.TIMEOUT_MS);
+    try { const r = await fetch(url, { ...opt, signal: ac.signal }); return await r.json(); }
+    finally { clearTimeout(t); }
+  },
   async get(action, params={}) {
-    if (!CONFIG.API_URL) return this.demoGet(action, params);
-    const qs = new URLSearchParams({ action, token: APP.token || '', ...params });
-    const r = await fetch(CONFIG.API_URL + '?' + qs);
-    const j = await r.json();
+    const c = this.cfg(this.modulOf(action, params));
+    if (!c.api) return this.demoGet(action, params);
+    const qs = new URLSearchParams({ action, token: APP.token || '', modul:c.modul, ...params });
+    const j = await this._fetch(c.api + '?' + qs);
     if (!j.ok && j.auth) { SIM.logout('Sesi berakhir, silakan masuk kembali.'); }
     return j;
   },
   async post(action, body={}) {
-    if (!CONFIG.API_URL) return this.demoPost(action, body);
-    const r = await fetch(CONFIG.API_URL, {
+    const c = this.cfg(this.modulOf(action, body));
+    if (!c.api) return this.demoPost(action, body);
+    const j = await this._fetch(c.api, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, token: APP.token || '', ...body })
+      body: JSON.stringify({ action, token: APP.token || '', modul:c.modul, ...body })
     });
-    const j = await r.json();
     if (!j.ok && j.auth) { SIM.logout('Sesi berakhir, silakan masuk kembali.'); }
     return j;
+  },
+  /* Memuat data awal per kelompok sumber: modul yang berbagi URL + spreadsheet yang sama
+     digabung dalam satu permintaan; yang berbeda dimuat paralel. Tiap modul hanya mengisi
+     kunci miliknya sendiri, jadi satu sumber yang gagal tidak merusak yang lain. */
+  async bootstrapAll() {
+    const groups = {};
+    Object.keys(SUMBER_DATA).forEach(m => {
+      if (!KUNCI_BOOTSTRAP[m] || !KUNCI_BOOTSTRAP[m].length) return;
+      const c = this.cfg(m), k = c.api || 'DEMO';
+      (groups[k] = groups[k] || { api:c.api, moduls:[] }).moduls.push(m);
+    });
+    const hasil = { ok:[], gagal:[], demo:[] };
+    await Promise.all(Object.values(groups).map(async g => {
+      const first = g.moduls[0];
+      try {
+        const res = await (g.api
+          ? this.get('bootstrap', { modul:first, moduls:g.moduls.join(',') })
+          : Promise.resolve(this.demoGet('bootstrap', {})));
+        if (!res || !res.ok) throw new Error((res && res.error) || 'respons tidak valid');
+        g.moduls.forEach(m => {
+          KUNCI_BOOTSTRAP[m].forEach(k => { if (res[k] !== undefined) APP.db[k] = res[k]; });
+          (g.api ? hasil.ok : hasil.demo).push(m);
+        });
+      } catch (e) { g.moduls.forEach(m => hasil.gagal.push(m)); }
+    }));
+    return hasil;
+  },
+  /* Uji koneksi satu modul (dipakai panel diagnosa). */
+  async ping(modul) {
+    const c = this.cfg(modul);
+    if (!c.api) return { status:'demo', info:'Mode Demo (URL belum diisi)' };
+    const t0 = performance.now();
+    try {
+      const r = await this.get('bootstrap', { modul, moduls:modul });
+      return r && r.ok ? { status:'ok', info:Math.round(performance.now()-t0)+' ms' } : { status:'gagal', info:(r && r.error) || 'ditolak server' };
+    } catch (e) { return { status:'gagal', info:e.name === 'AbortError' ? 'timeout' : 'tidak terjangkau' }; }
   },
   demoGet(action, p) {
     if (action==='bootstrap') {
@@ -824,10 +910,11 @@ const SIM = {
     this.syncThemeUi();
   },
   async loadBootstrap() {
-    try {
-      const res = await API.get('bootstrap');
-      if (res && res.ok) Object.assign(APP.db, res);
-    } catch (e) { toast('Menggunakan data offline lokal.'); }
+    const h = await API.bootstrapAll();
+    if (h.gagal.length) {
+      const nm = h.gagal.map(m => SUMBER_DATA[m].label).join(', ');
+      toast(`Sumber data gagal dimuat: ${nm}. Memakai data lokal.`, true);
+    }
   },
   goHub(hub, sub) {
     APP.hub = hub;
@@ -1021,7 +1108,20 @@ const PortalMod = {
           <button class="btn btn-g" onclick="PortalMod.saveKonten()">Simpan ke Google Sheet</button>
         </div>
       </div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Sumber Data per Modul</h3><button class="btn btn-out btn-sm" id="srcTest" onclick="PortalMod.tesSumber()">🔌 Tes Koneksi</button></div>
+      <p style="font-size:.84rem;color:var(--tx2);margin-bottom:10px">Semua modul memakai Gerbang (<code>CONFIG.API_URL</code>) kecuali yang diarahkan lain di <code>SUMBER_DATA</code>. ID Google Sheet diatur di <code>Gerbang.gs</code>.</p>
+      <div class="tw"><table><thead><tr><th>Modul</th><th>Web App</th><th>Status</th></tr></thead><tbody>${Object.keys(SUMBER_DATA).map(m=>{const c=API.cfg(m);return`<tr><td><b>${esc(SUMBER_DATA[m].label)}</b></td><td>${c.api?(SUMBER_DATA[m].api?'khusus':'bawaan'):'<span class="pill gold">demo</span>'}</td><td id="src-${m}"><span class="pill">belum dites</span></td></tr>`;}).join('')}</tbody></table></div>
     </div>`;
+  },
+  async tesSumber(){
+    const btn=$('#srcTest'); btn.disabled=true; btn.textContent='Menguji…';
+    await Promise.all(Object.keys(SUMBER_DATA).map(async m=>{
+      const cell=$('#src-'+m); cell.innerHTML='<span class="pill info">menguji…</span>';
+      const r=await API.ping(m);
+      cell.innerHTML=`<span class="pill ${r.status==='ok'?'':r.status==='demo'?'gold':'err'}">${r.status==='ok'?'✓ tersambung':r.status==='demo'?'demo':'✗ gagal'}</span> <small>${esc(r.info)}</small>`;
+    }));
+    btn.disabled=false; btn.textContent='🔌 Tes Koneksi';
   },
   async saveKonten(){
     const tipe=$('#ktTipe').value, judul=$('#ktJudul').value.trim(), kat=$('#ktKat').value.trim(), tgl=$('#ktTgl').value.trim(), ringkasan=$('#ktRingkas').value.trim();
