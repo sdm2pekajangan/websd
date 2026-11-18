@@ -351,8 +351,106 @@ dialog h3{font-size:1.15rem;margin-bottom:2px}
   .hero::before{animation:none}
 }
 
+/* ================= STYLE TOKENS (v3) ================= */
+:root{
+  --hero-bg:#0F2F22; --hero-bg2:#1B4332;
+  --glow-g:82,183,136; --glow-y:240,192,64;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --dur-1:.18s; --dur-2:.45s; --dur-3:.9s;
+}
+
+/* ================= HERO (v3): gradient hidup + orbit emblem ================= */
+.hero{background:linear-gradient(160deg,var(--hero-bg2),var(--hero-bg) 70%);padding:clamp(36px,6vw,72px) 0 clamp(70px,9vw,110px);border-bottom:0;isolation:isolate}
+.hero::before{display:none}
+#heroFx{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block;opacity:.95}
+.hero::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 6l9 21 21-9-9 21 21 9-21 9 9 21-21-9-9 21-9-21-21 9 9-21-21-9 21-9-9-21 21 9z' fill='none' stroke='%23F0C040' stroke-width='1'/%3E%3C/svg%3E");opacity:1;
+  background:linear-gradient(90deg,rgba(8,26,19,.62),rgba(8,26,19,.28) 55%,transparent 80%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 6l9 21 21-9-9 21 21 9-21 9 9 21-21-9-9 21-9-21-21 9 9-21-21-9 21-9-9-21 21 9z' fill='none' stroke='%23F0C040' stroke-opacity='.08' stroke-width='1'/%3E%3C/svg%3E")}
+.hero .wrap{z-index:2}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:clamp(20px,4vw,56px)}
+.hero-copy{order:1}
+.hero-art{order:2;position:relative;display:grid;place-items:center;aspect-ratio:1;width:min(100%,400px);margin-inline:auto}
+.hero h1{font-size:clamp(2.1rem,5.4vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin:16px 0 14px;text-wrap:balance}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,#F0C040 0%,#FFE9A8 30%,#F0C040 55%,#D4A017 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldflow 7s ease-in-out infinite alternate}
+@keyframes goldflow{to{background-position:100% 0}}
+.hero .tag{font-size:clamp(1rem,2.2vw,1.15rem);max-width:50ch;margin-bottom:26px;color:#E5F2EA}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn-lg{min-height:52px;padding:12px 24px;font-size:.98rem;border-radius:14px}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.btn-ghost:hover{background:rgba(255,255,255,.16)}
+.btn-gold{position:relative;overflow:hidden}
+.btn-gold::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%)}
+.btn-gold:hover::after{transform:translateX(120%);transition:transform .7s var(--ease-out)}
+.btn-gold span{display:inline-block;transition:transform var(--dur-1)}
+.btn-gold:hover span{transform:translateX(4px)}
+
+.stats-hero{max-width:560px;margin-top:34px;gap:12px}
+.st-box{padding:14px 14px 12px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(240,192,64,.22)}
+.st-box b{font-size:clamp(1.5rem,3.4vw,2rem)}
+
+/* emblem + orbit */
+.hero-logo{width:46%;height:46%;max-width:190px;max-height:190px;margin:0;border:4px solid var(--gold2);background:#fff;padding:3px;box-shadow:0 0 0 10px rgba(240,192,64,.12),0 24px 60px rgba(0,0,0,.45);animation:float 6s ease-in-out infinite;position:relative;z-index:3}
+@keyframes float{50%{transform:translateY(-10px)}}
+.ring{position:absolute;border-radius:50%;border:1.5px dashed rgba(240,192,64,.4);inset:12%;animation:spin 60s linear infinite}
+.ring.r2{inset:0;border-style:solid;border-color:rgba(var(--glow-g),.25);animation-duration:90s;animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orbit{position:absolute;inset:6%;animation:spin 38s linear infinite;z-index:2}
+.chip-o{position:absolute;display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:99px;background:rgba(255,255,255,.95);color:var(--g1);font-size:.74rem;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.28);white-space:nowrap;animation:spin 38s linear infinite reverse}
+.chip-o b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold-soft);font-size:.8rem}
+.chip-o.c1{top:0;left:50%;margin-left:-48px}
+.chip-o.c2{top:50%;right:-4%;margin-top:-17px}
+.chip-o.c3{bottom:0;left:50%;margin-left:-52px}
+.chip-o.c4{top:50%;left:-4%;margin-top:-17px}
+.hero-stars i{position:absolute;z-index:1;width:var(--s,14px);height:var(--s,14px);background:var(--gold2);opacity:.0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:twinkle 5s ease-in-out infinite}
+.hero-stars i:nth-child(1){left:6%;top:18%;--s:12px;animation-delay:.2s}
+.hero-stars i:nth-child(2){left:44%;top:10%;--s:9px;animation-delay:1.4s}
+.hero-stars i:nth-child(3){left:88%;top:16%;--s:16px;animation-delay:2.2s}
+.hero-stars i:nth-child(4){left:52%;top:72%;--s:10px;animation-delay:.9s}
+.hero-stars i:nth-child(5){left:93%;top:62%;--s:12px;animation-delay:3s}
+.hero-stars i:nth-child(6){left:3%;top:74%;--s:15px;animation-delay:1.9s}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.6) rotate(0)}50%{opacity:.9;transform:scale(1) rotate(25deg)}}
+.hero-wave{position:absolute;left:0;bottom:-1px;width:100%;height:clamp(28px,5vw,60px);z-index:2;display:block}
+
+/* masuk bertahap */
+[data-in]{animation:rise var(--dur-3) var(--ease-out) both;animation-delay:var(--d,0ms)}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero-art{animation:rise var(--dur-3) var(--ease-out) 120ms both}
+
+@media(max-width:820px){
+  .hero-grid{grid-template-columns:1fr;text-align:left}
+  .hero-art{order:-1;width:min(52vw,210px);margin:0 0 -6px}
+  .chip-o{font-size:.66rem;padding:4px 9px 4px 6px}.chip-o b{width:20px;height:20px}
+  .hero h1{margin-top:6px}
+}
+@media(max-width:560px){.stats-hero{grid-template-columns:repeat(2,1fr)}}
+
+/* ================= KOMPONEN ANIMASI ================= */
+.eb::before{content:"✦";margin-right:8px;color:var(--gold);letter-spacing:0}
+.sec-h h2 em{background:linear-gradient(100deg,var(--g2),var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-t=dark] .sec-h h2 em{background:linear-gradient(100deg,var(--g3),var(--gold2));-webkit-background-clip:text;background-clip:text}
+.rv-pre{opacity:0;transform:translateY(26px)}
+.rv-in{opacity:1;transform:none;transition:opacity .6s var(--ease-out),transform .6s var(--ease-out);transition-delay:var(--rd,0ms)}
+.card{position:relative}
+button.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(var(--glow-y),.16),transparent 60%)}
+button.card:hover::before{opacity:1}
+.pill.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:2px;animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 8px transparent}}
+.pg-bar i{background-size:200% 100%;animation:barflow 3s linear infinite}
+@keyframes barflow{to{background-position:-200% 0}}
+.topbar{transition:box-shadow .25s,background .25s}
+.topbar.scrolled{box-shadow:0 10px 30px rgba(0,0,0,.28)}
+
+@media(prefers-reduced-motion:reduce){
+  [data-in],.hero-art{animation:none!important;opacity:1!important;transform:none!important}
+  .hero-logo,.ring,.orbit,.chip-o,.hero-stars i,.hero h1 em,.pg-bar i{animation:none!important}
+  .hero-stars i{opacity:.5}
+  .rv-pre{opacity:1;transform:none}
+  #heroFx{display:none}
+}
+
 @media print{
   .foot,.skip{display:none!important}
+  #heroFx,.hero-stars,.hero-wave{display:none!important}
   body{background:#fff;padding:0}
   .topbar,.subbar,#hub-portal,#hub-belajar,#hub-admin,#rpp-form-col,.no-print,#toast,dialog{display:none!important}
   #hub-guru,#guru-rpp,.rpp-layout,#rpp-preview-col{display:block!important}
@@ -386,18 +484,29 @@ dialog h3{font-size:1.15rem;margin-bottom:2px}
 <!-- ==================== HUB 1: PORTAL SEKOLAH ==================== -->
 <main id="main" tabindex="-1">
 <section class="hub on" id="hub-portal">
-  <div class="hero">
-    <div class="wrap">
-      <img class="hero-logo" id="heroLogo" alt="Logo SD Muhammadiyah 2 Pekajangan" width="80" height="80">
-      <span class="pill gold">MAJELIS DIKDASMEN &amp; PNF · PCM PEKAJANGAN</span>
-      <h1>Genius School,<br><em>Semua Anak Bintang</em></h1>
-      <p class="tag">Portal informasi, pembelajaran digital (Al-Islam, AHE, GASING), dan manajemen akademik terpadu SD Muhammadiyah 2 Pekajangan.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-gold" onclick="SIM.goHub('belajar')">Mulai Belajar Anak</button>
-        <button class="btn btn-out" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)" onclick="SIM.goHub('guru')">Jadwal &amp; Ruang Guru</button>
+  <div class="hero" id="hero">
+    <canvas id="heroFx" aria-hidden="true"></canvas>
+    <div class="hero-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="wrap hero-grid">
+      <div class="hero-art" id="heroArt">
+        <div class="ring r1" aria-hidden="true"></div><div class="ring r2" aria-hidden="true"></div>
+        <div class="orbit" aria-hidden="true">
+          <span class="chip-o c1"><b>📖</b>Al-Islam</span><span class="chip-o c2"><b>🔤</b>AHE</span><span class="chip-o c3"><b>🧮</b>GASING</span><span class="chip-o c4"><b>🌙</b>BTQ</span>
+        </div>
+        <img class="hero-logo" id="heroLogo" alt="Logo SD Muhammadiyah 2 Pekajangan" width="150" height="150">
       </div>
-      <div class="stats-hero" id="portalStats"><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div></div>
+      <div class="hero-copy">
+        <span class="pill gold" data-in style="--d:0ms">MAJELIS DIKDASMEN &amp; PNF · PCM PEKAJANGAN</span>
+        <h1 data-in style="--d:90ms">Genius School,<br><em>Semua Anak Bintang</em></h1>
+        <p class="tag" data-in style="--d:190ms">Portal informasi, pembelajaran digital (Al-Islam, AHE, GASING), dan manajemen akademik terpadu SD Muhammadiyah 2 Pekajangan.</p>
+        <div class="hero-cta" data-in style="--d:280ms">
+          <button class="btn btn-gold btn-lg" onclick="SIM.goHub('belajar')">Mulai Belajar Anak <span aria-hidden="true">→</span></button>
+          <button class="btn btn-ghost btn-lg" onclick="SIM.goHub('guru')">Jadwal &amp; Ruang Guru</button>
+        </div>
+        <div class="stats-hero" id="portalStats" data-in style="--d:380ms"><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div><div class="st-box skel-d"><i class="skel"></i></div></div>
+      </div>
     </div>
+    <svg class="hero-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60V28C240 0 480 0 720 22s480 30 720 4v30z" fill="var(--bg)"/></svg>
   </div>
 
   <div class="wrap">
@@ -2130,7 +2239,89 @@ document.querySelectorAll('dialog').forEach(d => { d.addEventListener('close', _
 /* Jadwal sholat/jam & fokus: pindah hub → fokus ke konten untuk pembaca layar */
 const _goHub = SIM.goHub.bind(SIM);
 SIM.goHub = function(hub, sub){ _goHub(hub, sub); const m=$('#main'); if(m) m.focus({preventScroll:true}); };
-window.addEventListener('DOMContentLoaded',()=>SIM.init());
+
+/* ================= HERO FX & ANIMASI RINGAN ================= */
+/* Dirancang untuk HP sederhana: kanvas beresolusi rendah, ~30 fps, berhenti saat tak terlihat,
+   mati total bila perangkat meminta gerak dikurangi atau mode hemat data. */
+const HeroFX = {
+  init() {
+    const c = $('#heroFx'), hero = $('#hero');
+    if (!c || !hero) return;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData);
+    if (calm) return;
+    const x = c.getContext('2d'), SC = .35;
+    const B = [
+      { c:'60,160,115', r:.60, ax:.28, ay:.22, fx:.00018, fy:.00023, px:0,   py:1,   cx:.30, cy:.40, a:.30 },
+      { c:'240,192,64', r:.40, ax:.22, ay:.28, fx:.00026, fy:.00015, px:2,   py:.5,  cx:.78, cy:.30, a:.20 },
+      { c:'45,106,79',  r:.70, ax:.30, ay:.18, fx:.00014, fy:.00020, px:4,   py:3,   cx:.60, cy:.85, a:.45 },
+      { c:'90,190,145', r:.32, ax:.18, ay:.30, fx:.00031, fy:.00017, px:1.2, py:2.4, cx:.80, cy:.30, a:.16 }
+    ];
+    let w = 0, h = 0, raf = 0, last = 0, on = true;
+    const size = () => { w = c.width = Math.max(2, Math.round(hero.clientWidth * SC)); h = c.height = Math.max(2, Math.round(hero.clientHeight * SC)); };
+    const draw = t => {
+      x.globalCompositeOperation = 'source-over';
+      x.fillStyle = '#0F2F22'; x.fillRect(0, 0, w, h);
+      x.globalCompositeOperation = 'lighter';
+      const m = Math.max(w, h);
+      B.forEach(b => {
+        const px = (b.cx + Math.sin(t * b.fx + b.px) * b.ax) * w, py = (b.cy + Math.cos(t * b.fy + b.py) * b.ay) * h, r = b.r * m;
+        const g = x.createRadialGradient(px, py, 0, px, py, r);
+        g.addColorStop(0, `rgba(${b.c},${b.a})`); g.addColorStop(1, `rgba(${b.c},0)`);
+        x.fillStyle = g; x.fillRect(0, 0, w, h);
+      });
+    };
+    const loop = ts => { raf = 0; if (!on) return; if (ts - last > 32) { last = ts; draw(ts); } raf = requestAnimationFrame(loop); };
+    const start = () => { if (!raf && on) raf = requestAnimationFrame(loop); };
+    size(); draw(0);
+    new ResizeObserver(() => { size(); draw(performance.now()); }).observe(hero);
+    new IntersectionObserver(e => { on = e[0].isIntersecting && !document.hidden; on ? start() : (cancelAnimationFrame(raf), raf = 0); }).observe(hero);
+    document.addEventListener('visibilitychange', () => { on = !document.hidden && APP.hub === 'portal'; on ? start() : (cancelAnimationFrame(raf), raf = 0); });
+    start();
+  }
+};
+
+const Fx = {
+  calm: matchMedia('(prefers-reduced-motion: reduce)').matches,
+  /* hitung naik untuk angka statistik */
+  countUp(root) {
+    if (this.calm) return;
+    root.querySelectorAll('.st-box b').forEach(el => {
+      const n = parseInt(el.textContent, 10);
+      if (!/^\d+$/.test(el.textContent.trim()) || !n) return;
+      const t0 = performance.now(), D = 1100;
+      const step = t => { const k = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(n * e); if (k < 1) requestAnimationFrame(step); };
+      el.textContent = '0'; requestAnimationFrame(step);
+    });
+  },
+  /* muncul saat di-scroll */
+  io: null,
+  reveal(root) {
+    if (this.calm || !('IntersectionObserver' in window)) return;
+    if (!this.io) this.io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('rv-in'); e.target.classList.remove('rv-pre'); this.io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+    root.querySelectorAll('.card:not(.rv-seen), .sec-h:not(.rv-seen), .car .card').forEach((el, i) => {
+      if (el.classList.contains('rv-seen')) return;
+      el.classList.add('rv-seen');
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight * .92) return;            // sudah terlihat: jangan disembunyikan
+      el.style.setProperty('--rd', (i % 4) * 70 + 'ms');
+      el.classList.add('rv-pre'); this.io.observe(el);
+    });
+  },
+  init() {
+    const portal = $('#hub-portal');
+    let tmr; new MutationObserver(() => { clearTimeout(tmr); tmr = setTimeout(() => this.reveal(portal), 60); }).observe(portal, { childList: true, subtree: true });
+    const st = $('#portalStats');
+    new MutationObserver((m, ob) => { if (st.querySelector('.st-box:not(.skel-d)')) { ob.disconnect(); this.countUp(st); } }).observe(st, { childList: true });
+    /* sorot mengikuti kursor pada kartu menu */
+    document.addEventListener('pointermove', e => { const c = e.target.closest && e.target.closest('button.card'); if (!c) return; const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, { passive: true });
+    addEventListener('scroll', () => $('.topbar').classList.toggle('scrolled', scrollY > 8), { passive: true });
+    this.reveal(portal);
+  }
+};
+
+window.addEventListener('DOMContentLoaded',()=>{SIM.init();try{HeroFX.init();Fx.init();}catch(e){console.warn('FX',e);}});
 </script>
 </body>
 </html>
