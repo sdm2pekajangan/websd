@@ -437,7 +437,7 @@
       <div class="hud-panel quick-links">
         <a href="https://sdm2pekajangan.github.io/btq-tracker/" target="_blank" rel="noopener noreferrer" class="link-pill btq">📖 BTQ</a>
         <a href="https://sdm2pekajangan.github.io/jurnal/" target="_blank" rel="noopener noreferrer" class="link-pill rpp">📝 RPP</a>
-        <a href="https://mpropology.github.io/bukuinduk/lanjutkan" target="_blank" rel="noopener noreferrer" class="link-pill induk">📚 INDUK</a>
+        <a href="https://mpropology.github.io/bukuinduk/" target="_blank" rel="noopener noreferrer" class="link-pill induk">📚 INDUK</a>
       </div>
     </div>
 
@@ -605,14 +605,14 @@
       student: {
         label: 'Siswa / Murid',
         emoji: '🎒',
-        names: ['Andi', 'Budi', 'Siti', 'Rara', 'Dimas', 'Putri', 'Fajar', 'Nadia', 'Rizky', 'Tari', 'Bagas', 'Laras'],
+        names: ['Apep', 'Humna', 'Khayla', 'Dapit', 'Hana', 'Alfad', 'Raya', 'Tazya', 'Bilqis', 'Nahda', 'Anes', 'Salsa'],
         chats: ['Ayo masuk kelas!', 'Jajan di kantin yuk!', 'Bagus ya muralnya!', 'Belajar membaca!', 'Semangat sekolah!']
       },
       teacher: {
         label: 'Guru',
         emoji: '👩‍🏫',
         colors: [0x9333ea, 0xb45309, 0x0f766e, 0xbe123c],
-        names: ['Pak Joko', 'Bu Rina', 'Pak Hendra', 'Bu Dewi', 'Pak Budi', 'Bu Sari'],
+        names: ['Pak Fatur', 'Bu Rivi', 'Pak Febri', 'Bu Wid', 'Pak Dodi', 'Bu Sri'],
         chats: ['Selamat pagi anak-anak!', 'Sepatu taruh di rak ya', 'Ayo naik ke lantai 2', 'Jaga kebersihan sekolah']
       },
       robot: {
@@ -767,7 +767,7 @@
 
     const muralTex = createMuralTexture();
     const blueSignTex = createSignTexture('#0c4a6e', '#38bdf8', 'SD MUHAMMADIYAH 2', 'PEKAJANGAN', 'Hizbul Wathan • UKS • Tangkil Kulon');
-    const bannerTex = createSignTexture('#14532d', '#facc15', 'SELAMAT DATANG', 'SD MUTU TANGKIL KULON', 'Berkarakter & Berprestasi');
+    const bannerTex = createSignTexture('#14532d', '#facc15', 'SELAMAT DATANG', 'SD MUTU TANGKIL KULON', 'Islami, Cerdas, Berkarakter & Berkemajuan');
 
     // ==========================================
     // 4. PULAU SEKOLAH & HALAMAN
@@ -2812,11 +2812,13 @@
       }
       for (const px of [-3, 0, 3]) addOrReplaceRoad('paving', px, 24, 0);
 
-      addCharacter('teacher', 'Bu Rina', 6.5, 12);
-      addCharacter('student', 'Andi', 7.5, 4, null, { uniform: 'sd', acc: 'hat', item: 'book', hairIdx: 0 });
-      addCharacter('student', 'Siti', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
-      addCharacter('student', 'Budi', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
-      addCharacter('student', 'Rara', 6.5, 19, null, { uniform: 'sd', acc: 'glasses', item: 'ball', hairIdx: 1 });
+      addCharacter('teacher', 'Pak Fatur', 6.5, 12);
+      addCharacter('student', 'Rayyan', 7.5, 4, null, { uniform: 'sd', acc: 'hat', item: 'book', hairIdx: 0 });
+      addCharacter('student', 'Rara', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
+      addCharacter('student', 'Nafis', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
+      addCharacter('student', 'Salman', 6.5, 19, null, { uniform: 'sd', acc: 'glasses', item: 'ball', hairIdx: 1 });
+      addCharacter('student', 'Syifa', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
+      addCharacter('student', 'Bayu', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
     }
 
     function loadWorld() {
