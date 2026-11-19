@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SD Mutu Tangkil Kulon 3D - Dunia Sekolah Interaktif</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+      background: #1a2a3a;
+      color: #1e293b;
+    }
+
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      inset: 0;
+    }
+
+    .hud-panel {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+      border-radius: 16px;
+    }
+
+    #top-bar {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      pointer-events: none;
+      z-index: 20;
+      flex-wrap: wrap;
+    }
+
+    #top-bar > * { pointer-events: auto; }
+
+    .brand-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .brand-card {
+      padding: 9px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon { font-size: 25px; line-height: 1; }
+    .brand-title { font-size: 14.5px; font-weight: 800; color: #0f172a; }
+    .brand-sub { font-size: 11px; color: #64748b; font-weight: 600; }
+
+    /* Tombol Link BTQ, RPP, INDUK tepat di bawah panel SD Mutu */
+    .quick-links {
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 12px;
+    }
+
+    .link-pill {
+      text-decoration: none;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 8px;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
+    }
+
+    .link-pill:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .link-pill.btq   { background: #0284c7; }
+    .link-pill.rpp   { background: #16a34a; }
+    .link-pill.induk { background: #7c3aed; }
+
+    .stats-bar {
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(241, 245, 249, 0.95);
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #334155;
+    }
+
+    .btn-top {
+      border: none;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-top:hover { background: #e2e8f0; transform: translateY(-1px); }
+    .btn-top.primary { background: #dbeafe; color: #1d4ed8; }
+    .btn-top.primary:hover { background: #bfdbfe; }
+    .btn-top.danger:hover { background: #fee2e2; color: #b91c1c; }
+
+    #cam-bar {
+      position: fixed;
+      top: 66px;
+      right: 12px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 18;
+      flex-wrap: wrap;
+    }
+
+    #cam-bar span {
+      font-size: 11px;
+      font-weight: 800;
+      color: #475569;
+      margin-right: 2px;
+    }
+
+    #hint-banner {
+      position: fixed;
+      top: 114px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #1e293b;
+      z-index: 15;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .side-card {
+      position: fixed;
+      top: 126px;
+      left: 12px;
+      width: 268px;
+      padding: 14px;
+      z-index: 25;
+      display: none;
+      flex-direction: column;
+      gap: 9px;
+      animation: popIn 0.2s ease;
+    }
+
+    .side-card.active { display: flex; }
+
+    .inspect-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+
+    .inspect-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .inspect-close {
+      border: none;
+      background: #f1f5f9;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .inspect-row {
+      font-size: 12px;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .inspect-row strong { color: #0f172a; text-align: right; }
+
+    .card-section-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .pill-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .mini-pill {
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-pill:hover { background: #eff6ff; border-color: #93c5fd; }
+    .mini-pill.active { background: #2563eb; color: white; border-color: #2563eb; }
+
+    .btn-row { display: flex; gap: 6px; margin-top: 2px; }
+
+    #bottom-dock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      max-width: 96vw;
+    }
+
+    #sub-panel {
+      padding: 10px 14px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 95vw;
+    }
+
+    #sub-panel.active { display: flex; }
+
+    .mode-dock {
+      padding: 7px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn:hover { background: rgba(226, 232, 240, 0.7); color: #0f172a; }
+    .mode-btn.active { background: #2563eb; color: #ffffff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); }
+    .mode-btn.move-mode.active { background: #d97706; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35); }
+    .mode-btn.road-mode.active { background: #0d9488; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35); }
+    .mode-btn.delete-mode.active { background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35); }
+
+    .item-btn {
+      border: 2px solid transparent;
+      background: #f8fafc;
+      padding: 6px 9px;
+      border-radius: 11px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-width: 68px;
+      transition: all 0.15s ease;
+    }
+
+    .item-btn:hover { background: #eff6ff; transform: translateY(-2px); }
+    .item-btn.selected { border-color: #2563eb; background: #dbeafe; }
+
+    .item-emoji { font-size: 19px; line-height: 1.1; }
+    .item-label { font-size: 10px; font-weight: 700; color: #334155; text-align: center; }
+
+    .divider-v { width: 1px; height: 34px; background: #cbd5e1; margin: 0 2px; }
+
+    .action-chip {
+      border: none;
+      background: #0f172a;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .action-chip:hover { background: #334155; }
+    .action-chip.danger { background: #dc2626; }
+    .action-chip.danger:hover { background: #b91c1c; }
+    .action-chip.active-toggle { background: #0d9488; box-shadow: 0 0 0 2px #99f6e4; }
+
+    .select-mini, .input-name {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9px;
+      padding: 7px 9px;
+      font-size: 12px;
+      outline: none;
+      background: white;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .input-name { width: 120px; }
+
+    #labels-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .char-tag {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .char-bubble {
+      background: white;
+      color: #0f172a;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+      animation: popIn 0.2s ease;
+    }
+
+    .char-name {
+      background: rgba(15, 23, 42, 0.78);
+      color: #f8fafc;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 960px) {
+      .brand-sub, #hint-banner { display: none; }
+      #cam-bar { top: auto; bottom: 125px; right: 10px; }
+      .mode-btn span.txt { display: none; }
+    }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="labels-layer"></div>
+
+  <!-- Top Bar -->
+  <div id="top-bar">
+    <!-- Kolom Kiri: Panel SD Mutu + Tombol Link BTQ / RPP / INDUK di bawahnya -->
+    <div class="brand-col">
+      <div class="hud-panel brand-card">
+        <div class="brand-icon">🏫</div>
+        <div>
+          <div class="brand-title">SD Mutu Tangkil Kulon 3D</div>
+          <div class="brand-sub">Geser Ruang • Gedung Menempel • Tangga Kustom</div>
+        </div>
+      </div>
+
+      <div class="hud-panel quick-links">
+        <a href="https://sdm2pekajangan.github.io/btq-tracker/" target="_blank" rel="noopener noreferrer" class="link-pill btq">📖 BTQ</a>
+        <a href="https://sdm2pekajangan.github.io/jurnal/" target="_blank" rel="noopener noreferrer" class="link-pill rpp">📝 RPP</a>
+        <a href="https://mpropology.github.io/bukuinduk/lanjutkan" target="_blank" rel="noopener noreferrer" class="link-pill induk">📚 INDUK</a>
+      </div>
+    </div>
+
+    <!-- Kolom Kanan: Statistik, Export/Import Save JSON, Suasana & Reset -->
+    <div class="hud-panel stats-bar">
+      <div class="stat-pill">🏫 <span id="stat-buildings">0</span> Objek</div>
+      <div class="stat-pill">🛣️ <span id="stat-roads">0</span> Jalan</div>
+      <div class="stat-pill">🚶 <span id="stat-chars">0</span> Orang/Guru</div>
+      <button class="btn-top primary" id="btn-export" title="Download file JSON denah & kondisi sekolah">💾 Export JSON</button>
+      <button class="btn-top primary" id="btn-import" title="Muat file JSON denah sekolah">📂 Import JSON</button>
+      <input type="file" id="file-import" accept=".json,application/json" style="display:none" />
+      <button class="btn-top" id="btn-time">☀️ Siang</button>
+      <button class="btn-top" id="btn-labels">🏷️ Label: ON</button>
+      <button class="btn-top danger" id="btn-reset">🔄 Reset</button>
+    </div>
+  </div>
+
+  <!-- Hint Banner -->
+  <div id="hint-banner" class="hud-panel">
+    👀 Mode Jelajah • Klik murid/guru atau gedung 2 lantai untuk kustom tangga
+  </div>
+
+  <!-- Camera Angle Presets -->
+  <div id="cam-bar" class="hud-panel">
+    <span>🎥 Sudut Video:</span>
+    <button class="btn-top" data-cam="gate">Gerbang</button>
+    <button class="btn-top" data-cam="corridor">Lorong Mural</button>
+    <button class="btn-top" data-cam="yard">Lapangan</button>
+    <button class="btn-top" data-cam="overview">Atas</button>
+  </div>
+
+  <!-- Kartu Profil Karakter -->
+  <div id="inspect-card" class="hud-panel side-card">
+    <div class="inspect-header">
+      <div class="inspect-title" id="ins-title">🎒 Detail Karakter</div>
+      <button class="inspect-close" id="ins-close">✕</button>
+    </div>
+    <div class="inspect-row"><span>Peran / Jenjang</span><strong id="ins-role">-</strong></div>
+    <div class="inspect-row"><span>Gaya / Aksesoris</span><strong id="ins-acc">-</strong></div>
+    <div class="inspect-row"><span>Bawaan</span><strong id="ins-item">-</strong></div>
+    <div class="inspect-row"><span>Aktivitas</span><strong id="ins-act">-</strong></div>
+    <div class="btn-row">
+      <button class="action-chip" id="ins-greet" style="flex:1;">💬 Sapa</button>
+      <button class="action-chip danger" id="ins-delete">🗑️ Hapus</button>
+    </div>
+  </div>
+
+  <!-- Kartu Kustomisasi Tangga Gedung 2 Lantai -->
+  <div id="building-card" class="hud-panel side-card">
+    <div class="inspect-header">
+      <div class="inspect-title">🪜 Kustom Tangga 2 Lt</div>
+      <button class="inspect-close" id="bld-close">✕</button>
+    </div>
+    <div class="inspect-row"><span>Lantai 1</span><strong id="bld-f1">-</strong></div>
+    <div class="inspect-row"><span>Lantai 2</span><strong id="bld-f2">-</strong></div>
+    <div class="card-section-label">Posisi Tangga</div>
+    <div class="pill-grid" id="stair-side-pills"></div>
+    <div class="card-section-label">Model / Gaya Tangga</div>
+    <div class="pill-grid" id="stair-style-pills"></div>
+  </div>
+
+  <!-- Bottom Controls -->
+  <div id="bottom-dock">
+    <div id="sub-panel" class="hud-panel"></div>
+
+    <div class="hud-panel mode-dock">
+      <button class="mode-btn active" data-mode="view">
+        <span>👀</span><span class="txt">Jelajah</span>
+      </button>
+      <button class="mode-btn" data-mode="build">
+        <span>🏗️</span><span class="txt">Gedung & Tangga</span>
+      </button>
+      <button class="mode-btn move-mode" data-mode="move">
+        <span>✋</span><span class="txt">Geser Ruang</span>
+      </button>
+      <button class="mode-btn road-mode" data-mode="road">
+        <span>🛣️</span><span class="txt">Custom Jalan</span>
+      </button>
+      <button class="mode-btn" data-mode="character">
+        <span>🧑‍🎓</span><span class="txt">Tambah Orang</span>
+      </button>
+      <button class="mode-btn delete-mode" data-mode="delete">
+        <span>🗑️</span><span class="txt">Hapus</span>
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ==========================================
+    // 1. KONFIGURASI & CATALOG
+    // ==========================================
+    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v5';
+    const ISLAND_LIMIT = 34;
+    const ROAD_STEP = 3;
+    const FLOOR_HEIGHT = 3.5;
+
+    const state = {
+      mode: 'view',
+      selectedBuilding: 'classroom',
+      buildRotation: 0,
+      defaultStairStyle: 'blue_steel',
+      moving: null,
+      selectedRoad: 'paving',
+      roadRotation: 0,
+      roadBrushDrag: false,
+      selectedRole: 'student',
+      studentUniform: 'sd',
+      studentAcc: 'random',
+      studentItem: 'random',
+      timeMode: 0,
+      showLabels: true,
+      inspectedCharId: null,
+      inspectedBuildingId: null,
+      buildings: [],
+      roads: [],
+      characters: []
+    };
+
+    const BUILDING_CATALOG = {
+      classroom:   { label: 'Ruang Kelas', emoji: '🏠', w: 7.6, d: 5.6, stackable: true },
+      library:     { label: 'Perpustakaan', emoji: '📚', w: 7.6, d: 5.6, stackable: true },
+      lab:         { label: 'Lab Komputer', emoji: '💻', w: 7.6, d: 5.6, stackable: true },
+      canteen:     { label: 'Kantin', emoji: '🍔', w: 7.6, d: 5.6, stackable: true },
+      stairs:      { label: 'Tangga Lt.2', emoji: '🪜', w: 1.6, d: 4.6, stackable: false },
+      court:       { label: 'Lap. Basket', emoji: '🏀', w: 11, d: 7, stackable: false },
+      tree_park:   { label: 'Pohon Pisang', emoji: '🌴', w: 2.8, d: 2.8, stackable: false },
+      flagpole:    { label: 'Tiang Bendera', emoji: '🇮🇩', w: 2.0, d: 2.0, stackable: false },
+
+      sd_mural_wall:   { label: 'Tembok Mural', emoji: '🎨', w: 1.0, d: 34, stackable: false, hidden: true },
+      sd_front_fence:  { label: 'Pagar & Gerbang', emoji: '🚧', w: 40, d: 1.2, stackable: false, hidden: true },
+      sd_front_left:   { label: 'Ruang Depan', emoji: '🏫', w: 9.0, d: 5.4, stackable: false, hidden: true },
+      sd_carport:      { label: 'Garasi & Mobil', emoji: '🚙', w: 4.6, d: 5.2, stackable: false, hidden: true },
+      sd_bike_shed:    { label: 'Parkir Sepeda', emoji: '🚲', w: 4.8, d: 3.4, stackable: false, hidden: true },
+      sd_toren_wc:     { label: 'WC & Toren Air', emoji: '🟧', w: 4.4, d: 3.8, stackable: false, hidden: true },
+      sd_back_wall:    { label: 'Tembok Keliling', emoji: '🧱', w: 1.0, d: 44, stackable: false, hidden: true }
+    };
+
+    const STAIR_SIDES = { none: 'Tanpa', right: 'Kanan', left: 'Kiri', front: 'Depan', back: 'Belakang' };
+
+    const STAIR_STYLES = {
+      blue_steel: { label: 'Besi Biru', stepColor: 0x1d4ed8, sideColor: 0x1e40af, railColor: 0x2563eb, wide: false },
+      concrete:   { label: 'Beton', stepColor: 0xcbd5e1, sideColor: 0xf1f5f9, railColor: 0x334155, wide: false },
+      wood:       { label: 'Kayu', stepColor: 0xb45309, sideColor: 0x78350f, railColor: 0x451a03, wide: false },
+      double:     { label: 'Lebar', stepColor: 0xe2e8f0, sideColor: 0x94a3b8, railColor: 0x2563eb, wide: true }
+    };
+
+    const ROAD_CATALOG = {
+      paving:  { label: 'Paving Sekolah', emoji: '🧱' },
+      asphalt: { label: 'Jalan Aspal', emoji: '🛣️' },
+      zebra:   { label: 'Zebra Cross', emoji: '🦓' },
+      plaza:   { label: 'Tanah Lapang', emoji: '🟫' }
+    };
+
+    const UNIFORM_CATALOG = {
+      sd:      { label: 'SD (Putih-Merah)', shirt: 0xffffff, pants: 0xdc2626, tie: 0xdc2626, badge: 'SD' },
+      smp:     { label: 'SMP (Putih-Biru)', shirt: 0xffffff, pants: 0x1e3a8a, tie: 0x1e3a8a, badge: 'SMP' },
+      sma:     { label: 'SMA (Putih-Abu)', shirt: 0xffffff, pants: 0x64748b, tie: 0x475569, badge: 'SMA' },
+      pramuka: { label: 'HW / Pramuka', shirt: 0xd9a066, pants: 0x78350f, tie: 0xdc2626, badge: 'HW' }
+    };
+
+    const ROLE_CATALOG = {
+      student: {
+        label: 'Siswa / Murid',
+        emoji: '🎒',
+        names: ['Andi', 'Budi', 'Siti', 'Rara', 'Dimas', 'Putri', 'Fajar', 'Nadia', 'Rizky', 'Tari', 'Bagas', 'Laras'],
+        chats: ['Ayo masuk kelas!', 'Jajan di kantin yuk!', 'Bagus ya muralnya!', 'Belajar membaca!', 'Semangat sekolah!']
+      },
+      teacher: {
+        label: 'Guru',
+        emoji: '👩‍🏫',
+        colors: [0x9333ea, 0xb45309, 0x0f766e, 0xbe123c],
+        names: ['Pak Joko', 'Bu Rina', 'Pak Hendra', 'Bu Dewi', 'Pak Budi', 'Bu Sari'],
+        chats: ['Selamat pagi anak-anak!', 'Sepatu taruh di rak ya', 'Ayo naik ke lantai 2', 'Jaga kebersihan sekolah']
+      },
+      robot: {
+        label: 'Robot Sekolah',
+        emoji: '🤖',
+        colors: [0x06b6d4, 0xf59e0b, 0x8b5cf6],
+        names: ['Edu-Bot', 'Mutu-Bot', 'Gemini-Bot'],
+        chats: ['Beep Boop!', 'SD Mutu Bersih!', 'Membaca Jendela Dunia!']
+      }
+    };
+
+    // ==========================================
+    // 2. THREE.JS SCENE & PENCAHAYAAN
+    // ==========================================
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x9bd6f0);
+    scene.fog = new THREE.FogExp2(0x9bd6f0, 0.0045);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 400);
+    camera.position.set(16, 22, 49);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.maxPolarAngle = Math.PI / 2 - 0.05;
+    controls.minDistance = 10;
+    controls.maxDistance = 120;
+    controls.target.set(-2, 2, 4);
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x6b7280, 0.9);
+    hemiLight.position.set(0, 50, 0);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.45);
+    dirLight.position.set(32, 55, 34);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 5;
+    dirLight.shadow.camera.far = 160;
+    const d = 52;
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+    dirLight.shadow.bias = -0.0005;
+    scene.add(dirLight);
+
+    const windowMaterials = [];
+    function createWindowMaterial() {
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x3b2314, roughness: 0.35, metalness: 0.1, emissive: 0xfef08a, emissiveIntensity: 0
+      });
+      windowMaterials.push(mat);
+      return mat;
+    }
+
+    // ==========================================
+    // 3. TEKSTUR PROCEDURAL CANVAS
+    // ==========================================
+    function createMuralTexture() {
+      const c = document.createElement('canvas');
+      c.width = 1024; c.height = 256;
+      const ctx = c.getContext('2d');
+
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(0, 0, 1024, 256);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(0, 120);
+      ctx.bezierCurveTo(250, 50, 500, 180, 1024, 80);
+      ctx.lineTo(1024, 256); ctx.lineTo(0, 256); ctx.fill();
+
+      ctx.fillStyle = '#0d9488';
+      ctx.beginPath();
+      ctx.ellipse(760, 150, 250, 140, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#15803d';
+      ctx.beginPath(); ctx.moveTo(60, 220); ctx.lineTo(180, 60); ctx.lineTo(310, 220); ctx.fill();
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath(); ctx.moveTo(0, 240); ctx.lineTo(140, 140); ctx.lineTo(350, 256); ctx.lineTo(0, 256); ctx.fill();
+
+      ctx.fillStyle = '#fde68a';
+      ctx.beginPath(); ctx.arc(520, 190, 95, 0, Math.PI * 2); ctx.fill();
+
+      ctx.save();
+      ctx.translate(450, 130); ctx.rotate(-0.2);
+      ctx.fillStyle = '#ec4899';
+      ctx.fillRect(-70, -22, 135, 44);
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath(); ctx.moveTo(65, -22); ctx.lineTo(105, 0); ctx.lineTo(65, 22); ctx.fill();
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath(); ctx.moveTo(90, -8); ctx.lineTo(105, 0); ctx.lineTo(90, 8); ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(445, 72, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#334155';
+      ctx.beginPath(); ctx.arc(452, 72, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(428, 92, 26, 26);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px sans-serif'; ctx.fillText('MEMBACA', 350, 38);
+      ctx.font = 'bold 18px sans-serif'; ctx.fillText('Gapai CITA-CITA', 345, 58);
+
+      ctx.font = 'bold 34px sans-serif'; ctx.fillText('BUKU', 690, 80);
+      ctx.font = 'bold 20px sans-serif'; ctx.fillText('Jendela Dunia', 690, 108);
+
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 22px sans-serif'; ctx.fillText('100%  √  5  ♪', 630, 160);
+
+      ctx.fillStyle = '#f87171'; ctx.fillRect(890, 150, 55, 85);
+      ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(918, 125, 18, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#3b82f6'; ctx.fillRect(150, 180, 48, 40);
+      ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(174, 158, 15, 0, Math.PI * 2); ctx.fill();
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    function createSignTexture(bg, border, line1, line2, line3 = '') {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, 512, 256);
+      ctx.strokeStyle = border; ctx.lineWidth = 14; ctx.strokeRect(10, 10, 492, 236);
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+      ctx.font = 'bold 34px sans-serif'; ctx.fillText(line1, 256, 85);
+      ctx.font = 'bold 28px sans-serif'; ctx.fillStyle = '#fef08a'; ctx.fillText(line2, 256, 140);
+      if (line3) {
+        ctx.font = 'bold 22px sans-serif'; ctx.fillStyle = '#e2e8f0'; ctx.fillText(line3, 256, 195);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    const muralTex = createMuralTexture();
+    const blueSignTex = createSignTexture('#0c4a6e', '#38bdf8', 'SD MUHAMMADIYAH 2', 'PEKAJANGAN', 'Hizbul Wathan • UKS • Tangkil Kulon');
+    const bannerTex = createSignTexture('#14532d', '#facc15', 'SELAMAT DATANG', 'SD MUTU TANGKIL KULON', 'Berkarakter & Berprestasi');
+
+    // ==========================================
+    // 4. PULAU SEKOLAH & HALAMAN
+    // ==========================================
+    const groundGroup = new THREE.Group();
+    scene.add(groundGroup);
+
+    const grassMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(74, 2, 74),
+      new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.88 })
+    );
+    grassMesh.position.y = -1;
+    grassMesh.receiveShadow = true;
+    groundGroup.add(grassMesh);
+
+    const dirtMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(71, 4.5, 71),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.95 })
+    );
+    dirtMesh.position.y = -4.2;
+    groundGroup.add(dirtMesh);
+
+    const baseMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(62, 3, 62),
+      new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.95 })
+    );
+    baseMesh.position.y = -7.8;
+    groundGroup.add(baseMesh);
+
+    const innerDirtYard = new THREE.Mesh(
+      new THREE.BoxGeometry(23, 0.05, 29),
+      new THREE.MeshStandardMaterial({ color: 0x8d6e4c, roughness: 0.95 })
+    );
+    innerDirtYard.position.set(-14.5, 0.025, 3);
+    innerDirtYard.receiveShadow = true;
+    groundGroup.add(innerDirtYard);
+
+    for (const [gx, gz, gw, gd] of [[-18, -2, 5, 4], [-10, 8, 6, 3.5], [-21, 11, 4, 5], [-9, -5, 4, 3]]) {
+      const patch = new THREE.Mesh(
+        new THREE.BoxGeometry(gw, 0.06, gd),
+        new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.95 })
+      );
+      patch.position.set(gx, 0.03, gz);
+      patch.receiveShadow = true;
+      groundGroup.add(patch);
+    }
+
+    const netMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(7.2, 24, 12, 28),
+      new THREE.MeshBasicMaterial({ color: 0xf8fafc, wireframe: true, transparent: true, opacity: 0.32 })
+    );
+    netMesh.rotation.x = Math.PI / 2;
+    netMesh.position.set(7.2, 3.9, 4);
+    groundGroup.add(netMesh);
+
+    const waterMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(400, 400),
+      new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.88 })
+    );
+    waterMesh.rotation.x = -Math.PI / 2;
+    waterMesh.position.y = -3.2;
+    groundGroup.add(waterMesh);
+
+    const roadGridHelper = new THREE.GridHelper(63, 21, 0xffffff, 0xffffff);
+    roadGridHelper.position.y = 0.05;
+    roadGridHelper.material.transparent = true;
+    roadGridHelper.material.opacity = 0.3;
+    roadGridHelper.visible = false;
+    scene.add(roadGridHelper);
+
+    const raycastPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(200, 200),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    raycastPlane.rotation.x = -Math.PI / 2;
+    scene.add(raycastPlane);
+
+    const clouds = [];
+    (function createClouds() {
+      const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true });
+      for (let i = 0; i < 9; i++) {
+        const cGroup = new THREE.Group();
+        const puffs = 3 + Math.floor(Math.random() * 3);
+        for (let p = 0; p < puffs; p++) {
+          const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(2.5 + Math.random() * 2.2, 0), cloudMat);
+          puff.position.set((p - puffs / 2) * 2.4, Math.random() * 1.2, (Math.random() - 0.5) * 2);
+          cGroup.add(puff);
+        }
+        cGroup.position.set((Math.random() - 0.5) * 140, 28 + Math.random() * 12, (Math.random() - 0.5) * 120);
+        scene.add(cGroup);
+        clouds.push({ mesh: cGroup, speed: 0.4 + Math.random() * 0.5 });
+      }
+    })();
+
+    // ==========================================
+    // 5. MODEL 3D JALAN & TANGGA KUSTOM
+    // ==========================================
+    function enableShadows(group) {
+      group.traverse(obj => {
+        if (obj.isMesh && !obj.userData.isHitbox) {
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+      });
+      return group;
+    }
+
+    function createRoadMesh(type) {
+      const g = new THREE.Group();
+      const size = ROAD_STEP;
+      if (type === 'paving') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0xa89f91, roughness: 0.92 }));
+        base.position.y = 0.04;
+        g.add(base);
+        const tileMat = new THREE.MeshStandardMaterial({ color: 0xbcb3a5, roughness: 0.95 });
+        for (const ox of [-0.72, 0.72]) {
+          for (const oz of [-0.72, 0.72]) {
+            const t = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.09, 1.32), tileMat);
+            t.position.set(ox, 0.042, oz);
+            g.add(t);
+          }
+        }
+      } else if (type === 'asphalt') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.85 }));
+        base.position.y = 0.04;
+        g.add(base);
+        const lineMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 });
+        for (const zOff of [-0.75, 0.75]) {
+          const dash = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.095, 0.85), lineMat);
+          dash.position.set(0, 0.045, zOff);
+          g.add(dash);
+        }
+      } else if (type === 'zebra') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.85 }));
+        base.position.y = 0.04;
+        g.add(base);
+        const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+        for (let i = -2; i <= 2; i++) {
+          const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.095, 2.2), stripeMat);
+          stripe.position.set(i * 0.55, 0.045, 0);
+          g.add(stripe);
+        }
+      } else if (type === 'plaza') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x8d6e4c, roughness: 0.95 }));
+        base.position.y = 0.04;
+        g.add(base);
+      }
+      g.traverse(o => { if (o.isMesh) o.receiveShadow = true; });
+      return g;
+    }
+
+    function buildStairSubMesh(styleKey = 'blue_steel') {
+      const st = STAIR_STYLES[styleKey] || STAIR_STYLES.blue_steel;
+      const sg = new THREE.Group();
+      const width = st.wide ? 1.85 : 1.25;
+
+      const stepMat = new THREE.MeshStandardMaterial({ color: st.stepColor, roughness: 0.65 });
+      const sideMat = new THREE.MeshStandardMaterial({ color: st.sideColor, roughness: 0.65 });
+      const railMat = new THREE.MeshStandardMaterial({ color: st.railColor, metalness: 0.35, roughness: 0.45 });
+
+      const landing = new THREE.Mesh(new THREE.BoxGeometry(width, 0.2, 1.55), stepMat);
+      landing.position.set(0, FLOOR_HEIGHT - 0.05, 1.6);
+      sg.add(landing);
+
+      for (const px of [-width / 2 + 0.1, width / 2 - 0.1]) {
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, FLOOR_HEIGHT, 0.14), sideMat);
+        post.position.set(px, FLOOR_HEIGHT / 2, 2.22);
+        sg.add(post);
+      }
+
+      const topRailFront = new THREE.Mesh(new THREE.BoxGeometry(width, 0.72, 0.08), railMat);
+      topRailFront.position.set(0, FLOOR_HEIGHT + 0.35, 2.32);
+      const topRailSide = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.72, 1.5), railMat);
+      topRailSide.position.set(width / 2 - 0.06, FLOOR_HEIGHT + 0.35, 1.6);
+      sg.add(topRailFront, topRailSide);
+
+      const steps = 9;
+      for (let i = 0; i < steps; i++) {
+        const t = i / steps;
+        const stepH = styleKey === 'concrete' ? FLOOR_HEIGHT * (1 - t) : 0.18;
+        const stepY = styleKey === 'concrete' ? stepH / 2 : FLOOR_HEIGHT * (1 - t) - 0.16;
+        const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(width - 0.1, stepH, 0.38), stepMat);
+        stepMesh.position.set(0, stepY, 0.72 - i * 0.36);
+        sg.add(stepMesh);
+      }
+
+      for (const rx of [width / 2 - 0.08, -width / 2 + 0.08]) {
+        const handRail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 4.5), railMat);
+        handRail.position.set(rx, FLOOR_HEIGHT * 0.56, -0.75);
+        handRail.rotation.x = Math.atan2(FLOOR_HEIGHT, 3.2);
+        sg.add(handRail);
+
+        const stringer = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 4.5), sideMat);
+        stringer.position.set(rx, FLOOR_HEIGHT * 0.43, -0.75);
+        stringer.rotation.x = Math.atan2(FLOOR_HEIGHT, 3.2);
+        sg.add(stringer);
+      }
+
+      enableShadows(sg);
+      return sg;
+    }
+
+    function applyBuildingStairs(b) {
+      if (!b.stairsContainer) return;
+      while (b.stairsContainer.children.length > 0) {
+        b.stairsContainer.remove(b.stairsContainer.children[0]);
+      }
+      const hasFloor2 = state.buildings.some(other => other.parentId === b.id);
+      if (!hasFloor2 || b.stairSide === 'none') {
+        b.stairsContainer.visible = false;
+        return;
+      }
+
+      const st = STAIR_STYLES[b.stairStyle || 'blue_steel'];
+      const halfStairW = (st.wide ? 1.85 : 1.25) / 2;
+      const stairMesh = buildStairSubMesh(b.stairStyle || 'blue_steel');
+
+      const localHalfW = BUILDING_CATALOG[b.type].w / 2;
+      const localHalfD = BUILDING_CATALOG[b.type].d / 2;
+
+      if (b.stairSide === 'right') {
+        stairMesh.position.set(localHalfW + halfStairW - 0.02, 0, 0);
+        stairMesh.rotation.y = 0;
+      } else if (b.stairSide === 'left') {
+        stairMesh.position.set(-localHalfW - halfStairW + 0.02, 0, 0);
+        stairMesh.rotation.y = 0;
+      } else if (b.stairSide === 'front') {
+        stairMesh.position.set(0, 0, localHalfD + halfStairW - 0.02);
+        stairMesh.rotation.y = Math.PI / 2;
+      } else if (b.stairSide === 'back') {
+        stairMesh.position.set(0, 0, -localHalfD - halfStairW + 0.02);
+        stairMesh.rotation.y = -Math.PI / 2;
+      }
+
+      b.stairsContainer.add(stairMesh);
+      b.stairsContainer.visible = true;
+    }
+
+    // ==========================================
+    // 6. MODEL 3D BANGUNAN
+    // ==========================================
+    let flagClothMesh = null;
+
+    function createBuildingMesh(type, floor = 1, stairStyle = 'blue_steel', extraOpts = {}) {
+      const g = new THREE.Group();
+      const roofGroup = new THREE.Group();
+      const stairsContainer = new THREE.Group();
+      const winMat = createWindowMaterial();
+
+      if (BUILDING_CATALOG[type].stackable) {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.25, 5.6), new THREE.MeshStandardMaterial({ color: floor === 1 ? 0xd6d3d1 : 0x94a3b8 }));
+        base.position.y = 0.125;
+        g.add(base);
+
+        const topSlab = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.2, 5.6), new THREE.MeshStandardMaterial({ color: 0xe7e5e4 }));
+        topSlab.position.y = FLOOR_HEIGHT - 0.1;
+        g.add(topSlab);
+
+        if (type === 'classroom') {
+          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.1), new THREE.MeshStandardMaterial({ color: 0xede0c8, roughness: 0.85 }));
+          walls.position.set(0, 1.8, -0.55);
+          g.add(walls);
+
+          if (extraOpts.hasMading) {
+            const yWall = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2.7, 0.12), new THREE.MeshStandardMaterial({ color: 0xeab308 }));
+            yWall.position.set(1.6, 1.6, 1.52);
+            const madingBoard = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.15, 0.12), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+            madingBoard.position.set(1.8, 1.45, 2.25);
+            const madingPaper = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.75, 0.14), new THREE.MeshStandardMaterial({ color: 0xdbeafe }));
+            madingPaper.position.set(1.8, 1.45, 2.25);
+            g.add(yWall, madingBoard, madingPaper);
+            for (const lx of [1.1, 2.5]) {
+              const mLeg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.4, 0.08), new THREE.MeshStandardMaterial({ color: 0x64748b }));
+              mLeg.position.set(lx, 0.8, 2.25);
+              g.add(mLeg);
+            }
+          }
+
+          const porch = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.25, 1.4), new THREE.MeshStandardMaterial({ color: 0xf1f5f9 }));
+          porch.position.set(0, 0.13, 2.1);
+          g.add(porch);
+
+          const halfWall = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.85, 0.22), new THREE.MeshStandardMaterial({ color: 0xa8a29e }));
+          halfWall.position.set(0.85, 0.65, 2.65);
+          g.add(halfWall);
+
+          for (const px of [-3.5, -0.1, 3.5]) {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.28, 3.1, 0.28), new THREE.MeshStandardMaterial({ color: 0x9ca3af }));
+            pillar.position.set(px, 1.8, 2.65);
+            g.add(pillar);
+          }
+
+          const door = new THREE.Mesh(new THREE.BoxGeometry(1.0, 2.15, 0.14), new THREE.MeshStandardMaterial({ color: 0x3f2305 }));
+          door.position.set(-2.3, 1.32, 1.52);
+          g.add(door);
+
+          for (const wx of [-0.6, 0.9, 2.4]) {
+            const wFrame = new THREE.Mesh(new THREE.BoxGeometry(1.05, 1.15, 0.14), winMat);
+            wFrame.position.set(wx, 1.95, 1.52);
+            g.add(wFrame);
+          }
+
+          if (floor === 1) {
+            const rack = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.55, 0.35), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+            rack.position.set(-1.3, 0.48, 2.35);
+            const desk = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.55, 0.55), new THREE.MeshStandardMaterial({ color: 0x92400e }));
+            desk.position.set(1.2, 0.52, 2.05);
+            g.add(rack, desk);
+          }
+
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.35, 5.9), new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.85 }));
+          roof.position.set(0, FLOOR_HEIGHT + 0.35, 0.15);
+          roof.rotation.x = 0.14;
+          const ridge = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.45, 2.8), new THREE.MeshStandardMaterial({ color: 0x6c2710 }));
+          ridge.position.set(0, FLOOR_HEIGHT + 0.65, -0.9);
+          roofGroup.add(roof, ridge);
+
+          if (extraOpts.roofTitle) {
+            const roofSign = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.8, 0.18), new THREE.MeshStandardMaterial({ map: bannerTex }));
+            roofSign.position.set(0, FLOOR_HEIGHT + 1.05, 0.2);
+            roofGroup.add(roofSign);
+          }
+        }
+        else if (type === 'library') {
+          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.8), new THREE.MeshStandardMaterial({ color: 0xecfeff, roughness: 0.7 }));
+          walls.position.y = 1.8;
+          const glass = new THREE.Mesh(new THREE.BoxGeometry(4.8, 2.1, 0.18), new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0xfef08a, emissiveIntensity: 0 }));
+          windowMaterials.push(glass.material);
+          glass.position.set(0.4, 1.8, 2.42);
+          const door = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.0, 0.18), new THREE.MeshStandardMaterial({ color: 0x0f766e }));
+          door.position.set(-2.5, 1.25, 2.42);
+          g.add(walls, glass, door);
+
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.4, 5.7), new THREE.MeshStandardMaterial({ color: 0x7c2d12 }));
+          roof.position.y = FLOOR_HEIGHT + 0.25;
+          roofGroup.add(roof);
+        }
+        else if (type === 'lab') {
+          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.8), new THREE.MeshStandardMaterial({ color: 0xede0c8 }));
+          walls.position.y = 1.8;
+          const trim = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.3, 5.0), new THREE.MeshStandardMaterial({ color: 0xd4a373 }));
+          trim.position.y = 3.2;
+          g.add(walls, trim);
+
+          for (const x of [-1.9, 0, 1.9]) {
+            const w = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.25, 0.16), winMat);
+            w.position.set(x, 1.85, 2.42);
+            g.add(w);
+          }
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.5, 5.8), new THREE.MeshStandardMaterial({ color: 0x9a3412 }));
+          roof.position.y = FLOOR_HEIGHT + 0.25;
+          roofGroup.add(roof);
+        }
+        else if (type === 'canteen') {
+          for (const px of [-3.45, 3.45]) {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.1, 0.35), new THREE.MeshStandardMaterial({ color: 0xea580c }));
+            pillar.position.set(px, 1.85, 2.3);
+            g.add(pillar);
+          }
+          const kiosk = new THREE.Mesh(new THREE.BoxGeometry(7.48, 3.1, 2.4), new THREE.MeshStandardMaterial({ color: 0xfdba74 }));
+          kiosk.position.set(0, 1.85, -1.2);
+          const counter = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.95, 0.6), new THREE.MeshStandardMaterial({ color: 0xea580c }));
+          counter.position.set(0, 0.78, 0.15);
+          g.add(kiosk, counter);
+
+          const awning = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.28, 2.4), new THREE.MeshStandardMaterial({ color: 0xea580c }));
+          awning.position.set(0, FLOOR_HEIGHT + 0.2, 0.8);
+          roofGroup.add(awning);
+        }
+
+        if (floor === 2) {
+          const corridor = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.2, 0.95), new THREE.MeshStandardMaterial({ color: 0xcbd5e1 }));
+          corridor.position.set(0, 0.1, 3.15);
+          const pinkParapet = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.88, 0.16), new THREE.MeshStandardMaterial({ color: 0xbe7c89, roughness: 0.8 }));
+          pinkParapet.position.set(0, 0.58, 3.55);
+          g.add(corridor, pinkParapet);
+
+          if (extraOpts.hasBanner) {
+            const banner = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.9, 0.1), new THREE.MeshStandardMaterial({ map: bannerTex }));
+            banner.position.set(0, 0.95, 3.68);
+            g.add(banner);
+          }
+
+          const sideTrim = new THREE.Mesh(new THREE.BoxGeometry(7.62, 0.25, 5.62), new THREE.MeshStandardMaterial({ color: 0xd4a373 }));
+          sideTrim.position.y = 0.05;
+          g.add(sideTrim);
+        }
+
+        g.add(roofGroup);
+        g.add(stairsContainer);
+        enableShadows(g);
+        return { mesh: g, roofGroup, stairsContainer };
+      }
+
+      if (type === 'stairs') {
+        const stairMesh = buildStairSubMesh(stairStyle);
+        g.add(stairMesh);
+        enableShadows(g);
+        return { mesh: g, roofGroup, stairsContainer };
+      }
+
+      if (type === 'sd_mural_wall') {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 3.4, 34), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+        wall.position.y = 1.7;
+        g.add(wall);
+
+        const muralFace = new THREE.Mesh(new THREE.PlaneGeometry(33.6, 3.2), new THREE.MeshStandardMaterial({ map: muralTex, roughness: 0.7 }));
+        muralFace.position.set(-0.32, 1.7, 0);
+        muralFace.rotation.y = -Math.PI / 2;
+        g.add(muralFace);
+
+        const neighborRoof = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.5, 33), new THREE.MeshStandardMaterial({ color: 0x9a3412 }));
+        neighborRoof.position.set(1.8, 3.8, 0);
+        neighborRoof.rotation.z = -0.3;
+        g.add(neighborRoof);
+
+        for (let pz = -14; pz <= 14; pz += 3.5) {
+          const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.2, 0.35, 8), new THREE.MeshStandardMaterial({ color: 0x78350f }));
+          pot.position.set(-0.65, 0.18, pz);
+          const leaf = new THREE.Mesh(new THREE.DodecahedronGeometry(0.42, 0), new THREE.MeshStandardMaterial({ color: 0x16a34a }));
+          leaf.position.set(-0.65, 0.55, pz);
+          g.add(pot, leaf);
+        }
+      }
+
+      else if (type === 'sd_front_fence') {
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xe5d3a3, roughness: 0.85 });
+        const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.4 });
+
+        const lowWallL = new THREE.Mesh(new THREE.BoxGeometry(24.5, 0.9, 0.45), wallMat);
+        lowWallL.position.set(-7.75, 0.45, 0);
+        const lowWallR = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.9, 0.45), wallMat);
+        lowWallR.position.set(12.75, 0.45, 0);
+        g.add(lowWallL, lowWallR);
+
+        for (const px of [-20, -14, -8, -2, 4.5, 11.5, 14]) {
+          const pil = new THREE.Mesh(new THREE.BoxGeometry(0.65, 2.35, 0.65), wallMat);
+          pil.position.set(px, 1.18, 0);
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.18, 0.8), wallMat);
+          cap.position.set(px, 2.4, 0);
+          g.add(pil, cap);
+        }
+
+        for (let bx = -19.2; bx <= 4.0; bx += 0.6) {
+          const bar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.2, 0.08), ironMat);
+          bar.position.set(bx, 1.5, 0);
+          g.add(bar);
+        }
+        const topRail = new THREE.Mesh(new THREE.BoxGeometry(24.5, 0.08, 0.1), ironMat);
+        topRail.position.set(-7.75, 2.08, 0);
+        g.add(topRail);
+
+        const gateDoor = new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.6, 0.12), ironMat);
+        gateDoor.position.set(9.7, 0.85, 0.25);
+        g.add(gateDoor);
+
+        const signPostL = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 4.2, 8), ironMat);
+        signPostL.position.set(-10.5, 2.1, 0.35);
+        const signPostR = signPostL.clone();
+        signPostR.position.x = -6.0;
+        const bigSign = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.5, 0.16), new THREE.MeshStandardMaterial({ map: blueSignTex }));
+        bigSign.position.set(-8.25, 3.05, 0.35);
+        g.add(signPostL, signPostR, bigSign);
+      }
+
+      else if (type === 'sd_front_left') {
+        const body = new THREE.Mesh(new THREE.BoxGeometry(8.8, 3.0, 5.0), new THREE.MeshStandardMaterial({ color: 0xd9ccb2 }));
+        body.position.y = 1.5;
+        const greenAccent = new THREE.Mesh(new THREE.BoxGeometry(8.85, 2.2, 0.15), new THREE.MeshStandardMaterial({ color: 0x15803d }));
+        greenAccent.position.set(0, 1.3, 2.5);
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.45, 5.8), new THREE.MeshStandardMaterial({ color: 0x9a3412 }));
+        roof.position.set(0, 3.35, 0.1);
+        roof.rotation.x = 0.16;
+        const ridge = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.6, 2.8), new THREE.MeshStandardMaterial({ color: 0x7c2d12 }));
+        ridge.position.set(0, 3.7, -0.9);
+        const frontSign = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.3, 0.14), new THREE.MeshStandardMaterial({ map: bannerTex }));
+        frontSign.position.set(-1.8, 1.35, 2.65);
+        g.add(body, greenAccent, roof, ridge, frontSign);
+      }
+
+      else if (type === 'sd_carport') {
+        const metalMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.12, 5.0), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
+        roof.position.set(0, 2.65, 0);
+        roof.rotation.z = 0.08;
+        g.add(roof);
+        for (const px of [-2.0, 2.0]) {
+          for (const pz of [-2.2, 2.2]) {
+            const p = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.65, 8), metalMat);
+            p.position.set(px, 1.32, pz);
+            g.add(p);
+          }
+        }
+        const carBody = new THREE.Mesh(new THREE.BoxGeometry(1.85, 1.0, 3.6), new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 }));
+        carBody.position.set(0, 0.72, 0);
+        const carCab = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.75, 2.6), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        carCab.position.set(0, 1.5, -0.15);
+        g.add(carBody, carCab);
+        for (const wx of [-0.9, 0.9]) {
+          for (const wz of [-1.1, 1.1]) {
+            const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.25, 12), new THREE.MeshStandardMaterial({ color: 0x09090b }));
+            wheel.rotation.z = Math.PI / 2;
+            wheel.position.set(wx, 0.35, wz);
+            g.add(wheel);
+          }
+        }
+      }
+
+      else if (type === 'sd_bike_shed') {
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.14, 3.4), new THREE.MeshStandardMaterial({ color: 0xd6d3d1 }));
+        slab.position.y = 0.07;
+        const canopy = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.1, 3.5), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
+        canopy.position.y = 2.45;
+        canopy.rotation.x = 0.12;
+        g.add(slab, canopy);
+        for (const px of [-2.2, 2.2]) {
+          for (const pz of [-1.5, 1.5]) {
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.45, 6), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+            post.position.set(px, 1.22, pz);
+            g.add(post);
+          }
+        }
+        const bikeColors = [0xdc2626, 0x2563eb, 0x16a34a];
+        for (let i = 0; i < 3; i++) {
+          const bx = -1.4 + i * 1.4;
+          const bMat = new THREE.MeshStandardMaterial({ color: bikeColors[i] });
+          const w1 = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.05, 6, 12), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+          w1.rotation.y = Math.PI / 2; w1.position.set(bx, 0.42, -0.6);
+          const w2 = w1.clone(); w2.position.z = 0.6;
+          const frame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 1.25), bMat);
+          frame.position.set(bx, 0.72, 0);
+          const handle = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.06, 0.06), new THREE.MeshStandardMaterial({ color: 0x64748b }));
+          handle.position.set(bx, 1.0, 0.5);
+          g.add(w1, w2, frame, handle);
+        }
+      }
+
+      else if (type === 'sd_toren_wc') {
+        const room = new THREE.Mesh(new THREE.BoxGeometry(3.4, 2.8, 3.6), new THREE.MeshStandardMaterial({ color: 0xede0c8 }));
+        room.position.set(-0.4, 1.4, 0);
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.25, 4.0), new THREE.MeshStandardMaterial({ color: 0x7c2d12 }));
+        roof.position.set(-0.4, 2.9, 0);
+        roof.rotation.z = -0.1;
+        const tower = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.0, 1.1), new THREE.MeshStandardMaterial({ color: 0x475569, wireframe: true }));
+        tower.position.set(1.8, 1.0, 0);
+        const toren = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.25, 12), new THREE.MeshStandardMaterial({ color: 0xea580c, roughness: 0.4 }));
+        toren.position.set(1.8, 2.6, 0);
+        const torenCap = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.55, 0.25, 12), new THREE.MeshStandardMaterial({ color: 0xc2410c }));
+        torenCap.position.set(1.8, 3.35, 0);
+        g.add(room, roof, tower, toren, torenCap);
+      }
+
+      else if (type === 'sd_back_wall') {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.6, 44), new THREE.MeshStandardMaterial({ color: 0xa3a635 }));
+        wall.position.y = 1.3;
+        g.add(wall);
+      }
+
+      else if (type === 'court') {
+        const surface = new THREE.Mesh(new THREE.BoxGeometry(11, 0.18, 7), new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.8 }));
+        surface.position.y = 0.09;
+        const inner = new THREE.Mesh(new THREE.BoxGeometry(9.6, 0.2, 5.8), new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.8 }));
+        inner.position.y = 0.095;
+        const line = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.21, 5.8), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+        line.position.y = 0.1;
+        g.add(surface, inner, line);
+        for (const dir of [-1, 1]) {
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3.0, 8), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+          pole.position.set(dir * 4.9, 1.5, 0);
+          const board = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.1, 1.5), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+          board.position.set(dir * 4.6, 2.8, 0);
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.04, 8, 16), new THREE.MeshStandardMaterial({ color: 0xf97316 }));
+          ring.rotation.x = Math.PI / 2;
+          ring.position.set(dir * 4.25, 2.55, 0);
+          g.add(pole, board, ring);
+        }
+      }
+      else if (type === 'tree_park') {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.26, 2.6, 7), new THREE.MeshStandardMaterial({ color: 0x4d7c0f }));
+        trunk.position.y = 1.3;
+        g.add(trunk);
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, flatShading: true });
+        for (let i = 0; i < 6; i++) {
+          const ang = (i / 6) * Math.PI * 2;
+          const leaf = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.08, 1.9), leafMat);
+          leaf.position.set(Math.sin(ang) * 0.85, 2.55, Math.cos(ang) * 0.85);
+          leaf.rotation.y = ang;
+          leaf.rotation.x = 0.35;
+          g.add(leaf);
+        }
+      }
+      else if (type === 'flagpole') {
+        const ped = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.35, 1.4), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+        ped.position.y = 0.175;
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 7.2, 10), new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.5 }));
+        pole.position.y = 3.7;
+        const flagGeo = new THREE.PlaneGeometry(1.9, 1.1, 10, 4);
+        const pos = flagGeo.attributes.position;
+        const colors = [];
+        for (let i = 0; i < pos.count; i++) {
+          if (pos.getY(i) > 0) colors.push(0.9, 0.1, 0.1);
+          else colors.push(1, 1, 1);
+        }
+        flagGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const flag = new THREE.Mesh(flagGeo, new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.6 }));
+        flag.position.set(1.0, 6.6, 0);
+        flagClothMesh = flag;
+        g.add(ped, pole, flag);
+      }
+
+      enableShadows(g);
+      return { mesh: g, roofGroup, stairsContainer };
+    }
+
+    // ==========================================
+    // 7. MODEL 3D KARAKTER
+    // ==========================================
+    function createCharacterMesh(role, shirtColor, details = {}) {
+      const group = new THREE.Group();
+      const isStudent = role === 'student';
+      const uInfo = isStudent ? UNIFORM_CATALOG[details.uniform || 'sd'] : null;
+
+      const bodyColor = isStudent ? uInfo.shirt : shirtColor;
+      const pantsColor = isStudent ? uInfo.pants : (role === 'teacher' ? 0x1e293b : 0x475569);
+      const skinColor = role === 'robot' ? 0xcbd5e1 : 0xfdba74;
+
+      const hitbox = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.72, 0.72, 2.3, 8),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+      );
+      hitbox.position.y = 1.15;
+      hitbox.userData.isHitbox = true;
+      group.add(hitbox);
+
+      const headGeo = role === 'robot' ? new THREE.BoxGeometry(0.54, 0.5, 0.54) : new THREE.SphereGeometry(0.31, 12, 12);
+      const head = new THREE.Mesh(headGeo, new THREE.MeshStandardMaterial({ color: skinColor }));
+      head.position.y = 1.66;
+      group.add(head);
+
+      const eyeMat = new THREE.MeshBasicMaterial({ color: role === 'robot' ? 0x22d3ee : 0x0f172a });
+      const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.042, 6, 6), eyeMat);
+      leftEye.position.set(-0.095, 1.68, 0.27);
+      const rightEye = leftEye.clone(); rightEye.position.x = 0.095;
+      group.add(leftEye, rightEye);
+
+      if (role === 'robot') {
+        const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x64748b }));
+        ant.position.y = 2.02;
+        group.add(ant);
+      } else {
+        if (isStudent && details.acc === 'hijab') {
+          const hijabColor = details.uniform === 'pramuka' ? 0x78350f : 0xf8fafc;
+          const hijabHood = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.72), new THREE.MeshStandardMaterial({ color: hijabColor }));
+          hijabHood.position.y = 1.67; hijabHood.rotation.x = -0.15;
+          const hijabNeck = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.45, 10), new THREE.MeshStandardMaterial({ color: hijabColor }));
+          hijabNeck.position.set(0, 1.35, 0.04);
+          group.add(hijabHood, hijabNeck);
+        } else {
+          const hairColors = [0x1e1b4b, 0x3f2305, 0x0f172a];
+          const hair = new THREE.Mesh(
+            new THREE.SphereGeometry(0.33, 10, 10, 0, Math.PI * 2, 0, Math.PI * 0.56),
+            new THREE.MeshStandardMaterial({ color: hairColors[(details.hairIdx || 0) % hairColors.length] })
+          );
+          hair.position.y = 1.69;
+          group.add(hair);
+
+          if (isStudent && details.acc === 'hat') {
+            const capColor = uInfo.pants;
+            const capDome = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.45), new THREE.MeshStandardMaterial({ color: capColor }));
+            capDome.position.y = 1.72;
+            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.04, 0.24), new THREE.MeshStandardMaterial({ color: capColor }));
+            visor.position.set(0, 1.78, 0.31); visor.rotation.x = 0.1;
+            group.add(capDome, visor);
+          }
+        }
+
+        if (isStudent && details.acc === 'glasses') {
+          const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+          const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.014, 6, 12), frameMat);
+          lRim.position.set(-0.095, 1.68, 0.3);
+          const rRim = lRim.clone(); rRim.position.x = 0.095;
+          const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.015), frameMat);
+          bridge.position.set(0, 1.68, 0.3);
+          group.add(lRim, rRim, bridge);
+        }
+      }
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.33), new THREE.MeshStandardMaterial({ color: bodyColor }));
+      torso.position.y = 1.02;
+      group.add(torso);
+
+      if (isStudent) {
+        const tie = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.34, 0.04), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
+        tie.position.set(0, 1.13, 0.175);
+        const belt = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        belt.position.y = 0.72;
+        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.48, 0.2), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        bag.position.set(0, 1.05, -0.25);
+        const bagStripe = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.1, 0.22), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
+        bagStripe.position.set(0, 1.1, -0.255);
+        group.add(tie, belt, bag, bagStripe);
+      }
+
+      const armGeo = new THREE.BoxGeometry(0.15, 0.54, 0.15);
+      armGeo.translate(0, -0.21, 0);
+      const armMat = new THREE.MeshStandardMaterial({ color: bodyColor });
+
+      const leftArm = new THREE.Mesh(armGeo, armMat);
+      leftArm.position.set(-0.36, 1.28, 0);
+      const rightArm = new THREE.Mesh(armGeo, armMat);
+      rightArm.position.set(0.36, 1.28, 0);
+      group.add(leftArm, rightArm);
+
+      if (isStudent && details.item && details.item !== 'none') {
+        if (details.item === 'book') {
+          const book = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.28, 0.22), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
+          book.position.set(0.05, -0.42, 0.08);
+          rightArm.add(book);
+        } else if (details.item === 'ball') {
+          const ball = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), new THREE.MeshStandardMaterial({ color: 0xea580c }));
+          ball.position.set(0.06, -0.46, 0.05);
+          rightArm.add(ball);
+        } else if (details.item === 'bottle') {
+          const bottle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.24, 8), new THREE.MeshStandardMaterial({ color: 0x38bdf8 }));
+          bottle.position.set(0.04, -0.44, 0.06);
+          rightArm.add(bottle);
+        }
+      }
+
+      function buildLeg(xOffset) {
+        const legPivot = new THREE.Group();
+        legPivot.position.set(xOffset, 0.66, 0);
+        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.38, 0.22), new THREE.MeshStandardMaterial({ color: pantsColor }));
+        thigh.position.y = -0.19;
+        const sock = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.16, 0.18), new THREE.MeshStandardMaterial({ color: isStudent ? 0xffffff : pantsColor }));
+        sock.position.y = -0.46;
+        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.28), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        shoe.position.set(0, -0.58, 0.04);
+        legPivot.add(thigh, sock, shoe);
+        return legPivot;
+      }
+
+      const leftLeg = buildLeg(-0.14);
+      const rightLeg = buildLeg(0.14);
+      group.add(leftLeg, rightLeg);
+
+      enableShadows(group);
+      return { group, parts: { leftArm, rightArm, leftLeg, rightLeg } };
+    }
+
+    // ==========================================
+    // 8. LOGIKA BANGUNAN, GESER RUANG, JALAN & ORANG
+    // ==========================================
+    function getRotatedDims(type, rotation) {
+      const info = BUILDING_CATALOG[type];
+      const isSwapped = Math.round(Math.abs(rotation / (Math.PI / 2))) % 2 === 1;
+      return {
+        halfW: (isSwapped ? info.d : info.w) / 2,
+        halfD: (isSwapped ? info.w : info.d) / 2
+      };
+    }
+
+    function canPlaceFloor1(type, x, z, rotation, excludeIds = []) {
+      const { halfW, halfD } = getRotatedDims(type, rotation);
+      if (Math.abs(x) + halfW > ISLAND_LIMIT + 0.5 || Math.abs(z) + halfD > ISLAND_LIMIT + 0.5) return false;
+      const eps = 0.08;
+      for (const b of state.buildings) {
+        if (b.floor !== 1 || excludeIds.includes(b.id)) continue;
+        const overlapX = Math.abs(x - b.x) < (halfW + b.halfW - eps);
+        const overlapZ = Math.abs(z - b.z) < (halfD + b.halfD - eps);
+        if (overlapX && overlapZ) return false;
+      }
+      return true;
+    }
+
+    function findMagneticSnap(type, rawX, rawZ, rotation, excludeIds = []) {
+      const info = BUILDING_CATALOG[type];
+      if (!info.stackable && type !== 'stairs') return null;
+
+      let best = null;
+      let bestDist = 2.1;
+
+      for (const b of state.buildings) {
+        if (b.floor !== 1 || excludeIds.includes(b.id) || !BUILDING_CATALOG[b.type].stackable) continue;
+        const snapRot = type === 'stairs' ? rotation : b.rotation;
+        const { halfW, halfD } = getRotatedDims(type, snapRot);
+
+        const candidates = [
+          { x: b.x + b.halfW + halfW, z: b.z },
+          { x: b.x - b.halfW - halfW, z: b.z },
+          { x: b.x, z: b.z + b.halfD + halfD },
+          { x: b.x, z: b.z - b.halfD - halfD }
+        ];
+
+        for (const c of candidates) {
+          const dist = Math.hypot(rawX - c.x, rawZ - c.z);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = { x: Number(c.x.toFixed(2)), z: Number(c.z.toFixed(2)), rotation: snapRot, attachedTo: b };
+          }
+        }
+      }
+      return best;
+    }
+
+    function rebuildBuildingMesh(b) {
+      scene.remove(b.mesh);
+      const { mesh, roofGroup, stairsContainer } = createBuildingMesh(b.type, b.floor, b.stairStyle, b.extraOpts || {});
+      mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
+      mesh.rotation.y = b.rotation;
+      mesh.userData = { entityType: 'building', entityId: b.id };
+      scene.add(mesh);
+
+      b.mesh = mesh;
+      b.roofGroup = roofGroup;
+      b.stairsContainer = stairsContainer;
+
+      const dims = getRotatedDims(b.type, b.rotation);
+      b.halfW = dims.halfW;
+      b.halfD = dims.halfD;
+
+      if (b.floor === 1) {
+        const hasChild = state.buildings.some(other => other.parentId === b.id);
+        b.roofGroup.visible = !hasChild;
+        applyBuildingStairs(b);
+      }
+    }
+
+    function addBuilding(type, x, z, rotation = 0, floor = 1, parentId = null, customId = null, animatePop = true, stairSide = 'right', stairStyle = null, extraOpts = {}) {
+      const usedStyle = stairStyle || state.defaultStairStyle;
+      const { mesh, roofGroup, stairsContainer } = createBuildingMesh(type, floor, usedStyle, extraOpts);
+      const yPos = floor === 2 ? FLOOR_HEIGHT : 0;
+      mesh.position.set(x, yPos, z);
+      mesh.rotation.y = rotation;
+
+      const { halfW, halfD } = getRotatedDims(type, rotation);
+      const id = customId || ('b_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6));
+      mesh.userData = { entityType: 'building', entityId: id };
+      scene.add(mesh);
+
+      const buildingObj = {
+        id, type, x, z, rotation, floor, parentId,
+        stairSide, stairStyle: usedStyle, extraOpts,
+        mesh, roofGroup, stairsContainer, halfW, halfD
+      };
+      state.buildings.push(buildingObj);
+
+      if (floor === 2 && parentId) {
+        const parent = state.buildings.find(b => b.id === parentId);
+        if (parent) {
+          parent.roofGroup.visible = false;
+          applyBuildingStairs(parent);
+        }
+      }
+
+      if (animatePop) {
+        mesh.scale.set(0.1, 0.1, 0.1);
+        const start = performance.now();
+        function popAnim(now) {
+          const t = Math.min(1, (now - start) / 260);
+          mesh.scale.setScalar(1 - Math.pow(1 - t, 3));
+          if (t < 1) requestAnimationFrame(popAnim);
+        }
+        requestAnimationFrame(popAnim);
+      }
+
+      updateStats();
+      saveWorld();
+      return id;
+    }
+
+    function canPlaceRoad(x, z) {
+      if (Math.abs(x) > 30 || Math.abs(z) > 30) return false;
+      const halfRoad = ROAD_STEP / 2;
+      for (const b of state.buildings) {
+        if (b.floor !== 1) continue;
+        if (Math.abs(x - b.x) < (halfRoad + b.halfW - 0.35) && Math.abs(z - b.z) < (halfRoad + b.halfD - 0.35)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function addOrReplaceRoad(type, x, z, rotation = 0) {
+      if (!canPlaceRoad(x, z)) return;
+      const existing = state.roads.find(r => r.x === x && r.z === z);
+      if (existing) {
+        if (existing.type === type && existing.rotation === rotation) return;
+        scene.remove(existing.mesh);
+        state.roads = state.roads.filter(r => r.id !== existing.id);
+      }
+      const mesh = createRoadMesh(type);
+      mesh.position.set(x, 0, z);
+      mesh.rotation.y = rotation;
+      const id = 'r_' + x + '_' + z;
+      mesh.userData = { entityType: 'road', entityId: id };
+      scene.add(mesh);
+
+      state.roads.push({ id, type, x, z, rotation, mesh });
+      updateStats();
+      saveWorld();
+    }
+
+    function isPointBlocked(px, pz) {
+      for (const b of state.buildings) {
+        if (b.floor !== 1) continue;
+        if (Math.abs(px - b.x) < b.halfW + 0.55 && Math.abs(pz - b.z) < b.halfD + 0.55) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function pickRandomWalkPoint() {
+      const insideRoads = state.roads.filter(r => r.z < 23 && r.x < 10.5 && !isPointBlocked(r.x, r.z));
+      if (insideRoads.length > 0 && Math.random() < 0.55) {
+        const rd = insideRoads[Math.floor(Math.random() * insideRoads.length)];
+        return { x: rd.x + (Math.random() - 0.5) * 1.2, z: rd.z + (Math.random() - 0.5) * 1.2 };
+      }
+      for (let attempt = 0; attempt < 25; attempt++) {
+        const rx = -21 + Math.random() * 29.5;
+        const rz = -11 + Math.random() * 32;
+        if (!isPointBlocked(rx, rz)) return { x: rx, z: rz };
+      }
+      return { x: -12, z: 4 };
+    }
+
+    function resolveStudentDetails(customDetails = null) {
+      if (customDetails) return customDetails;
+      const uniforms = ['sd', 'sd', 'pramuka'];
+      const accs = ['hat', 'hijab', 'glasses', 'none', 'none'];
+      const items = ['book', 'ball', 'bottle', 'none'];
+      return {
+        uniform: state.studentUniform === 'random' ? uniforms[Math.floor(Math.random() * uniforms.length)] : state.studentUniform,
+        acc: state.studentAcc === 'random' ? accs[Math.floor(Math.random() * accs.length)] : state.studentAcc,
+        item: state.studentItem === 'random' ? items[Math.floor(Math.random() * items.length)] : state.studentItem,
+        hairIdx: Math.floor(Math.random() * 3)
+      };
+    }
+
+    const labelsLayer = document.getElementById('labels-layer');
+
+    function addCharacter(role, customName, x, z, shirtColorOverride = null, savedDetails = null) {
+      const catalog = ROLE_CATALOG[role];
+      const details = role === 'student' ? resolveStudentDetails(savedDetails) : {};
+      const shirtColor = shirtColorOverride ?? (catalog.colors ? catalog.colors[Math.floor(Math.random() * catalog.colors.length)] : 0xffffff);
+      const name = (customName && customName.trim()) ? customName.trim() : catalog.names[Math.floor(Math.random() * catalog.names.length)];
+
+      const { group, parts } = createCharacterMesh(role, shirtColor, details);
+      group.position.set(x, 0, z);
+      const id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      group.userData = { entityType: 'character', entityId: id };
+      scene.add(group);
+
+      const badgeTxt = role === 'student' ? `[${UNIFORM_CATALOG[details.uniform].badge}] ` : '';
+      const labelEl = document.createElement('div');
+      labelEl.className = 'char-tag';
+      labelEl.innerHTML = `<div class="char-bubble" style="display:none"></div><div class="char-name">${catalog.emoji} ${badgeTxt}${name}</div>`;
+      labelsLayer.appendChild(labelEl);
+
+      const target = pickRandomWalkPoint();
+      state.characters.push({
+        id, role, name, details, shirtColor,
+        mesh: group, parts, labelEl,
+        x, z, targetX: target.x, targetZ: target.z,
+        speed: role === 'teacher' ? 2.4 : (role === 'robot' ? 3.2 : 2.9 + Math.random() * 0.7),
+        walkPhase: Math.random() * 10,
+        state: 'walk',
+        stateTimer: 3 + Math.random() * 5,
+        bubbleTimer: 0
+      });
+
+      updateStats();
+      saveWorld();
+    }
+
+    function removeEntity(entityType, entityId) {
+      if (entityType === 'building') {
+        const b = state.buildings.find(item => item.id === entityId);
+        if (!b) return;
+        scene.remove(b.mesh);
+        state.buildings = state.buildings.filter(item => item.id !== entityId);
+
+        if (b.floor === 2 && b.parentId) {
+          const parent = state.buildings.find(item => item.id === b.parentId);
+          if (parent) {
+            parent.roofGroup.visible = true;
+            applyBuildingStairs(parent);
+          }
+        }
+        if (b.floor === 1) {
+          const child = state.buildings.find(item => item.parentId === b.id);
+          if (child) {
+            scene.remove(child.mesh);
+            state.buildings = state.buildings.filter(item => item.id !== child.id);
+          }
+        }
+        if (state.inspectedBuildingId === entityId || (b.parentId && state.inspectedBuildingId === b.parentId)) {
+          closeBuildingCard();
+        }
+      }
+      else if (entityType === 'road') {
+        const idx = state.roads.findIndex(r => r.id === entityId);
+        if (idx !== -1) {
+          scene.remove(state.roads[idx].mesh);
+          state.roads.splice(idx, 1);
+        }
+      }
+      else if (entityType === 'character') {
+        const idx = state.characters.findIndex(c => c.id === entityId);
+        if (idx !== -1) {
+          scene.remove(state.characters[idx].mesh);
+          state.characters[idx].labelEl.remove();
+          state.characters.splice(idx, 1);
+          if (state.inspectedCharId === entityId) closeInspectCard();
+        }
+      }
+      updateStats();
+      saveWorld();
+    }
+
+    function clearCharactersByRole(roleFilter = null) {
+      const toRemove = state.characters.filter(c => !roleFilter || c.role === roleFilter);
+      toRemove.forEach(c => {
+        scene.remove(c.mesh);
+        c.labelEl.remove();
+      });
+      state.characters = state.characters.filter(c => roleFilter && c.role !== roleFilter);
+      closeInspectCard();
+      updateStats();
+      saveWorld();
+    }
+
+    // ==========================================
+    // 9. GHOST PREVIEW & LOGIKA GESER RUANG
+    // ==========================================
+    let ghostMesh = null;
+    const ghostValidMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.48 });
+    const ghostSnapMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.52 });
+    const ghostStackMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55 });
+    const ghostInvalidMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.48 });
+
+    let pendingBuildPlacement = null;
+
+    function refreshGhostMesh() {
+      if (ghostMesh) {
+        scene.remove(ghostMesh);
+        ghostMesh = null;
+      }
+      pendingBuildPlacement = null;
+
+      if (state.mode === 'build') {
+        const { mesh, stairsContainer } = createBuildingMesh(state.selectedBuilding, 1, state.defaultStairStyle);
+        stairsContainer.visible = false;
+        mesh.traverse(obj => {
+          if (obj.isMesh) {
+            obj.castShadow = false;
+            obj.receiveShadow = false;
+            obj.material = ghostValidMat;
+          }
+        });
+        mesh.visible = false;
+        scene.add(mesh);
+        ghostMesh = mesh;
+      }
+      else if (state.mode === 'move' && state.moving) {
+        const mv = state.moving;
+        const { mesh, roofGroup, stairsContainer } = createBuildingMesh(mv.building.type, 1, mv.building.stairStyle, mv.building.extraOpts || {});
+        stairsContainer.visible = false;
+        if (mv.child) {
+          roofGroup.visible = false;
+          const childRes = createBuildingMesh(mv.child.type, 2, mv.child.stairStyle, mv.child.extraOpts || {});
+          childRes.mesh.position.y = FLOOR_HEIGHT;
+          mesh.add(childRes.mesh);
+        }
+        mesh.traverse(obj => {
+          if (obj.isMesh) {
+            obj.castShadow = false;
+            obj.receiveShadow = false;
+            obj.material = ghostValidMat;
+          }
+        });
+        mesh.visible = false;
+        scene.add(mesh);
+        ghostMesh = mesh;
+      }
+      else if (state.mode === 'road') {
+        const mesh = createRoadMesh(state.selectedRoad);
+        mesh.traverse(obj => {
+          if (obj.isMesh) {
+            obj.castShadow = false;
+            obj.receiveShadow = false;
+            obj.material = ghostValidMat;
+          }
+        });
+        mesh.position.y = 0.08;
+        mesh.visible = false;
+        scene.add(mesh);
+        ghostMesh = mesh;
+      }
+    }
+
+    function pickBuildingToMove(b) {
+      const child = b.floor === 1 ? state.buildings.find(item => item.parentId === b.id) : null;
+      state.moving = {
+        building: b,
+        child,
+        origX: b.x,
+        origZ: b.z,
+        origRot: b.rotation,
+        origFloor: b.floor,
+        origParentId: b.parentId,
+        curRot: b.rotation
+      };
+
+      b.mesh.visible = false;
+      if (child) child.mesh.visible = false;
+
+      if (b.floor === 2 && b.parentId) {
+        const oldParent = state.buildings.find(item => item.id === b.parentId);
+        b.parentId = null;
+        if (oldParent) {
+          oldParent.roofGroup.visible = true;
+          applyBuildingStairs(oldParent);
+        }
+      }
+
+      refreshGhostMesh();
+      renderSubPanel();
+      evaluateMoveCursor();
+    }
+
+    function cancelMove() {
+      if (!state.moving) return;
+      const mv = state.moving;
+      const b = mv.building;
+
+      b.x = mv.origX;
+      b.z = mv.origZ;
+      b.rotation = mv.origRot;
+      b.floor = mv.origFloor;
+      b.parentId = mv.origParentId;
+
+      b.mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
+      b.mesh.rotation.y = b.rotation;
+      b.mesh.visible = true;
+
+      if (mv.child) mv.child.mesh.visible = true;
+
+      if (b.floor === 2 && b.parentId) {
+        const oldParent = state.buildings.find(item => item.id === b.parentId);
+        if (oldParent) {
+          oldParent.roofGroup.visible = false;
+          applyBuildingStairs(oldParent);
+        }
+      }
+
+      state.moving = null;
+      refreshGhostMesh();
+      renderSubPanel();
+    }
+
+    function commitMove() {
+      if (!state.moving || !pendingBuildPlacement || !pendingBuildPlacement.valid) return;
+      const mv = state.moving;
+      const p = pendingBuildPlacement;
+      const b = mv.building;
+      const floorChanged = b.floor !== p.floor;
+
+      b.x = p.x;
+      b.z = p.z;
+      b.rotation = p.rotation;
+      b.floor = p.floor;
+      b.parentId = p.parentId;
+
+      if (floorChanged) {
+        rebuildBuildingMesh(b);
+      } else {
+        b.mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
+        b.mesh.rotation.y = b.rotation;
+        const dims = getRotatedDims(b.type, b.rotation);
+        b.halfW = dims.halfW;
+        b.halfD = dims.halfD;
+        b.mesh.visible = true;
+      }
+
+      if (mv.child) {
+        mv.child.x = p.x;
+        mv.child.z = p.z;
+        mv.child.rotation = p.rotation;
+        mv.child.mesh.position.set(p.x, FLOOR_HEIGHT, p.z);
+        mv.child.mesh.rotation.y = p.rotation;
+        const cDims = getRotatedDims(mv.child.type, p.rotation);
+        mv.child.halfW = cDims.halfW;
+        mv.child.halfD = cDims.halfD;
+        mv.child.mesh.visible = true;
+      }
+
+      if (b.floor === 2 && b.parentId) {
+        const newParent = state.buildings.find(item => item.id === b.parentId);
+        if (newParent) {
+          newParent.roofGroup.visible = false;
+          applyBuildingStairs(newParent);
+        }
+      }
+
+      state.moving = null;
+      refreshGhostMesh();
+      renderSubPanel();
+      saveWorld();
+    }
+
+    function isObjectVisible(obj) {
+      let c = obj;
+      while (c) {
+        if (!c.visible) return false;
+        c = c.parent;
+      }
+      return true;
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let pointerDownPos = { x: 0, y: 0 };
+    let isRoadDragging = false;
+
+    function updatePointer(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    }
+
+    function evaluatePlacementPreview(type, rot, excludeIds = [], allowStacking = true) {
+      if (!ghostMesh) return;
+      raycaster.setFromCamera(pointer, camera);
+
+      const isStackable = BUILDING_CATALOG[type].stackable && allowStacking;
+      if (isStackable) {
+        const stackCandidates = state.buildings.filter(b =>
+          b.floor === 1 && !excludeIds.includes(b.id) && BUILDING_CATALOG[b.type].stackable
+        );
+        const hits = raycaster.intersectObjects(stackCandidates.map(b => b.mesh), true)
+          .filter(h => isObjectVisible(h.object));
+
+        if (hits.length > 0) {
+          let curr = hits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          const baseB = state.buildings.find(b => b.id === curr?.userData.entityId);
+          if (baseB) {
+            const hasFloor2 = state.buildings.some(b => b.parentId === baseB.id && !excludeIds.includes(b.id));
+            ghostMesh.visible = true;
+            if (!hasFloor2) {
+              ghostMesh.position.set(baseB.x, FLOOR_HEIGHT + 0.04, baseB.z);
+              ghostMesh.rotation.y = baseB.rotation;
+              ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostStackMat; });
+              pendingBuildPlacement = { x: baseB.x, z: baseB.z, rotation: baseB.rotation, floor: 2, parentId: baseB.id, valid: true };
+              hintBanner.textContent = `⬆️ Klik untuk taruh di Lantai 2 atas ${BUILDING_CATALOG[baseB.type].label}!`;
+            } else {
+              ghostMesh.position.set(baseB.x, FLOOR_HEIGHT * 2 + 0.04, baseB.z);
+              ghostMesh.rotation.y = baseB.rotation;
+              ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostInvalidMat; });
+              pendingBuildPlacement = { valid: false };
+              hintBanner.textContent = '❌ Maksimal bangunan 2 lantai!';
+            }
+            return;
+          }
+        }
+      }
+
+      const groundHits = raycaster.intersectObject(raycastPlane);
+      if (groundHits.length > 0) {
+        const rawX = groundHits[0].point.x;
+        const rawZ = groundHits[0].point.z;
+
+        const snap = findMagneticSnap(type, rawX, rawZ, rot, excludeIds);
+        let sx = snap ? snap.x : Math.round(rawX * 2) / 2;
+        let sz = snap ? snap.z : Math.round(rawZ * 2) / 2;
+        let srot = snap ? snap.rotation : rot;
+
+        const valid = canPlaceFloor1(type, sx, sz, srot, excludeIds);
+        ghostMesh.visible = true;
+        ghostMesh.position.set(sx, 0.05, sz);
+        ghostMesh.rotation.y = srot;
+        ghostMesh.traverse(o => {
+          if (o.isMesh) o.material = !valid ? ghostInvalidMat : (snap ? ghostSnapMat : ghostValidMat);
+        });
+        pendingBuildPlacement = { x: sx, z: sz, rotation: srot, floor: 1, parentId: null, valid };
+
+        if (snap && valid) {
+          hintBanner.textContent = `🧲 Menempel rapi ke ${BUILDING_CATALOG[snap.attachedTo.type].label}! Klik untuk letakkan`;
+        } else if (state.mode === 'move') {
+          hintBanner.textContent = `✋ Geser ${BUILDING_CATALOG[type].label} ke lokasi baru • [R] Putar • [Esc] Batal`;
+        } else {
+          hintBanner.textContent = isStackable
+            ? '🏗️ Dekatkan ke sisi gedung untuk menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar'
+            : '🏗️ Klik area pulau untuk menempatkan objek • [R] Putar';
+        }
+      }
+    }
+
+    function evaluateBuildCursor() {
+      evaluatePlacementPreview(state.selectedBuilding, state.buildRotation, [], true);
+    }
+
+    function evaluateMoveCursor() {
+      if (state.mode !== 'move') return;
+      if (!state.moving) {
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(state.buildings.map(b => b.mesh), true).filter(h => isObjectVisible(h.object));
+        if (hits.length > 0) {
+          let curr = hits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          const b = state.buildings.find(item => item.id === curr?.userData.entityId);
+          if (b) {
+            const hasF2 = b.floor === 1 && state.buildings.some(item => item.parentId === b.id);
+            hintBanner.textContent = hasF2
+              ? `✋ Klik untuk geser 1 blok 2 lantai: ${BUILDING_CATALOG[b.type].label}`
+              : `✋ Klik untuk geser: ${BUILDING_CATALOG[b.type].label} (Lt. ${b.floor})`;
+            return;
+          }
+        }
+        hintBanner.textContent = '✋ Mode Geser Ruang • Klik gedung/ruang mana saja untuk memindahkannya';
+      } else {
+        const mv = state.moving;
+        const excludeIds = mv.child ? [mv.building.id, mv.child.id] : [mv.building.id];
+        evaluatePlacementPreview(mv.building.type, mv.curRot, excludeIds, !mv.child);
+      }
+    }
+
+    function evaluateRoadCursor(paintIfDragging = false) {
+      if (!ghostMesh || state.mode !== 'road') return;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObject(raycastPlane);
+      if (hits.length > 0) {
+        const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -30, 30);
+        const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -30, 30);
+        const valid = canPlaceRoad(gx, gz);
+        ghostMesh.visible = true;
+        ghostMesh.position.set(gx, 0.09, gz);
+        ghostMesh.rotation.y = state.roadRotation;
+        ghostMesh.traverse(o => { if (o.isMesh) o.material = valid ? ghostValidMat : ghostInvalidMat; });
+        if (paintIfDragging && valid) addOrReplaceRoad(state.selectedRoad, gx, gz, state.roadRotation);
+      }
+    }
+
+    function evaluateDeleteHover() {
+      if (state.mode !== 'delete') return;
+      raycaster.setFromCamera(pointer, camera);
+      const targets = [
+        ...state.characters.map(c => c.mesh),
+        ...state.buildings.map(b => b.mesh),
+        ...state.roads.map(r => r.mesh)
+      ];
+      const hits = raycaster.intersectObjects(targets, true).filter(h => isObjectVisible(h.object));
+      if (hits.length > 0) {
+        let curr = hits[0].object;
+        while (curr && !curr.userData.entityId) curr = curr.parent;
+        if (curr) {
+          const { entityType, entityId } = curr.userData;
+          if (entityType === 'character') {
+            const ch = state.characters.find(c => c.id === entityId);
+            if (ch) {
+              hintBanner.textContent = `🗑️ Klik untuk MENGHAPUS ${ROLE_CATALOG[ch.role].label}: ${ch.name}`;
+              return;
+            }
+          } else if (entityType === 'building') {
+            const b = state.buildings.find(item => item.id === entityId);
+            if (b) {
+              hintBanner.textContent = `🗑️ Klik untuk MENGHAPUS ${BUILDING_CATALOG[b.type].label} (Lantai ${b.floor})`;
+              return;
+            }
+          } else if (entityType === 'road') {
+            hintBanner.textContent = '🗑️ Klik untuk MENGHAPUS Petak Jalan ini';
+            return;
+          }
+        }
+      }
+      hintBanner.textContent = '🗑️ Mode Hapus • Klik murid, guru, gedung, atau jalan yang ingin dihapus';
+    }
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      updatePointer(e);
+      if (state.mode === 'build') evaluateBuildCursor();
+      else if (state.mode === 'move') evaluateMoveCursor();
+      else if (state.mode === 'road') evaluateRoadCursor(isRoadDragging);
+      else if (state.mode === 'delete') evaluateDeleteHover();
+    });
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+      if (state.mode === 'road' && state.roadBrushDrag && e.button === 0) {
+        isRoadDragging = true;
+        controls.enabled = false;
+        updatePointer(e);
+        evaluateRoadCursor(true);
+      }
+    });
+
+    renderer.domElement.addEventListener('pointerup', (e) => {
+      if (isRoadDragging) {
+        isRoadDragging = false;
+        controls.enabled = true;
+        return;
+      }
+
+      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (dist > 6 || e.button !== 0) return;
+
+      updatePointer(e);
+      raycaster.setFromCamera(pointer, camera);
+
+      if (state.mode === 'build') {
+        evaluateBuildCursor();
+        if (pendingBuildPlacement && pendingBuildPlacement.valid) {
+          const p = pendingBuildPlacement;
+          addBuilding(state.selectedBuilding, p.x, p.z, p.rotation, p.floor, p.parentId);
+          evaluateBuildCursor();
+        }
+      }
+      else if (state.mode === 'move') {
+        if (!state.moving) {
+          const hits = raycaster.intersectObjects(state.buildings.map(b => b.mesh), true).filter(h => isObjectVisible(h.object));
+          if (hits.length > 0) {
+            let curr = hits[0].object;
+            while (curr && !curr.userData.entityId) curr = curr.parent;
+            const b = state.buildings.find(item => item.id === curr?.userData.entityId);
+            if (b) pickBuildingToMove(b);
+          }
+        } else {
+          evaluateMoveCursor();
+          commitMove();
+        }
+      }
+      else if (state.mode === 'road') {
+        const hits = raycaster.intersectObject(raycastPlane);
+        if (hits.length > 0) {
+          const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -30, 30);
+          const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -30, 30);
+          addOrReplaceRoad(state.selectedRoad, gx, gz, state.roadRotation);
+        }
+      }
+      else if (state.mode === 'character') {
+        const hits = raycaster.intersectObject(raycastPlane);
+        if (hits.length > 0) {
+          const px = THREE.MathUtils.clamp(hits[0].point.x, -ISLAND_LIMIT + 2, ISLAND_LIMIT - 2);
+          const pz = THREE.MathUtils.clamp(hits[0].point.z, -ISLAND_LIMIT + 2, ISLAND_LIMIT - 2);
+          const nameInput = document.getElementById('char-name-input');
+          addCharacter(state.selectedRole, nameInput ? nameInput.value : '', px, pz);
+          if (nameInput) nameInput.value = '';
+        }
+      }
+      else if (state.mode === 'delete') {
+        const targets = [
+          ...state.characters.map(c => c.mesh),
+          ...state.buildings.map(b => b.mesh),
+          ...state.roads.map(r => r.mesh)
+        ];
+        const hits = raycaster.intersectObjects(targets, true).filter(h => isObjectVisible(h.object));
+        if (hits.length > 0) {
+          let curr = hits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          if (curr && curr.userData.entityId) {
+            removeEntity(curr.userData.entityType, curr.userData.entityId);
+            evaluateDeleteHover();
+          }
+        }
+      }
+      else if (state.mode === 'view') {
+        const charHits = raycaster.intersectObjects(state.characters.map(c => c.mesh), true);
+        if (charHits.length > 0) {
+          let curr = charHits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          if (curr) {
+            const ch = state.characters.find(c => c.id === curr.userData.entityId);
+            if (ch) {
+              triggerChatBubble(ch);
+              openInspectCard(ch);
+              return;
+            }
+          }
+        }
+        const bldHits = raycaster.intersectObjects(state.buildings.map(b => b.mesh), true).filter(h => isObjectVisible(h.object));
+        if (bldHits.length > 0) {
+          let curr = bldHits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          if (curr) {
+            let b = state.buildings.find(item => item.id === curr.userData.entityId);
+            if (b && b.floor === 2 && b.parentId) {
+              b = state.buildings.find(item => item.id === b.parentId);
+            }
+            if (b && BUILDING_CATALOG[b.type].stackable) {
+              const childF2 = state.buildings.find(item => item.parentId === b.id);
+              if (childF2) {
+                openBuildingCard(b, childF2);
+                return;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+      if (e.key === 'Escape' && state.mode === 'move' && state.moving) {
+        cancelMove();
+        return;
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        if (state.mode === 'build') {
+          state.buildRotation = (state.buildRotation + Math.PI / 2) % (Math.PI * 2);
+          evaluateBuildCursor();
+        } else if (state.mode === 'move' && state.moving) {
+          state.moving.curRot = (state.moving.curRot + Math.PI / 2) % (Math.PI * 2);
+          evaluateMoveCursor();
+        } else if (state.mode === 'road') {
+          state.roadRotation = (state.roadRotation + Math.PI / 2) % (Math.PI * 2);
+          evaluateRoadCursor(false);
+        }
+      }
+    });
+
+    // ==========================================
+    // 10. PRESET KAMERA VIDEO & KARTU DETAIL
+    // ==========================================
+    const CAM_PRESETS = {
+      gate:     { pos: [6, 9, 43], target: [2, 2.5, 16] },
+      corridor: { pos: [7, 4.8, 24], target: [3, 2.2, 2] },
+      yard:     { pos: [-5, 7, 17], target: [-14, 2, -12] },
+      overview: { pos: [30, 38, 42], target: [-4, 1, 2] }
+    };
+
+    document.querySelectorAll('#cam-bar button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = CAM_PRESETS[btn.dataset.cam];
+        if (!p) return;
+        camera.position.set(...p.pos);
+        controls.target.set(...p.target);
+        controls.update();
+      });
+    });
+
+    const inspectCard = document.getElementById('inspect-card');
+    const buildingCard = document.getElementById('building-card');
+
+    function openInspectCard(ch) {
+      closeBuildingCard();
+      state.inspectedCharId = ch.id;
+      const cat = ROLE_CATALOG[ch.role];
+      document.getElementById('ins-title').textContent = `${cat.emoji} ${ch.name}`;
+
+      if (ch.role === 'student') {
+        const u = UNIFORM_CATALOG[ch.details.uniform];
+        const accMap = { hat: 'Topi Sekolah', hijab: 'Berhijab', glasses: 'Berkacamata', none: 'Standar' };
+        const itemMap = { book: '📚 Buku Pelajaran', ball: '🏀 Bola Basket', bottle: '🥤 Botol Minum', none: 'Tidak ada' };
+        document.getElementById('ins-role').textContent = `Siswa ${u.label}`;
+        document.getElementById('ins-acc').textContent = accMap[ch.details.acc] || 'Standar';
+        document.getElementById('ins-item').textContent = itemMap[ch.details.item] || 'Tidak ada';
+      } else {
+        document.getElementById('ins-role').textContent = cat.label;
+        document.getElementById('ins-acc').textContent = ch.role === 'teacher' ? 'Seragam Guru' : 'Bodi Metalik AI';
+        document.getElementById('ins-item').textContent = '-';
+      }
+      document.getElementById('ins-act').textContent = ch.state === 'walk' ? 'Sedang berkeliling' : 'Berhenti sejenak';
+      inspectCard.classList.add('active');
+    }
+
+    function closeInspectCard() {
+      state.inspectedCharId = null;
+      inspectCard.classList.remove('active');
+    }
+    document.getElementById('ins-close').onclick = closeInspectCard;
+    document.getElementById('ins-greet').onclick = () => {
+      const ch = state.characters.find(c => c.id === state.inspectedCharId);
+      if (ch) triggerChatBubble(ch);
+    };
+    document.getElementById('ins-delete').onclick = () => {
+      if (state.inspectedCharId) removeEntity('character', state.inspectedCharId);
+    };
+
+    function openBuildingCard(bFloor1, bFloor2) {
+      closeInspectCard();
+      state.inspectedBuildingId = bFloor1.id;
+      document.getElementById('bld-f1').textContent = `${BUILDING_CATALOG[bFloor1.type].emoji} ${BUILDING_CATALOG[bFloor1.type].label}`;
+      document.getElementById('bld-f2').textContent = `${BUILDING_CATALOG[bFloor2.type].emoji} ${BUILDING_CATALOG[bFloor2.type].label}`;
+
+      const sideContainer = document.getElementById('stair-side-pills');
+      sideContainer.innerHTML = '';
+      for (const [key, label] of Object.entries(STAIR_SIDES)) {
+        const pill = document.createElement('button');
+        pill.className = `mini-pill ${bFloor1.stairSide === key ? 'active' : ''}`;
+        pill.textContent = label;
+        pill.onclick = () => {
+          bFloor1.stairSide = key;
+          applyBuildingStairs(bFloor1);
+          saveWorld();
+          openBuildingCard(bFloor1, bFloor2);
+        };
+        sideContainer.appendChild(pill);
+      }
+
+      const styleContainer = document.getElementById('stair-style-pills');
+      styleContainer.innerHTML = '';
+      for (const [key, info] of Object.entries(STAIR_STYLES)) {
+        const pill = document.createElement('button');
+        pill.className = `mini-pill ${(bFloor1.stairStyle || 'blue_steel') === key ? 'active' : ''}`;
+        pill.textContent = info.label;
+        pill.onclick = () => {
+          bFloor1.stairStyle = key;
+          if (bFloor1.stairSide === 'none') bFloor1.stairSide = 'front';
+          applyBuildingStairs(bFloor1);
+          saveWorld();
+          openBuildingCard(bFloor1, bFloor2);
+        };
+        styleContainer.appendChild(pill);
+      }
+
+      buildingCard.classList.add('active');
+    }
+
+    function closeBuildingCard() {
+      state.inspectedBuildingId = null;
+      buildingCard.classList.remove('active');
+    }
+    document.getElementById('bld-close').onclick = closeBuildingCard;
+
+    // ==========================================
+    // 11. SUB-PANEL & KONTROL UTAMA
+    // ==========================================
+    const subPanel = document.getElementById('sub-panel');
+    const hintBanner = document.getElementById('hint-banner');
+
+    function renderSubPanel() {
+      subPanel.innerHTML = '';
+      roadGridHelper.visible = state.mode === 'road';
+
+      if (state.mode === 'view') {
+        subPanel.classList.remove('active');
+        hintBanner.textContent = '👀 Mode Jelajah • Klik murid/guru untuk profil, atau klik gedung 2 lantai untuk kustom tangga';
+        return;
+      }
+
+      subPanel.classList.add('active');
+
+      if (state.mode === 'build') {
+        hintBanner.textContent = '🏗️ Dekatkan ke sisi gedung agar menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar';
+        for (const [key, info] of Object.entries(BUILDING_CATALOG)) {
+          if (info.hidden) continue;
+          const btn = document.createElement('button');
+          btn.className = `item-btn ${state.selectedBuilding === key ? 'selected' : ''}`;
+          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}${info.stackable ? ' ⬆️' : ''}</span>`;
+          btn.onclick = () => {
+            state.selectedBuilding = key;
+            renderSubPanel();
+            refreshGhostMesh();
+          };
+          subPanel.appendChild(btn);
+        }
+
+        const div = document.createElement('div');
+        div.className = 'divider-v';
+        subPanel.appendChild(div);
+
+        const selStair = document.createElement('select');
+        selStair.className = 'select-mini';
+        selStair.innerHTML = Object.entries(STAIR_STYLES)
+          .map(([k, v]) => `<option value="${k}">🪜 Tangga: ${v.label}</option>`).join('');
+        selStair.value = state.defaultStairStyle;
+        selStair.onchange = () => {
+          state.defaultStairStyle = selStair.value;
+          refreshGhostMesh();
+        };
+        subPanel.appendChild(selStair);
+
+        const rotBtn = document.createElement('button');
+        rotBtn.className = 'action-chip';
+        rotBtn.textContent = '🔄 Putar (R)';
+        rotBtn.onclick = () => {
+          state.buildRotation = (state.buildRotation + Math.PI / 2) % (Math.PI * 2);
+          evaluateBuildCursor();
+        };
+        subPanel.appendChild(rotBtn);
+      }
+
+      else if (state.mode === 'move') {
+        if (!state.moving) {
+          hintBanner.textContent = '✋ Mode Geser Ruang • Klik ruang/gedung mana saja di pulau untuk memindahkannya';
+          const info = document.createElement('div');
+          info.style.cssText = 'font-size:12.5px;font-weight:700;color:#b45309;';
+          info.textContent = 'Klik Lantai 1 untuk geser 1 blok penuh, atau klik Lantai 2 untuk pindah ruang atas saja';
+          subPanel.appendChild(info);
+        } else {
+          const mv = state.moving;
+          const label = BUILDING_CATALOG[mv.building.type].label;
+          hintBanner.textContent = `✋ Menggeser ${label} • Klik posisi baru untuk meletakkan • [R] Putar`;
+
+          const info = document.createElement('div');
+          info.style.cssText = 'font-size:12.5px;font-weight:800;color:#0f172a;margin-right:4px;';
+          info.textContent = `📦 Memindahkan: ${BUILDING_CATALOG[mv.building.type].emoji} ${label}${mv.child ? ' (2 Lt)' : ''}`;
+          subPanel.appendChild(info);
+
+          const rotBtn = document.createElement('button');
+          rotBtn.className = 'action-chip';
+          rotBtn.textContent = '🔄 Putar (R)';
+          rotBtn.onclick = () => {
+            if (state.moving) {
+              state.moving.curRot = (state.moving.curRot + Math.PI / 2) % (Math.PI * 2);
+              evaluateMoveCursor();
+            }
+          };
+          subPanel.appendChild(rotBtn);
+
+          const cancelBtn = document.createElement('button');
+          cancelBtn.className = 'action-chip danger';
+          cancelBtn.textContent = '❌ Batal (Esc)';
+          cancelBtn.onclick = cancelMove;
+          subPanel.appendChild(cancelBtn);
+        }
+      }
+
+      else if (state.mode === 'road') {
+        hintBanner.textContent = state.roadBrushDrag
+          ? '🖌️ Mode Kuas Aktif: Seret di rumput untuk menggambar jalan! • [R] Putar'
+          : '🛣️ Klik grid untuk membuat jalan • Aktifkan Mode Kuas untuk seret • [R] Putar';
+
+        for (const [key, info] of Object.entries(ROAD_CATALOG)) {
+          const btn = document.createElement('button');
+          btn.className = `item-btn ${state.selectedRoad === key ? 'selected' : ''}`;
+          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}</span>`;
+          btn.onclick = () => {
+            state.selectedRoad = key;
+            renderSubPanel();
+            refreshGhostMesh();
+          };
+          subPanel.appendChild(btn);
+        }
+
+        const rotBtn = document.createElement('button');
+        rotBtn.className = 'action-chip';
+        rotBtn.textContent = '🔄 Putar (R)';
+        rotBtn.onclick = () => {
+          state.roadRotation = (state.roadRotation + Math.PI / 2) % (Math.PI * 2);
+          evaluateRoadCursor(false);
+        };
+        subPanel.appendChild(rotBtn);
+
+        const brushBtn = document.createElement('button');
+        brushBtn.className = `action-chip ${state.roadBrushDrag ? 'active-toggle' : ''}`;
+        brushBtn.textContent = state.roadBrushDrag ? '🖌️ Kuas Drag: ON' : '🖌️ Kuas Drag: OFF';
+        brushBtn.onclick = () => {
+          state.roadBrushDrag = !state.roadBrushDrag;
+          renderSubPanel();
+        };
+        subPanel.appendChild(brushBtn);
+      }
+
+      else if (state.mode === 'character') {
+        hintBanner.textContent = '🧑‍🎓 Pilih peran & detail murid lalu klik di pulau, atau klik Tambah Acak';
+        for (const [key, info] of Object.entries(ROLE_CATALOG)) {
+          const btn = document.createElement('button');
+          btn.className = `item-btn ${state.selectedRole === key ? 'selected' : ''}`;
+          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}</span>`;
+          btn.onclick = () => {
+            state.selectedRole = key;
+            renderSubPanel();
+          };
+          subPanel.appendChild(btn);
+        }
+
+        if (state.selectedRole === 'student') {
+          const div = document.createElement('div');
+          div.className = 'divider-v';
+          subPanel.appendChild(div);
+
+          const selUniform = document.createElement('select');
+          selUniform.className = 'select-mini';
+          selUniform.innerHTML = `
+            <option value="sd">🔴 SD (Merah)</option>
+            <option value="pramuka">⚜️ HW / Pramuka</option>
+            <option value="smp">🔵 SMP (Biru)</option>
+            <option value="sma">⚪ SMA (Abu)</option>
+            <option value="random">Seragam: Acak</option>`;
+          selUniform.value = state.studentUniform;
+          selUniform.onchange = () => state.studentUniform = selUniform.value;
+          subPanel.appendChild(selUniform);
+
+          const selAcc = document.createElement('select');
+          selAcc.className = 'select-mini';
+          selAcc.innerHTML = `
+            <option value="random">Gaya: Acak</option>
+            <option value="hat">🧢 Topi Sekolah</option>
+            <option value="hijab">🧕 Hijab</option>
+            <option value="glasses">👓 Kacamata</option>
+            <option value="none">Polos</option>`;
+          selAcc.value = state.studentAcc;
+          selAcc.onchange = () => state.studentAcc = selAcc.value;
+          subPanel.appendChild(selAcc);
+
+          const selItem = document.createElement('select');
+          selItem.className = 'select-mini';
+          selItem.innerHTML = `
+            <option value="random">Bawaan: Acak</option>
+            <option value="book">📚 Buku</option>
+            <option value="ball">🏀 Bola</option>
+            <option value="bottle">🥤 Botol</option>
+            <option value="none">Kosong</option>`;
+          selItem.value = state.studentItem;
+          selItem.onchange = () => state.studentItem = selItem.value;
+          subPanel.appendChild(selItem);
+        }
+
+        const input = document.createElement('input');
+        input.id = 'char-name-input';
+        input.className = 'input-name';
+        input.placeholder = 'Nama (opsional)...';
+        subPanel.appendChild(input);
+
+        const spawnBtn = document.createElement('button');
+        spawnBtn.className = 'action-chip';
+        spawnBtn.textContent = '✨ Tambah Acak';
+        spawnBtn.onclick = () => {
+          const pt = pickRandomWalkPoint();
+          addCharacter(state.selectedRole, input.value, pt.x, pt.z);
+          input.value = '';
+        };
+        subPanel.appendChild(spawnBtn);
+      }
+
+      else if (state.mode === 'delete') {
+        hintBanner.textContent = '🗑️ Mode Hapus • Klik murid, guru, gedung, atau jalan di pulau, atau gunakan tombol cepat';
+
+        const delStudents = document.createElement('button');
+        delStudents.className = 'action-chip danger';
+        delStudents.textContent = '🎒 Hapus Semua Murid';
+        delStudents.onclick = () => clearCharactersByRole('student');
+
+        const delTeachers = document.createElement('button');
+        delTeachers.className = 'action-chip danger';
+        delTeachers.textContent = '👩‍🏫 Hapus Semua Guru';
+        delTeachers.onclick = () => clearCharactersByRole('teacher');
+
+        const delAllPeople = document.createElement('button');
+        delAllPeople.className = 'action-chip danger';
+        delAllPeople.textContent = '🧹 Hapus Semua Orang & Guru';
+        delAllPeople.onclick = () => clearCharactersByRole(null);
+
+        subPanel.append(delStudents, delTeachers, delAllPeople);
+      }
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (state.moving) cancelMove();
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.dataset.mode;
+        if (state.mode !== 'road') state.roadBrushDrag = false;
+        if (state.mode !== 'view') {
+          closeInspectCard();
+          closeBuildingCard();
+        }
+        renderSubPanel();
+        refreshGhostMesh();
+      });
+    });
+
+    const btnTime = document.getElementById('btn-time');
+    function applyTimeMode() {
+      if (state.timeMode === 0) {
+        scene.background.setHex(0x9bd6f0); scene.fog.color.setHex(0x9bd6f0);
+        dirLight.color.setHex(0xfffbeb); dirLight.intensity = 1.45; hemiLight.intensity = 0.9;
+        windowMaterials.forEach(m => m.emissiveIntensity = 0);
+        btnTime.textContent = '☀️ Siang';
+      } else if (state.timeMode === 1) {
+        scene.background.setHex(0xfb923c); scene.fog.color.setHex(0xfb923c);
+        dirLight.color.setHex(0xfed7aa); dirLight.intensity = 1.3; hemiLight.intensity = 0.65;
+        windowMaterials.forEach(m => m.emissiveIntensity = 0.35);
+        btnTime.textContent = '🌇 Sore';
+      } else {
+        scene.background.setHex(0x0f172a); scene.fog.color.setHex(0x0f172a);
+        dirLight.color.setHex(0x93c5fd); dirLight.intensity = 0.5; hemiLight.intensity = 0.35;
+        windowMaterials.forEach(m => m.emissiveIntensity = 1.1);
+        btnTime.textContent = '🌙 Malam';
+      }
+    }
+    btnTime.addEventListener('click', () => {
+      state.timeMode = (state.timeMode + 1) % 3;
+      applyTimeMode();
+      saveWorld();
+    });
+
+    const btnLabels = document.getElementById('btn-labels');
+    function applyLabelsVisibility() {
+      labelsLayer.style.display = state.showLabels ? 'block' : 'none';
+      btnLabels.textContent = state.showLabels ? '🏷️ Label: ON' : '🏷️ Label: OFF';
+    }
+    btnLabels.addEventListener('click', () => {
+      state.showLabels = !state.showLabels;
+      applyLabelsVisibility();
+      saveWorld();
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      if (confirm('Kembalikan sekolah SD Mutu Tangkil Kulon ke susunan awal video?')) {
+        if (state.moving) cancelMove();
+        localStorage.removeItem(STORAGE_KEY);
+        clearWorld();
+        seedDefaultSchool();
+      }
+    });
+
+    function updateStats() {
+      document.getElementById('stat-buildings').textContent = state.buildings.length;
+      document.getElementById('stat-roads').textContent = state.roads.length;
+      document.getElementById('stat-chars').textContent = state.characters.length;
+    }
+
+    // ==========================================
+    // 12. SAVE / EXPORT / IMPORT JSON & SEED AWAL
+    // ==========================================
+    function getWorldPayload() {
+      return {
+        app: 'SD Mutu Tangkil Kulon 3D',
+        version: 1,
+        savedAt: new Date().toISOString(),
+        timeMode: state.timeMode,
+        showLabels: state.showLabels,
+        buildings: state.buildings.map(b => ({
+          id: b.id, type: b.type, x: b.x, z: b.z, rotation: b.rotation,
+          floor: b.floor, parentId: b.parentId, stairSide: b.stairSide,
+          stairStyle: b.stairStyle, extraOpts: b.extraOpts
+        })),
+        roads: state.roads.map(r => ({ type: r.type, x: r.x, z: r.z, rotation: r.rotation })),
+        characters: state.characters.map(c => ({
+          role: c.role, name: c.name, shirtColor: c.shirtColor, details: c.details, x: c.x, z: c.z
+        }))
+      };
+    }
+
+    function saveWorld() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getWorldPayload()));
+    }
+
+    function clearWorld() {
+      state.buildings.forEach(b => scene.remove(b.mesh));
+      state.buildings = [];
+      state.roads.forEach(r => scene.remove(r.mesh));
+      state.roads = [];
+      state.characters.forEach(c => { scene.remove(c.mesh); c.labelEl.remove(); });
+      state.characters = [];
+      closeInspectCard();
+      closeBuildingCard();
+      updateStats();
+    }
+
+    function applyWorldData(data) {
+      if (typeof data.timeMode === 'number') {
+        state.timeMode = data.timeMode;
+        applyTimeMode();
+      }
+      if (typeof data.showLabels === 'boolean') {
+        state.showLabels = data.showLabels;
+        applyLabelsVisibility();
+      }
+      const f1 = data.buildings.filter(b => (b.floor || 1) === 1);
+      const f2 = data.buildings.filter(b => b.floor === 2);
+      f1.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 1, null, b.id, false, b.stairSide || 'right', b.stairStyle || 'blue_steel', b.extraOpts || {}));
+      f2.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 2, b.parentId, b.id, false, 'none', 'blue_steel', b.extraOpts || {}));
+      (data.roads || []).forEach(r => addOrReplaceRoad(r.type, r.x, r.z, r.rotation));
+      (data.characters || []).forEach(c => addCharacter(c.role, c.name, c.x, c.z, c.shirtColor, c.details));
+    }
+
+    // Export JSON File
+    document.getElementById('btn-export').addEventListener('click', () => {
+      if (state.moving) cancelMove();
+      const jsonStr = JSON.stringify(getWorldPayload(), null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateTag = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `denah-sd-mutu-${dateTag}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      hintBanner.textContent = '💾 File JSON denah & kondisi sekolah berhasil diunduh!';
+    });
+
+    // Import JSON File
+    const fileImportInput = document.getElementById('file-import');
+    document.getElementById('btn-import').addEventListener('click', () => fileImportInput.click());
+    fileImportInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!Array.isArray(data.buildings)) throw new Error('Format file tidak valid');
+        if (state.moving) cancelMove();
+        clearWorld();
+        applyWorldData(data);
+        saveWorld();
+        hintBanner.textContent = `📂 Berhasil memuat denah dari ${file.name}!`;
+      } catch (err) {
+        alert('Gagal membaca file JSON denah sekolah. Pastikan file berasal dari Export JSON aplikasi ini.');
+      } finally {
+        fileImportInput.value = '';
+      }
+    });
+
+    function seedDefaultSchool() {
+      addBuilding('sd_front_fence', -2.5, 25.5, 0, 1, null, 'b_fence', false);
+      addBuilding('sd_front_left', -16.5, 21.5, 0, 1, null, 'b_frontL', false);
+      addBuilding('sd_carport', -5.2, 18.8, 0, 1, null, 'b_carport', false);
+
+      const f1Main = addBuilding('classroom', 0.2, 17.6, Math.PI / 2, 1, null, 'b_2f_base', false, 'front', 'blue_steel', { hasMading: true });
+      addBuilding('lab', 0.2, 17.6, Math.PI / 2, 2, f1Main, 'b_2f_top', false, 'none', 'blue_steel', { hasBanner: true });
+
+      addBuilding('classroom', 0.2, 10.0, Math.PI / 2, 1, null, 'b_wing_1', false);
+      addBuilding('classroom', 0.2, 2.4, Math.PI / 2, 1, null, 'b_wing_2', false);
+      addBuilding('classroom', 0.2, -5.2, Math.PI / 2, 1, null, 'b_wing_3', false);
+
+      addBuilding('sd_mural_wall', 11.4, 8.5, 0, 1, null, 'b_mural', false);
+      addBuilding('sd_bike_shed', -5.2, 9.2, Math.PI / 2, 1, null, 'b_bikes', false);
+      addBuilding('sd_toren_wc', -23.5, 4.5, 0, 1, null, 'b_toren', false);
+
+      addBuilding('sd_back_wall', -27.5, 2.0, 0, 1, null, 'b_wall_l', false);
+      addBuilding('sd_back_wall', -6.0, -21.5, Math.PI / 2, 1, null, 'b_wall_b', false);
+
+      addBuilding('classroom', -19.8, -16.2, 0, 1, null, 'b_back_1', false);
+      addBuilding('classroom', -12.2, -16.2, 0, 1, null, 'b_back_2', false, 'none', 'concrete', { roofTitle: true });
+      addBuilding('classroom', -4.6, -16.2, 0, 1, null, 'b_back_3', false);
+      addBuilding('flagpole', -12.2, -9.2, 0, 1, null, 'b_flag', false);
+
+      for (const [tx, tz] of [[-25, -13], [-25, -5], [-25, 13], [-4, -24], [-18, -24], [13.5, -12], [13.5, 2]]) {
+        addBuilding('tree_park', tx, tz, 0, 1, null, null, false);
+      }
+
+      for (let x = -27; x <= 27; x += 3) addOrReplaceRoad('asphalt', x, 30, Math.PI / 2);
+      for (let z = -12; z <= 27; z += 3) {
+        addOrReplaceRoad('paving', 6, z, 0);
+        addOrReplaceRoad('paving', 9, z, 0);
+      }
+      for (const px of [-3, 0, 3]) addOrReplaceRoad('paving', px, 24, 0);
+
+      addCharacter('teacher', 'Bu Rina', 6.5, 12);
+      addCharacter('student', 'Andi', 7.5, 4, null, { uniform: 'sd', acc: 'hat', item: 'book', hairIdx: 0 });
+      addCharacter('student', 'Siti', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
+      addCharacter('student', 'Budi', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
+      addCharacter('student', 'Rara', 6.5, 19, null, { uniform: 'sd', acc: 'glasses', item: 'ball', hairIdx: 1 });
+    }
+
+    function loadWorld() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { seedDefaultSchool(); return; }
+      try {
+        const data = JSON.parse(raw);
+        if (!data.buildings || data.buildings.length === 0) { seedDefaultSchool(); return; }
+        applyWorldData(data);
+      } catch {
+        seedDefaultSchool();
+      }
+    }
+
+    // ==========================================
+    // 13. LOOP ANIMASI & SLIDING COLLISION
+    // ==========================================
+    function triggerChatBubble(ch) {
+      const chats = ROLE_CATALOG[ch.role].chats;
+      const bubble = ch.labelEl.querySelector('.char-bubble');
+      bubble.textContent = chats[Math.floor(Math.random() * chats.length)];
+      bubble.style.display = 'block';
+      ch.bubbleTimer = 3.2;
+    }
+
+    const clock = new THREE.Clock();
+    const tempVec = new THREE.Vector3();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.elapsedTime;
+
+      for (const c of clouds) {
+        c.mesh.position.x += c.speed * dt;
+        if (c.mesh.position.x > 85) c.mesh.position.x = -85;
+      }
+
+      if (flagClothMesh) {
+        const pos = flagClothMesh.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i);
+          pos.setZ(i, Math.sin(elapsed * 5 + x * 2.5) * 0.14 * ((x + 0.95) / 1.9));
+        }
+        pos.needsUpdate = true;
+      }
+
+      for (const ch of state.characters) {
+        ch.stateTimer -= dt;
+        if (ch.bubbleTimer > 0) {
+          ch.bubbleTimer -= dt;
+          if (ch.bubbleTimer <= 0) ch.labelEl.querySelector('.char-bubble').style.display = 'none';
+        }
+
+        if (ch.state === 'idle') {
+          ch.parts.leftLeg.rotation.x *= 0.85;
+          ch.parts.rightLeg.rotation.x *= 0.85;
+          ch.parts.leftArm.rotation.x *= 0.85;
+          ch.parts.rightArm.rotation.x *= 0.85;
+          ch.mesh.position.y = 0;
+
+          if (ch.stateTimer <= 0) {
+            const pt = pickRandomWalkPoint();
+            ch.targetX = pt.x; ch.targetZ = pt.z;
+            ch.state = 'walk';
+            ch.stateTimer = 4 + Math.random() * 6;
+          }
+        } else {
+          const dx = ch.targetX - ch.x;
+          const dz = ch.targetZ - ch.z;
+          const dist = Math.hypot(dx, dz);
+
+          if (dist < 0.6 || ch.stateTimer <= 0) {
+            ch.state = 'idle';
+            ch.stateTimer = 1.2 + Math.random() * 2.0;
+            if (Math.random() < 0.35) triggerChatBubble(ch);
+          } else {
+            const step = ch.speed * dt;
+            const nx = THREE.MathUtils.clamp(ch.x + (dx / dist) * step, -25.5, 10.2);
+            const nz = THREE.MathUtils.clamp(ch.z + (dz / dist) * step, -12.5, 23.5);
+
+            let moved = false;
+            if (!isPointBlocked(nx, ch.z)) {
+              ch.x = nx;
+              moved = true;
+            }
+            if (!isPointBlocked(ch.x, nz)) {
+              ch.z = nz;
+              moved = true;
+            }
+
+            if (!moved) {
+              const pt = pickRandomWalkPoint();
+              ch.targetX = pt.x; ch.targetZ = pt.z;
+            }
+
+            const targetAngle = Math.atan2(dx, dz);
+            let diff = targetAngle - ch.mesh.rotation.y;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            ch.mesh.rotation.y += diff * 0.14;
+
+            ch.walkPhase += dt * ch.speed * 3.2;
+            const swing = Math.sin(ch.walkPhase) * 0.65;
+            ch.parts.leftLeg.rotation.x = swing;
+            ch.parts.rightLeg.rotation.x = -swing;
+            ch.parts.leftArm.rotation.x = -swing * 0.75;
+            ch.parts.rightArm.rotation.x = swing * 0.75;
+            ch.mesh.position.set(ch.x, Math.abs(Math.sin(ch.walkPhase)) * 0.08, ch.z);
+          }
+        }
+
+        if (state.showLabels) {
+          tempVec.set(ch.x, 2.4, ch.z);
+          tempVec.project(camera);
+          if (tempVec.z < 1) {
+            ch.labelEl.style.left = `${(tempVec.x * 0.5 + 0.5) * window.innerWidth}px`;
+            ch.labelEl.style.top = `${(-tempVec.y * 0.5 + 0.5) * window.innerHeight}px`;
+            ch.labelEl.style.opacity = '1';
+          } else {
+            ch.labelEl.style.opacity = '0';
+          }
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    loadWorld();
+    renderSubPanel();
+    animate();
+  </script>
+</body>
+</html>
