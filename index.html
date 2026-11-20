@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SD Mutu Tangkil Kulon 3D - Dunia Sekolah Interaktif</title>
+  <title>SD Mutu Tangkil Kulon 3D - Denah Interaktif</title>
   <style>
     * {
       box-sizing: border-box;
@@ -27,13 +27,78 @@
     }
 
     .hud-panel {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.93);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.78);
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
       border-radius: 16px;
+      transition: opacity 0.22s ease, transform 0.22s ease;
     }
+
+    .ico {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ico svg {
+      display: block;
+    }
+
+    /* Mode Bersih (Sembunyikan Menu) */
+    body.hud-hidden #top-bar,
+    body.hud-hidden #cam-bar,
+    body.hud-hidden #activity-bar,
+    body.hud-hidden #hint-banner,
+    body.hud-hidden #bottom-dock,
+    body.hud-hidden #inspect-card,
+    body.hud-hidden #building-card {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(-10px);
+    }
+
+    body.hud-hidden #bottom-dock {
+      transform: translate(-50%, 20px);
+    }
+
+    #hud-restore-pill {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      opacity: 0.72;
+      transition: opacity 0.2s ease;
+    }
+
+    #hud-restore-pill:hover { opacity: 1; }
+    body.hud-hidden #hud-restore-pill { display: flex; }
+
+    .restore-btn {
+      border: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .restore-btn:hover { background: #ffffff; }
 
     #top-bar {
       position: fixed;
@@ -59,17 +124,27 @@
     }
 
     .brand-card {
-      padding: 9px 15px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .brand-icon { font-size: 25px; line-height: 1; }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #14532d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(20, 83, 45, 0.35);
+      flex-shrink: 0;
+    }
+
     .brand-title { font-size: 14.5px; font-weight: 800; color: #0f172a; }
     .brand-sub { font-size: 11px; color: #64748b; font-weight: 600; }
 
-    /* Tombol Link BTQ, RPP, INDUK tepat di bawah panel SD Mutu */
     .quick-links {
       padding: 6px 8px;
       display: flex;
@@ -92,11 +167,7 @@
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
     }
 
-    .link-pill:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.08);
-    }
-
+    .link-pill:hover { transform: translateY(-1px); filter: brightness(1.08); }
     .link-pill.btq   { background: #0284c7; }
     .link-pill.rpp   { background: #16a34a; }
     .link-pill.induk { background: #7c3aed; }
@@ -112,9 +183,9 @@
     }
 
     .stat-pill {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       background: rgba(241, 245, 249, 0.95);
       padding: 5px 9px;
       border-radius: 999px;
@@ -130,12 +201,19 @@
       font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       transition: all 0.15s ease;
     }
 
     .btn-top:hover { background: #e2e8f0; transform: translateY(-1px); }
     .btn-top.primary { background: #dbeafe; color: #1d4ed8; }
     .btn-top.primary:hover { background: #bfdbfe; }
+    .btn-top.active-act { background: #15803d; color: #ffffff; box-shadow: 0 3px 10px rgba(21, 128, 61, 0.35); }
+    .btn-top.active-act:hover { background: #166534; }
+    .btn-top.dark { background: #1e293b; color: #ffffff; }
+    .btn-top.dark:hover { background: #334155; }
     .btn-top.danger:hover { background: #fee2e2; color: #b91c1c; }
 
     #cam-bar {
@@ -150,16 +228,32 @@
       flex-wrap: wrap;
     }
 
-    #cam-bar span {
+    #activity-bar {
+      position: fixed;
+      top: 110px;
+      right: 12px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 18;
+      flex-wrap: wrap;
+      max-width: 92vw;
+    }
+
+    .cam-label {
       font-size: 11px;
       font-weight: 800;
       color: #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       margin-right: 2px;
     }
 
     #hint-banner {
       position: fixed;
-      top: 114px;
+      top: 158px;
       left: 50%;
       transform: translateX(-50%);
       padding: 7px 16px;
@@ -177,7 +271,7 @@
       position: fixed;
       top: 126px;
       left: 12px;
-      width: 268px;
+      width: 274px;
       padding: 14px;
       z-index: 25;
       display: none;
@@ -250,7 +344,7 @@
     .mini-pill:hover { background: #eff6ff; border-color: #93c5fd; }
     .mini-pill.active { background: #2563eb; color: white; border-color: #2563eb; }
 
-    .btn-row { display: flex; gap: 6px; margin-top: 2px; }
+    .btn-row { display: flex; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
 
     #bottom-dock {
       position: fixed;
@@ -261,21 +355,48 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
       max-width: 96vw;
     }
 
     #sub-panel {
       padding: 10px 14px;
       display: none;
+      flex-direction: column;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
       max-width: 95vw;
     }
 
     #sub-panel.active { display: flex; }
+
+    .sub-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cat-tab {
+      border: 1.5px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cat-tab.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
 
     .mode-dock {
       padding: 7px;
@@ -295,7 +416,7 @@
       font-weight: 700;
       color: #475569;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: all 0.2s ease;
@@ -316,15 +437,25 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
-      min-width: 68px;
+      gap: 4px;
+      min-width: 72px;
       transition: all 0.15s ease;
     }
 
     .item-btn:hover { background: #eff6ff; transform: translateY(-2px); }
     .item-btn.selected { border-color: #2563eb; background: #dbeafe; }
 
-    .item-emoji { font-size: 19px; line-height: 1.1; }
+    .item-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(37, 99, 235, 0.1);
+      color: #1d4ed8;
+    }
+
     .item-label { font-size: 10px; font-weight: 700; color: #334155; text-align: center; }
 
     .divider-v { width: 1px; height: 34px; background: #cbd5e1; margin: 0 2px; }
@@ -333,14 +464,23 @@
       border: none;
       background: #0f172a;
       color: white;
-      padding: 8px 12px;
+      padding: 7px 11px;
       border-radius: 10px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .action-chip:hover { background: #334155; }
+    .action-chip.green { background: #15803d; }
+    .action-chip.green:hover { background: #166534; }
+    .action-chip.blue { background: #2563eb; }
+    .action-chip.blue:hover { background: #1d4ed8; }
+    .action-chip.amber { background: #d97706; }
+    .action-chip.amber:hover { background: #b45309; }
     .action-chip.danger { background: #dc2626; }
     .action-chip.danger:hover { background: #b91c1c; }
     .action-chip.active-toggle { background: #0d9488; box-shadow: 0 0 0 2px #99f6e4; }
@@ -388,13 +528,16 @@
     }
 
     .char-name {
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.8);
       color: #f8fafc;
       font-size: 10px;
       font-weight: 600;
       padding: 2px 7px;
       border-radius: 999px;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     @keyframes popIn {
@@ -404,7 +547,8 @@
 
     @media (max-width: 960px) {
       .brand-sub, #hint-banner { display: none; }
-      #cam-bar { top: auto; bottom: 125px; right: 10px; }
+      #cam-bar { top: auto; bottom: 170px; right: 10px; }
+      #activity-bar { top: auto; bottom: 124px; right: 10px; }
       .mode-btn span.txt { display: none; }
     }
   </style>
@@ -412,8 +556,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
       }
     }
   </script>
@@ -422,74 +566,134 @@
   <div id="canvas-container"></div>
   <div id="labels-layer"></div>
 
+  <!-- Tombol Restore saat Mode Layar Bersih aktif -->
+  <div id="hud-restore-pill">
+    <button class="restore-btn" id="btn-show-hud">
+      <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      <span>Tampilkan Menu (H)</span>
+    </button>
+    <button class="restore-btn" id="btn-clean-labels">Label: ON</button>
+  </div>
+
   <!-- Top Bar -->
   <div id="top-bar">
-    <!-- Kolom Kiri: Panel SD Mutu + Tombol Link BTQ / RPP / INDUK di bawahnya -->
+    <!-- Kolom Kiri: Panel SD Mutu + Link BTQ / RPP / INDUK -->
     <div class="brand-col">
       <div class="hud-panel brand-card">
-        <div class="brand-icon">🏫</div>
+        <div class="brand-logo" title="Logo SD Mutu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="4.5" fill="#facc15"/>
+            <g stroke="#facc15" stroke-width="1.8" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="5.2"/><line x1="12" y1="18.8" x2="12" y2="22"/>
+              <line x1="2" y1="12" x2="5.2" y2="12"/><line x1="18.8" y1="12" x2="22" y2="12"/>
+              <line x1="4.9" y1="4.9" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="19.1" y2="19.1"/>
+              <line x1="19.1" y1="4.9" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="4.9" y2="19.1"/>
+            </g>
+          </svg>
+        </div>
         <div>
-          <div class="brand-title">SD Mutu Tangkil Kulon 3D</div>
-          <div class="brand-sub">Geser Ruang • Gedung Menempel • Tangga Kustom</div>
+          <div class="brand-title">SD Mutu 3D</div>
+          <div class="brand-sub">Denah &bull; Geser Ruang &bull; Interaksi Lengkap</div>
         </div>
       </div>
 
       <div class="hud-panel quick-links">
-        <a href="https://sdm2pekajangan.github.io/btq-tracker/" target="_blank" rel="noopener noreferrer" class="link-pill btq">📖 BTQ</a>
-        <a href="https://sdm2pekajangan.github.io/jurnal/" target="_blank" rel="noopener noreferrer" class="link-pill rpp">📝 RPP</a>
-        <a href="https://mpropology.github.io/bukuinduk/" target="_blank" rel="noopener noreferrer" class="link-pill induk">📚 INDUK</a>
+        <a href="https://sdm2pekajangan.github.io/btq-tracker/" target="_blank" rel="noopener noreferrer" class="link-pill btq">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          BTQ
+        </a>
+        <a href="https://sdm2pekajangan.github.io/jurnal/" target="_blank" rel="noopener noreferrer" class="link-pill rpp">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+          RPP
+        </a>
+        <a href="https://mpropology.github.io/bukuinduk/" target="_blank" rel="noopener noreferrer" class="link-pill induk">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          INDUK
+        </a>
       </div>
     </div>
 
-    <!-- Kolom Kanan: Statistik, Export/Import Save JSON, Suasana & Reset -->
+    <!-- Kolom Kanan: Statistik, Export/Import, Suasana, Sembunyikan Menu & Reset -->
     <div class="hud-panel stats-bar">
-      <div class="stat-pill">🏫 <span id="stat-buildings">0</span> Objek</div>
-      <div class="stat-pill">🛣️ <span id="stat-roads">0</span> Jalan</div>
-      <div class="stat-pill">🚶 <span id="stat-chars">0</span> Orang/Guru</div>
-      <button class="btn-top primary" id="btn-export" title="Download file JSON denah & kondisi sekolah">💾 Export JSON</button>
-      <button class="btn-top primary" id="btn-import" title="Muat file JSON denah sekolah">📂 Import JSON</button>
-      <input type="file" id="file-import" accept=".json,application/json" style="display:none" />
-      <button class="btn-top" id="btn-time">☀️ Siang</button>
-      <button class="btn-top" id="btn-labels">🏷️ Label: ON</button>
-      <button class="btn-top danger" id="btn-reset">🔄 Reset</button>
-    </div>
-  </div>
+      <div class="stat-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.4"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        <span id="stat-buildings">0</span> Objek
+      </div>
+      <div class="stat-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.4"><path d="M4 19L9 5"/><path d="M20 19L15 5"/><path d="M12 19v-3"/><path d="M12 12V9"/></svg>
+        <span id="stat-roads">0</span> Jalan
+      </div>
+      <div class="stat-pill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.4"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+        <span id="stat-chars">0</span> Orang/Guru
+      </div>
 
-  <!-- Hint Banner -->
-  <div id="hint-banner" class="hud-panel">
-    👀 Mode Jelajah • Klik murid/guru atau gedung 2 lantai untuk kustom tangga
+      <button class="btn-top primary" id="btn-export" title="Download file JSON denah & kondisi sekolah">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export JSON
+      </button>
+      <button class="btn-top primary" id="btn-import" title="Muat file JSON denah sekolah">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import JSON
+      </button>
+      <input type="file" id="file-import" accept=".json,application/json" style="display:none" />
+
+      <button class="btn-top" id="btn-time">Siang</button>
+      <button class="btn-top" id="btn-labels">Label: ON</button>
+      <button class="btn-top dark" id="btn-hide-hud" title="Sembunyikan semua menu (Hotkey: H)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        Sembunyikan Menu
+      </button>
+      <button class="btn-top danger" id="btn-reset">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Reset
+      </button>
+    </div>
   </div>
 
   <!-- Camera Angle Presets -->
   <div id="cam-bar" class="hud-panel">
-    <span>🎥 Sudut Video:</span>
+    <span class="cam-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.4"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      Sudut Video:
+    </span>
     <button class="btn-top" data-cam="gate">Gerbang</button>
     <button class="btn-top" data-cam="corridor">Lorong Mural</button>
     <button class="btn-top" data-cam="yard">Lapangan</button>
     <button class="btn-top" data-cam="overview">Atas</button>
   </div>
 
+   <!-- Hint Banner -->
+  <div id="hint-banner" class="hud-panel">
+    Mode Jelajah &bull; Klik murid/guru untuk profil &amp; interaksi, atau klik gedung 2 lantai untuk kustom tangga
+  </div>
+
   <!-- Kartu Profil Karakter -->
   <div id="inspect-card" class="hud-panel side-card">
     <div class="inspect-header">
-      <div class="inspect-title" id="ins-title">🎒 Detail Karakter</div>
-      <button class="inspect-close" id="ins-close">✕</button>
+      <div class="inspect-title" id="ins-title">Detail Karakter</div>
+      <button class="inspect-close" id="ins-close">&times;</button>
     </div>
     <div class="inspect-row"><span>Peran / Jenjang</span><strong id="ins-role">-</strong></div>
     <div class="inspect-row"><span>Gaya / Aksesoris</span><strong id="ins-acc">-</strong></div>
     <div class="inspect-row"><span>Bawaan</span><strong id="ins-item">-</strong></div>
     <div class="inspect-row"><span>Aktivitas</span><strong id="ins-act">-</strong></div>
     <div class="btn-row">
-      <button class="action-chip" id="ins-greet" style="flex:1;">💬 Sapa</button>
-      <button class="action-chip danger" id="ins-delete">🗑️ Hapus</button>
+      <button class="action-chip" id="ins-greet" style="flex:1;">Sapa</button>
+      <button class="action-chip blue" id="ins-play" style="flex:1;">Ajak Main</button>
+    </div>
+    <div class="btn-row">
+      <button class="action-chip amber" id="ins-salute" style="flex:1;">Hormat</button>
+      <button class="action-chip green" id="ins-pray" style="flex:1;">Shalat</button>
+      <button class="action-chip danger" id="ins-delete">Hapus</button>
     </div>
   </div>
 
   <!-- Kartu Kustomisasi Tangga Gedung 2 Lantai -->
   <div id="building-card" class="hud-panel side-card">
     <div class="inspect-header">
-      <div class="inspect-title">🪜 Kustom Tangga 2 Lt</div>
-      <button class="inspect-close" id="bld-close">✕</button>
+      <div class="inspect-title">Kustom Tangga 2 Lantai</div>
+      <button class="inspect-close" id="bld-close">&times;</button>
     </div>
     <div class="inspect-row"><span>Lantai 1</span><strong id="bld-f1">-</strong></div>
     <div class="inspect-row"><span>Lantai 2</span><strong id="bld-f2">-</strong></div>
@@ -505,22 +709,28 @@
 
     <div class="hud-panel mode-dock">
       <button class="mode-btn active" data-mode="view">
-        <span>👀</span><span class="txt">Jelajah</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="txt">Jelajah</span>
       </button>
       <button class="mode-btn" data-mode="build">
-        <span>🏗️</span><span class="txt">Gedung & Tangga</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        <span class="txt">Gedung &amp; Objek</span>
       </button>
       <button class="mode-btn move-mode" data-mode="move">
-        <span>✋</span><span class="txt">Geser Ruang</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        <span class="txt">Geser Ruang</span>
       </button>
       <button class="mode-btn road-mode" data-mode="road">
-        <span>🛣️</span><span class="txt">Custom Jalan</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19L9 5"/><path d="M20 19L15 5"/><path d="M12 19v-3"/><path d="M12 12V9"/></svg>
+        <span class="txt">Custom Jalan</span>
       </button>
       <button class="mode-btn" data-mode="character">
-        <span>🧑‍🎓</span><span class="txt">Tambah Orang</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        <span class="txt">Tambah Orang</span>
       </button>
       <button class="mode-btn delete-mode" data-mode="delete">
-        <span>🗑️</span><span class="txt">Hapus</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        <span class="txt">Hapus</span>
       </button>
     </div>
   </div>
@@ -530,15 +740,51 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     // ==========================================
+    // 0. IKON SVG VEKTOR
+    // ==========================================
+    const SVG_ICONS = {
+      classroom:   '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2.2"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-6h6v6"/></svg>',
+      library:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+      lab:         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+      canteen:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.2"><path d="M3 7h18l-1.5 4h-15z"/><path d="M5 11v10h14V11"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+      stairs:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2.4"><path d="M4 20h4v-4h4v-4h4V8h4"/></svg>',
+      court:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3v18"/></svg>',
+      fence:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2"><path d="M4 20V7l2-2 2 2v13M10 20V7l2-2 2 2v13M16 20V7l2-2 2 2v13M2 12h20M2 17h20"/></svg>',
+      gate:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.2"><path d="M3 21V6h6v15M15 21V6h6v15M9 11h6M9 16h6"/></svg>',
+      plang:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="2.2"><rect x="3" y="4" width="18" height="10" rx="1"/><line x1="7" y1="14" x2="7" y2="21"/><line x1="17" y1="14" x2="17" y2="21"/></svg>',
+      mural:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2.2"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c1.5 0 2.5-1 2.5-2.5 0-.8-.3-1.4-.8-1.9-.5-.5-.2-1.6.8-1.6H17a5 5 0 0 0 5-5c0-4.9-4.5-9-10-9z"/></svg>',
+      wall:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65a30d" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="1"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="4" x2="12" y2="10"/><line x1="8" y1="10" x2="8" y2="15"/><line x1="16" y1="10" x2="16" y2="15"/></svg>',
+      car:         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1e293b" stroke-width="2.2"><path d="M5 17h14v-5l-2-5H7l-2 5z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg>',
+      bike:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L9 11l4-2 2 3h3"/></svg>',
+      toren:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.2"><rect x="7" y="4" width="10" height="8" rx="2"/><line x1="8" y1="12" x2="6" y2="21"/><line x1="16" y1="12" x2="18" y2="21"/><line x1="7" y1="17" x2="17" y2="17"/></svg>',
+      flag:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2"><path d="M4 22V3"/><path d="M4 4h14l-2 4 2 4H4" fill="#ef4444" fill-opacity="0.25"/></svg>',
+      tree:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2"><path d="M12 22V10"/><path d="M12 10c-4 0-7-2-8-5 4 0 7 2 8 5z"/><path d="M12 10c4 0 7-2 8-5-4 0-7 2-8 5z"/><path d="M12 7c-3-3-3-5 0-5s3 2 0 5z"/></svg>',
+      paving:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>',
+      asphalt:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2"><path d="M5 20L8 4h8l3 16z"/><line x1="12" y1="7" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="17"/></svg>',
+      zebra:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.4"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>',
+      plaza:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2"><rect x="4" y="4" width="16" height="16" rx="2" fill="#d97706" fill-opacity="0.2"/></svg>',
+      student:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/><path d="M8 6l4-3 4 3"/></svg>',
+      teacher:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/><rect x="9" y="15" width="6" height="4" rx="1"/></svg>',
+      robot:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><rect x="4" y="7" width="16" height="12" rx="3"/><line x1="12" y1="7" x2="12" y2="3"/><circle cx="12" cy="2.5" r="1"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/></svg>',
+      studentMini: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.6"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>',
+      teacherMini: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.6"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>',
+      robotMini:   '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.6"><rect x="4" y="7" width="16" height="12" rx="3"/></svg>'
+    };
+
+    // ==========================================
     // 1. KONFIGURASI & CATALOG
     // ==========================================
-    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v5';
-    const ISLAND_LIMIT = 34;
+    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v7';
+    const ISLAND_LIMIT = 36;
     const ROAD_STEP = 3;
     const FLOOR_HEIGHT = 3.5;
 
     const state = {
       mode: 'view',
+      activityMode: 'free', // 'free' | 'ceremony' | 'prayer' | 'exercise' | 'play'
+      activityStartTime: 0,
+      hudHidden: false,
+      buildCategory: 'buildings',
       selectedBuilding: 'classroom',
       buildRotation: 0,
       defaultStairStyle: 'blue_steel',
@@ -547,9 +793,11 @@
       roadRotation: 0,
       roadBrushDrag: false,
       selectedRole: 'student',
-      studentUniform: 'sd',
+      studentUniform: 'random',
       studentAcc: 'random',
       studentItem: 'random',
+      teacherAcc: 'random',
+      teacherStyle: 'random',
       timeMode: 0,
       showLabels: true,
       inspectedCharId: null,
@@ -560,22 +808,24 @@
     };
 
     const BUILDING_CATALOG = {
-      classroom:   { label: 'Ruang Kelas', emoji: '🏠', w: 7.6, d: 5.6, stackable: true },
-      library:     { label: 'Perpustakaan', emoji: '📚', w: 7.6, d: 5.6, stackable: true },
-      lab:         { label: 'Lab Komputer', emoji: '💻', w: 7.6, d: 5.6, stackable: true },
-      canteen:     { label: 'Kantin', emoji: '🍔', w: 7.6, d: 5.6, stackable: true },
-      stairs:      { label: 'Tangga Lt.2', emoji: '🪜', w: 1.6, d: 4.6, stackable: false },
-      court:       { label: 'Lap. Basket', emoji: '🏀', w: 11, d: 7, stackable: false },
-      tree_park:   { label: 'Pohon Pisang', emoji: '🌴', w: 2.8, d: 2.8, stackable: false },
-      flagpole:    { label: 'Tiang Bendera', emoji: '🇮🇩', w: 2.0, d: 2.0, stackable: false },
+      classroom:   { cat: 'buildings', label: 'Ruang Kelas', icon: 'classroom', w: 7.6, d: 5.6, stackable: true },
+      library:     { cat: 'buildings', label: 'Perpustakaan', icon: 'library', w: 7.6, d: 5.6, stackable: true },
+      lab:         { cat: 'buildings', label: 'Lab Komputer', icon: 'lab', w: 7.6, d: 5.6, stackable: true },
+      canteen:     { cat: 'buildings', label: 'Kantin', icon: 'canteen', w: 7.6, d: 5.6, stackable: true },
+      stairs:      { cat: 'buildings', label: 'Tangga Lt.2', icon: 'stairs', w: 1.6, d: 5.0, stackable: false },
+      court:       { cat: 'buildings', label: 'Lap. Basket', icon: 'court', w: 11, d: 7, stackable: false },
 
-      sd_mural_wall:   { label: 'Tembok Mural', emoji: '🎨', w: 1.0, d: 34, stackable: false, hidden: true },
-      sd_front_fence:  { label: 'Pagar & Gerbang', emoji: '🚧', w: 40, d: 1.2, stackable: false, hidden: true },
-      sd_front_left:   { label: 'Ruang Depan', emoji: '🏫', w: 9.0, d: 5.4, stackable: false, hidden: true },
-      sd_carport:      { label: 'Garasi & Mobil', emoji: '🚙', w: 4.6, d: 5.2, stackable: false, hidden: true },
-      sd_bike_shed:    { label: 'Parkir Sepeda', emoji: '🚲', w: 4.8, d: 3.4, stackable: false, hidden: true },
-      sd_toren_wc:     { label: 'WC & Toren Air', emoji: '🟧', w: 4.4, d: 3.8, stackable: false, hidden: true },
-      sd_back_wall:    { label: 'Tembok Keliling', emoji: '🧱', w: 1.0, d: 44, stackable: false, hidden: true }
+      sd_fence_unit:   { cat: 'props', label: 'Pagar Besi', icon: 'fence', w: 4.0, d: 0.7, stackable: false },
+      sd_gate_unit:    { cat: 'props', label: 'Gerbang Besi', icon: 'gate', w: 4.2, d: 0.8, stackable: false },
+      sd_front_fence:  { cat: 'props', label: 'Pagar & Plang', icon: 'plang', w: 40, d: 1.2, stackable: false },
+      sd_mural_wall:   { cat: 'props', label: 'Tembok Mural', icon: 'mural', w: 1.0, d: 34, stackable: false },
+      sd_back_wall:    { cat: 'props', label: 'Tembok Hijau', icon: 'wall', w: 1.0, d: 44, stackable: false },
+      sd_front_left:   { cat: 'props', label: 'Ruang Depan', icon: 'classroom', w: 9.0, d: 5.4, stackable: false },
+      sd_carport:      { cat: 'props', label: 'Garasi & Mobil', icon: 'car', w: 4.6, d: 5.2, stackable: false },
+      sd_bike_shed:    { cat: 'props', label: 'Parkir Sepeda', icon: 'bike', w: 4.8, d: 3.4, stackable: false },
+      sd_toren_wc:     { cat: 'props', label: 'WC & Toren Air', icon: 'toren', w: 4.4, d: 3.8, stackable: false },
+      flagpole:        { cat: 'props', label: 'Tiang Bendera', icon: 'flag', w: 2.0, d: 2.0, stackable: false },
+      tree_park:       { cat: 'props', label: 'Pohon Pisang', icon: 'tree', w: 2.8, d: 2.8, stackable: false }
     };
 
     const STAIR_SIDES = { none: 'Tanpa', right: 'Kanan', left: 'Kiri', front: 'Depan', back: 'Belakang' };
@@ -588,36 +838,51 @@
     };
 
     const ROAD_CATALOG = {
-      paving:  { label: 'Paving Sekolah', emoji: '🧱' },
-      asphalt: { label: 'Jalan Aspal', emoji: '🛣️' },
-      zebra:   { label: 'Zebra Cross', emoji: '🦓' },
-      plaza:   { label: 'Tanah Lapang', emoji: '🟫' }
+      paving:  { label: 'Paving Sekolah', icon: 'paving' },
+      asphalt: { label: 'Jalan Aspal', icon: 'asphalt' },
+      zebra:   { label: 'Zebra Cross', icon: 'zebra' },
+      plaza:   { label: 'Tanah Lapang', icon: 'plaza' }
     };
 
     const UNIFORM_CATALOG = {
-      sd:      { label: 'SD (Putih-Merah)', shirt: 0xffffff, pants: 0xdc2626, tie: 0xdc2626, badge: 'SD' },
-      smp:     { label: 'SMP (Putih-Biru)', shirt: 0xffffff, pants: 0x1e3a8a, tie: 0x1e3a8a, badge: 'SMP' },
-      sma:     { label: 'SMA (Putih-Abu)', shirt: 0xffffff, pants: 0x64748b, tie: 0x475569, badge: 'SMA' },
-      pramuka: { label: 'HW / Pramuka', shirt: 0xd9a066, pants: 0x78350f, tie: 0xdc2626, badge: 'HW' }
+      merah_putih: { label: 'Merah Putih', shirt: 0xffffff, pants: 0xdc2626, tie: 0xdc2626, tieAccent: 0xdc2626, badge: 'SD', isBatik: false },
+      batik_hijau: { label: 'Batik Hijau', shirt: 0x15803d, pants: 0x14532d, tie: 0x14532d, tieAccent: 0xfacc15, badge: 'Batik', isBatik: true },
+      hw:          { label: 'Baju HW',     shirt: 0xc79c5e, pants: 0x172554, tie: 0x15803d, tieAccent: 0xfacc15, badge: 'HW', isBatik: false }
     };
+
+    const TEACHER_STYLE_CATALOG = {
+      batik_hijau: { label: 'Batik Hijau', color: 0x15803d, isBatik: true, hijabColor: 0x166534, pants: 0x0f172a },
+      khaki:       { label: 'Seragam Khaki', color: 0xc79c5e, isBatik: false, hijabColor: 0x78350f, pants: 0x78350f },
+      teal:        { label: 'Toska Guru', color: 0x0f766e, isBatik: false, hijabColor: 0x115e59, pants: 0x1e293b },
+      purple:      { label: 'Ungu Muslimah/Guru', color: 0x9333ea, isBatik: false, hijabColor: 0x6b21a8, pants: 0x1e293b }
+    };
+
+    function resolveUniformInfo(key) {
+      if (UNIFORM_CATALOG[key]) return UNIFORM_CATALOG[key];
+      if (key === 'pramuka') return UNIFORM_CATALOG.hw;
+      return UNIFORM_CATALOG.merah_putih;
+    }
 
     const ROLE_CATALOG = {
       student: {
         label: 'Siswa / Murid',
-        emoji: '🎒',
-        names: ['Apep', 'Humna', 'Khayla', 'Dapit', 'Hana', 'Alfad', 'Raya', 'Tazya', 'Bilqis', 'Nahda', 'Anes', 'Salsa'],
-        chats: ['Ayo masuk kelas!', 'Jajan di kantin yuk!', 'Bagus ya muralnya!', 'Belajar membaca!', 'Semangat sekolah!']
+        icon: 'student',
+        miniIcon: 'studentMini',
+        names: ['Apep', 'Bilqis', 'Celo', 'David', 'Fathan', 'Humna', 'Khayla', 'Nadia', 'Rafi', 'Zahra'],
+        chats: ['Ayo main kejar-kejaran!', 'Assalamualaikum!', 'Jajan di kantin yuk!', 'Bagus ya muralnya!', 'Belajar membaca!', 'Semangat sekolah!']
       },
       teacher: {
         label: 'Guru',
-        emoji: '👩‍🏫',
-        colors: [0x9333ea, 0xb45309, 0x0f766e, 0xbe123c],
-        names: ['Pak Fatur', 'Bu Rivi', 'Pak Febri', 'Bu Wid', 'Pak Dodi', 'Bu Sri'],
-        chats: ['Selamat pagi anak-anak!', 'Sepatu taruh di rak ya', 'Ayo naik ke lantai 2', 'Jaga kebersihan sekolah']
+        icon: 'teacher',
+        miniIcon: 'teacherMini',
+        colors: [0x9333ea, 0x15803d, 0x0f766e, 0xb45309],
+        names: ['Bu Rina', 'Pak Fatur', 'Bu Rivi', 'Pak Febri', 'Bu Dewi', 'Pak Dodi', 'Bu Sri'],
+        chats: ['Selamat pagi anak-anak!', 'Sepatu taruh di rak ya', 'Ayo masuk kelas!', 'Hati-hati berlarian ya!', 'Sudah shalat Dhuha?']
       },
       robot: {
         label: 'Robot Sekolah',
-        emoji: '🤖',
+        icon: 'robot',
+        miniIcon: 'robotMini',
         colors: [0x06b6d4, 0xf59e0b, 0x8b5cf6],
         names: ['Edu-Bot', 'Mutu-Bot', 'Gemini-Bot'],
         chats: ['Beep Boop!', 'SD Mutu Bersih!', 'Membaca Jendela Dunia!']
@@ -633,7 +898,7 @@
     scene.fog = new THREE.FogExp2(0x9bd6f0, 0.0045);
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 400);
-    camera.position.set(16, 22, 49);
+    camera.position.set(16, 26, 46);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -648,9 +913,9 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
     controls.maxPolarAngle = Math.PI / 2 - 0.05;
-    controls.minDistance = 10;
+    controls.minDistance = 8;
     controls.maxDistance = 120;
-    controls.target.set(-2, 2, 4);
+    controls.target.set(-3, 1, 2);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x6b7280, 0.9);
     hemiLight.position.set(0, 50, 0);
@@ -683,24 +948,64 @@
     // ==========================================
     // 3. TEKSTUR PROCEDURAL CANVAS
     // ==========================================
+    function drawSunEmblem(ctx, cx, cy, r) {
+      ctx.save();
+      ctx.fillStyle = '#14532d';
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath(); ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#facc15'; ctx.lineWidth = 3;
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * r * 0.48, cy + Math.sin(a) * r * 0.48);
+        ctx.lineTo(cx + Math.cos(a) * r * 0.85, cy + Math.sin(a) * r * 0.85);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function createBatikHijauTexture() {
+      const c = document.createElement('canvas');
+      c.width = 128; c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(0, 0, 128, 128);
+      ctx.strokeStyle = '#166534';
+      ctx.lineWidth = 4;
+      for (let x = -32; x <= 160; x += 32) {
+        for (let y = -32; y <= 160; y += 32) {
+          ctx.beginPath();
+          ctx.moveTo(x, y - 14); ctx.lineTo(x + 14, y);
+          ctx.lineTo(x, y + 14); ctx.lineTo(x - 14, y);
+          ctx.closePath(); ctx.stroke();
+          ctx.fillStyle = '#bbf7d0';
+          ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath(); ctx.arc(x + 16, y + 16, 3, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    }
+
     function createMuralTexture() {
       const c = document.createElement('canvas');
       c.width = 1024; c.height = 256;
       const ctx = c.getContext('2d');
-
-      ctx.fillStyle = '#0284c7';
-      ctx.fillRect(0, 0, 1024, 256);
+      ctx.fillStyle = '#0284c7'; ctx.fillRect(0, 0, 1024, 256);
 
       ctx.fillStyle = '#38bdf8';
-      ctx.beginPath();
-      ctx.moveTo(0, 120);
+      ctx.beginPath(); ctx.moveTo(0, 120);
       ctx.bezierCurveTo(250, 50, 500, 180, 1024, 80);
       ctx.lineTo(1024, 256); ctx.lineTo(0, 256); ctx.fill();
 
       ctx.fillStyle = '#0d9488';
-      ctx.beginPath();
-      ctx.ellipse(760, 150, 250, 140, 0, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.ellipse(760, 150, 250, 140, 0, 0, Math.PI * 2); ctx.fill();
 
       ctx.fillStyle = '#15803d';
       ctx.beginPath(); ctx.moveTo(60, 220); ctx.lineTo(180, 60); ctx.lineTo(310, 220); ctx.fill();
@@ -712,20 +1017,16 @@
 
       ctx.save();
       ctx.translate(450, 130); ctx.rotate(-0.2);
-      ctx.fillStyle = '#ec4899';
-      ctx.fillRect(-70, -22, 135, 44);
+      ctx.fillStyle = '#ec4899'; ctx.fillRect(-70, -22, 135, 44);
       ctx.fillStyle = '#fed7aa';
       ctx.beginPath(); ctx.moveTo(65, -22); ctx.lineTo(105, 0); ctx.lineTo(65, 22); ctx.fill();
       ctx.fillStyle = '#1e293b';
       ctx.beginPath(); ctx.moveTo(90, -8); ctx.lineTo(105, 0); ctx.lineTo(90, 8); ctx.fill();
       ctx.restore();
 
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath(); ctx.arc(445, 72, 22, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#334155';
-      ctx.beginPath(); ctx.arc(452, 72, 13, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(428, 92, 26, 26);
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(445, 72, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#334155'; ctx.beginPath(); ctx.arc(452, 72, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#e2e8f0'; ctx.fillRect(428, 92, 26, 26);
 
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px sans-serif'; ctx.fillText('MEMBACA', 350, 38);
@@ -734,8 +1035,7 @@
       ctx.font = 'bold 34px sans-serif'; ctx.fillText('BUKU', 690, 80);
       ctx.font = 'bold 20px sans-serif'; ctx.fillText('Jendela Dunia', 690, 108);
 
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 22px sans-serif'; ctx.fillText('100%  √  5  ♪', 630, 160);
+      ctx.fillStyle = '#fef08a'; ctx.font = 'bold 22px sans-serif'; ctx.fillText('100%  V  5', 630, 160);
 
       ctx.fillStyle = '#f87171'; ctx.fillRect(890, 150, 55, 85);
       ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(918, 125, 18, 0, Math.PI * 2); ctx.fill();
@@ -748,81 +1048,87 @@
       return tex;
     }
 
-    function createSignTexture(bg, border, line1, line2, line3 = '') {
+    function createSignTexture(bg, border, line1, line2, line3 = '', withLogo = true) {
       const c = document.createElement('canvas');
       c.width = 512; c.height = 256;
       const ctx = c.getContext('2d');
       ctx.fillStyle = bg; ctx.fillRect(0, 0, 512, 256);
       ctx.strokeStyle = border; ctx.lineWidth = 14; ctx.strokeRect(10, 10, 492, 236);
+      if (withLogo) drawSunEmblem(ctx, 68, 72, 34);
+      const tx = withLogo ? 286 : 256;
       ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
-      ctx.font = 'bold 34px sans-serif'; ctx.fillText(line1, 256, 85);
-      ctx.font = 'bold 28px sans-serif'; ctx.fillStyle = '#fef08a'; ctx.fillText(line2, 256, 140);
+      ctx.font = 'bold 30px sans-serif'; ctx.fillText(line1, tx, 82);
+      ctx.font = 'bold 26px sans-serif'; ctx.fillStyle = '#fef08a'; ctx.fillText(line2, tx, 138);
       if (line3) {
-        ctx.font = 'bold 22px sans-serif'; ctx.fillStyle = '#e2e8f0'; ctx.fillText(line3, 256, 195);
+        ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#e2e8f0'; ctx.fillText(line3, 256, 198);
       }
       const tex = new THREE.CanvasTexture(c);
       tex.colorSpace = THREE.SRGBColorSpace;
       return tex;
     }
 
+    const batikHijauTex = createBatikHijauTexture();
     const muralTex = createMuralTexture();
-    const blueSignTex = createSignTexture('#0c4a6e', '#38bdf8', 'SD MUHAMMADIYAH 2', 'PEKAJANGAN', 'Hizbul Wathan • UKS • Tangkil Kulon');
-    const bannerTex = createSignTexture('#14532d', '#facc15', 'SELAMAT DATANG', 'SD MUTU TANGKIL KULON', 'Islami, Cerdas, Berkarakter & Berkemajuan');
+    const blueSignTex = createSignTexture('#0c4a6e', '#38bdf8', 'SD MUHAMMADIYAH 2', 'PEKAJANGAN', 'Hizbul Wathan - UKS - Tangkil Kulon', true);
+    const bannerTex = createSignTexture('#14532d', '#facc15', 'SD MUTU', 'TANGKIL KULON', 'Islami, Cerdas, Berkarakter & Berkemajuan', true);
 
     // ==========================================
-    // 4. PULAU SEKOLAH & HALAMAN
+    // 4. PULAU SEKOLAH POLIGON ASLI
     // ==========================================
     const groundGroup = new THREE.Group();
     scene.add(groundGroup);
 
-    const grassMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(74, 2, 74),
-      new THREE.MeshStandardMaterial({ color: 0x65a30d, roughness: 0.88 })
-    );
-    grassMesh.position.y = -1;
-    grassMesh.receiveShadow = true;
-    groundGroup.add(grassMesh);
+    const SCHOOL_POLYGON = [
+      [-20.0, -28.0],
+      [ 14.0, -28.0],
+      [  6.5,   2.0],
+      [  6.5,  28.0],
+      [ -9.5,  29.5],
+      [-11.5,   2.0],
+      [-21.0, -11.0],
+      [-21.0, -15.0]
+    ];
 
-    const dirtMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(71, 4.5, 71),
-      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.95 })
-    );
-    dirtMesh.position.y = -4.2;
-    groundGroup.add(dirtMesh);
+    function createPolygonExtrude(points, depth, yTop, color) {
+      const shape = new THREE.Shape();
+      points.forEach(([x, z], idx) => {
+        if (idx === 0) shape.moveTo(x, z);
+        else shape.lineTo(x, z);
+      });
+      shape.closePath();
 
-    const baseMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(62, 3, 62),
-      new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.95 })
-    );
-    baseMesh.position.y = -7.8;
-    groundGroup.add(baseMesh);
+      const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false });
+      geo.rotateX(Math.PI / 2);
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.9 }));
+      mesh.position.y = yTop;
+      mesh.receiveShadow = true;
+      return mesh;
+    }
 
-    const innerDirtYard = new THREE.Mesh(
-      new THREE.BoxGeometry(23, 0.05, 29),
-      new THREE.MeshStandardMaterial({ color: 0x8d6e4c, roughness: 0.95 })
-    );
-    innerDirtYard.position.set(-14.5, 0.025, 3);
-    innerDirtYard.receiveShadow = true;
-    groundGroup.add(innerDirtYard);
+    const outerIslandPts = [
+      [-26, -33], [19, -33], [11, 2], [11, 35], [-26, 35]
+    ];
+    groundGroup.add(createPolygonExtrude(outerIslandPts, 2.0, 0.0, 0x65a30d));
+    groundGroup.add(createPolygonExtrude(outerIslandPts, 4.5, -2.0, 0x78350f));
+    groundGroup.add(createPolygonExtrude(outerIslandPts, 3.0, -6.5, 0x57534e));
 
-    for (const [gx, gz, gw, gd] of [[-18, -2, 5, 4], [-10, 8, 6, 3.5], [-21, 11, 4, 5], [-9, -5, 4, 3]]) {
+    const innerYardPts = [
+      [-19.2, -27.0], [12.8, -27.0], [6.0, 2.0], [6.0, 27.5],
+      [-8.8, 28.8], [-10.8, 2.0], [-20.2, -11.0], [-20.2, -15.0]
+    ];
+    groundGroup.add(createPolygonExtrude(innerYardPts, 0.06, 0.06, 0x8d6e4c));
+
+    for (const [gx, gz, gw, gd] of [[-12, -16, 4.5, 3.5], [-14, -7, 4.0, 3.2], [5, -18, 4.0, 3.5]]) {
       const patch = new THREE.Mesh(
         new THREE.BoxGeometry(gw, 0.06, gd),
         new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.95 })
       );
-      patch.position.set(gx, 0.03, gz);
+      patch.position.set(gx, 0.04, gz);
       patch.receiveShadow = true;
       groundGroup.add(patch);
     }
 
-    const netMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(7.2, 24, 12, 28),
-      new THREE.MeshBasicMaterial({ color: 0xf8fafc, wireframe: true, transparent: true, opacity: 0.32 })
-    );
-    netMesh.rotation.x = Math.PI / 2;
-    netMesh.position.set(7.2, 3.9, 4);
-    groundGroup.add(netMesh);
-
+   
     const waterMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(400, 400),
       new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.88 })
@@ -831,8 +1137,8 @@
     waterMesh.position.y = -3.2;
     groundGroup.add(waterMesh);
 
-    const roadGridHelper = new THREE.GridHelper(63, 21, 0xffffff, 0xffffff);
-    roadGridHelper.position.y = 0.05;
+    const roadGridHelper = new THREE.GridHelper(66, 22, 0xffffff, 0xffffff);
+    roadGridHelper.position.y = 0.07;
     roadGridHelper.material.transparent = true;
     roadGridHelper.material.opacity = 0.3;
     roadGridHelper.visible = false;
@@ -863,7 +1169,7 @@
     })();
 
     // ==========================================
-    // 5. MODEL 3D JALAN & TANGGA KUSTOM
+    // 5. MODEL 3D JALAN & TANGGA PRESISI (DIPERBAIKI)
     // ==========================================
     function enableShadows(group) {
       group.traverse(obj => {
@@ -880,90 +1186,175 @@
       const size = ROAD_STEP;
       if (type === 'paving') {
         const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0xa89f91, roughness: 0.92 }));
-        base.position.y = 0.04;
+        base.position.y = 0.05;
         g.add(base);
         const tileMat = new THREE.MeshStandardMaterial({ color: 0xbcb3a5, roughness: 0.95 });
         for (const ox of [-0.72, 0.72]) {
           for (const oz of [-0.72, 0.72]) {
             const t = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.09, 1.32), tileMat);
-            t.position.set(ox, 0.042, oz);
+            t.position.set(ox, 0.052, oz);
             g.add(t);
           }
         }
       } else if (type === 'asphalt') {
         const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.85 }));
-        base.position.y = 0.04;
+        base.position.y = 0.05;
         g.add(base);
         const lineMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 });
         for (const zOff of [-0.75, 0.75]) {
           const dash = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.095, 0.85), lineMat);
-          dash.position.set(0, 0.045, zOff);
+          dash.position.set(0, 0.055, zOff);
           g.add(dash);
         }
       } else if (type === 'zebra') {
         const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.85 }));
-        base.position.y = 0.04;
+        base.position.y = 0.05;
         g.add(base);
         const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
         for (let i = -2; i <= 2; i++) {
           const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.095, 2.2), stripeMat);
-          stripe.position.set(i * 0.55, 0.045, 0);
+          stripe.position.set(i * 0.55, 0.055, 0);
           g.add(stripe);
         }
       } else if (type === 'plaza') {
         const base = new THREE.Mesh(new THREE.BoxGeometry(size, 0.08, size), new THREE.MeshStandardMaterial({ color: 0x8d6e4c, roughness: 0.95 }));
-        base.position.y = 0.04;
+        base.position.y = 0.05;
         g.add(base);
       }
       g.traverse(o => { if (o.isMesh) o.receiveShadow = true; });
       return g;
     }
 
-    function buildStairSubMesh(styleKey = 'blue_steel') {
+    function buildStairSubMesh(styleKey = 'blue_steel', attachSide = 'standalone') {
       const st = STAIR_STYLES[styleKey] || STAIR_STYLES.blue_steel;
       const sg = new THREE.Group();
-      const width = st.wide ? 1.85 : 1.25;
+      const width = st.wide ? 1.85 : 1.3;
 
-      const stepMat = new THREE.MeshStandardMaterial({ color: st.stepColor, roughness: 0.65 });
+      const stepMat = new THREE.MeshStandardMaterial({ color: st.stepColor, roughness: 0.6 });
       const sideMat = new THREE.MeshStandardMaterial({ color: st.sideColor, roughness: 0.65 });
-      const railMat = new THREE.MeshStandardMaterial({ color: st.railColor, metalness: 0.35, roughness: 0.45 });
+      const railMat = new THREE.MeshStandardMaterial({ color: st.railColor, metalness: 0.35, roughness: 0.4 });
 
-      const landing = new THREE.Mesh(new THREE.BoxGeometry(width, 0.2, 1.55), stepMat);
-      landing.position.set(0, FLOOR_HEIGHT - 0.05, 1.6);
+      // Geometri tangga yang rapi: naik dari z = -2.2 (y = 0) menuju z = +1.4 (y = FLOOR_HEIGHT)
+      const startZ = -2.2;
+      const landingStartZ = 1.4;
+      const landingEndZ = attachSide === 'standalone' ? 2.5 : 3.05;
+      const landingLen = landingEndZ - landingStartZ;
+      const landingCenterZ = (landingStartZ + landingEndZ) / 2;
+
+      const totalRun = landingStartZ - startZ; // 3.6m
+      const steps = 12;
+      const stepRun = totalRun / steps;        // 0.30m
+      const stepRise = FLOOR_HEIGHT / steps;   // ~0.2917m
+
+      // Bordes atas (Landing)
+      const landing = new THREE.Mesh(new THREE.BoxGeometry(width, 0.22, landingLen), stepMat);
+      landing.position.set(0, FLOOR_HEIGHT - 0.11, landingCenterZ);
       sg.add(landing);
 
+      // Tiang penyangga bordes ke lantai dasar
       for (const px of [-width / 2 + 0.1, width / 2 - 0.1]) {
-        const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, FLOOR_HEIGHT, 0.14), sideMat);
-        post.position.set(px, FLOOR_HEIGHT / 2, 2.22);
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, FLOOR_HEIGHT - 0.1, 0.14), sideMat);
+        post.position.set(px, (FLOOR_HEIGHT - 0.1) / 2, landingEndZ - 0.14);
         sg.add(post);
       }
 
-      const topRailFront = new THREE.Mesh(new THREE.BoxGeometry(width, 0.72, 0.08), railMat);
-      topRailFront.position.set(0, FLOOR_HEIGHT + 0.35, 2.32);
-      const topRailSide = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.72, 1.5), railMat);
-      topRailSide.position.set(width / 2 - 0.06, FLOOR_HEIGHT + 0.35, 1.6);
-      sg.add(topRailFront, topRailSide);
+      // Anak tangga (11 anak tangga naik, langkah ke-12 langsung menapak ke bordes atas)
+      for (let i = 0; i < steps - 1; i++) {
+        const topY = (i + 1) * stepRise;
+        const zCenter = startZ + (i + 0.5) * stepRun;
 
-      const steps = 9;
-      for (let i = 0; i < steps; i++) {
-        const t = i / steps;
-        const stepH = styleKey === 'concrete' ? FLOOR_HEIGHT * (1 - t) : 0.18;
-        const stepY = styleKey === 'concrete' ? stepH / 2 : FLOOR_HEIGHT * (1 - t) - 0.16;
-        const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(width - 0.1, stepH, 0.38), stepMat);
-        stepMesh.position.set(0, stepY, 0.72 - i * 0.36);
-        sg.add(stepMesh);
+        if (styleKey === 'concrete') {
+          const blockH = topY;
+          const stepBlock = new THREE.Mesh(new THREE.BoxGeometry(width - 0.08, blockH, stepRun + 0.02), stepMat);
+          stepBlock.position.set(0, blockH / 2, zCenter);
+          sg.add(stepBlock);
+        } else {
+          // Pijakan horizontal + penyangga anak tangga kecil (riser tipis)
+          const tread = new THREE.Mesh(new THREE.BoxGeometry(width - 0.14, 0.08, stepRun + 0.04), stepMat);
+          tread.position.set(0, topY - 0.04, zCenter);
+          sg.add(tread);
+
+          const riser = new THREE.Mesh(new THREE.BoxGeometry(width - 0.18, stepRise * 0.72, 0.04), sideMat);
+          riser.position.set(0, topY - stepRise * 0.42, zCenter - stepRun * 0.42);
+          sg.add(riser);
+        }
       }
 
-      for (const rx of [width / 2 - 0.08, -width / 2 + 0.08]) {
-        const handRail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 4.5), railMat);
-        handRail.position.set(rx, FLOOR_HEIGHT * 0.56, -0.75);
-        handRail.rotation.x = Math.atan2(FLOOR_HEIGHT, 3.2);
+      // Sudut kemiringan naik ke +Z -> rotasi X HARUS NEGATIF!
+      const slopeAngle = Math.atan2(FLOOR_HEIGHT, totalRun);
+      const slopeLen = Math.hypot(totalRun, FLOOR_HEIGHT);
+      const midZ = (startZ + landingStartZ) / 2;
+      const midY = FLOOR_HEIGHT / 2;
+      const railOffsetY = 0.88;
+
+      for (const rx of [-width / 2 + 0.07, width / 2 - 0.07]) {
+        // Balok miring samping tangga (Stringer) sejajar anak tangga
+        const stringer = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.22, slopeLen + 0.2), sideMat);
+        stringer.position.set(rx, midY - 0.1, midZ);
+        stringer.rotation.x = -slopeAngle;
+        sg.add(stringer);
+
+        // Pegangan tangan miring (Handrail) sejajar kemiringan tangga
+        const handRail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, slopeLen + 0.22), railMat);
+        handRail.position.set(rx, midY + railOffsetY, midZ);
+        handRail.rotation.x = -slopeAngle;
         sg.add(handRail);
 
-        const stringer = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 4.5), sideMat);
-        stringer.position.set(rx, FLOOR_HEIGHT * 0.43, -0.75);
-        stringer.rotation.x = Math.atan2(FLOOR_HEIGHT, 3.2);
-        sg.add(stringer);
+        // Rel tengah miring agar lebih kokoh
+        const midRail = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, slopeLen + 0.12), railMat);
+        midRail.position.set(rx, midY + railOffsetY * 0.5, midZ);
+        midRail.rotation.x = -slopeAngle;
+        sg.add(midRail);
+
+        // Tiang vertikal pegangan tangga (Balusters) dari anak tangga ke handrail
+        for (let b = 0; b <= 4; b++) {
+          const frac = b / 4;
+          const bz = startZ + frac * totalRun;
+          const baseH = frac * FLOOR_HEIGHT;
+          const baluster = new THREE.Mesh(new THREE.BoxGeometry(0.055, railOffsetY + 0.08, 0.055), railMat);
+          baluster.position.set(rx, baseH + railOffsetY / 2, bz);
+          sg.add(baluster);
+        }
+      }
+
+      // Pagar pengaman pada bordes atas (Landing Guardrail)
+      const railTopY = FLOOR_HEIGHT + railOffsetY;
+      const railMidY = FLOOR_HEIGHT + railOffsetY * 0.5;
+
+      // Pagar ujung bordes (z = landingEndZ)
+      const endPostL = new THREE.Mesh(new THREE.BoxGeometry(0.06, railOffsetY + 0.08, 0.06), railMat);
+      endPostL.position.set(-width / 2 + 0.07, FLOOR_HEIGHT + railOffsetY / 2, landingEndZ - 0.06);
+      const endPostR = endPostL.clone();
+      endPostR.position.x = width / 2 - 0.07;
+      const endTopRail = new THREE.Mesh(new THREE.BoxGeometry(width - 0.06, 0.07, 0.07), railMat);
+      endTopRail.position.set(0, railTopY, landingEndZ - 0.06);
+      const endMidRail = new THREE.Mesh(new THREE.BoxGeometry(width - 0.06, 0.04, 0.04), railMat);
+      endMidRail.position.set(0, railMidY, landingEndZ - 0.06);
+      sg.add(endPostL, endPostR, endTopRail, endMidRail);
+
+      // Pagar samping bordes (jangan tutup sisi yang langsung menyambung ke selasar lantai 2)
+      const openLeftSide = (attachSide === 'right');
+      const openRightSide = (attachSide === 'left' || attachSide === 'front' || attachSide === 'back');
+
+      for (const side of ['left', 'right']) {
+        const sx = side === 'left' ? -width / 2 + 0.07 : width / 2 - 0.07;
+        const isBuildingSide = (side === 'left' && openLeftSide) || (side === 'right' && openRightSide);
+
+        // Bila sisi luar, beri pagar penuh sepanjang bordes. Bila sisi dalam menghadap gedung, beri bukaan menuju selasar.
+        const segLen = isBuildingSide ? Math.max(0.35, landingLen - 1.1) : landingLen;
+        const segCenterZ = isBuildingSide ? landingStartZ + segLen / 2 : landingCenterZ;
+
+        const sideTop = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.07, segLen), railMat);
+        sideTop.position.set(sx, railTopY, segCenterZ);
+        const sideMid = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, segLen), railMat);
+        sideMid.position.set(sx, railMidY, segCenterZ);
+        sg.add(sideTop, sideMid);
+
+        if (isBuildingSide) {
+          const midPost = new THREE.Mesh(new THREE.BoxGeometry(0.06, railOffsetY + 0.08, 0.06), railMat);
+          midPost.position.set(sx, FLOOR_HEIGHT + railOffsetY / 2, landingStartZ + segLen);
+          sg.add(midPost);
+        }
       }
 
       enableShadows(sg);
@@ -982,8 +1373,8 @@
       }
 
       const st = STAIR_STYLES[b.stairStyle || 'blue_steel'];
-      const halfStairW = (st.wide ? 1.85 : 1.25) / 2;
-      const stairMesh = buildStairSubMesh(b.stairStyle || 'blue_steel');
+      const halfStairW = (st.wide ? 1.85 : 1.3) / 2;
+      const stairMesh = buildStairSubMesh(b.stairStyle || 'blue_steel', b.stairSide);
 
       const localHalfW = BUILDING_CATALOG[b.type].w / 2;
       const localHalfD = BUILDING_CATALOG[b.type].d / 2;
@@ -1007,7 +1398,7 @@
     }
 
     // ==========================================
-    // 6. MODEL 3D BANGUNAN
+    // 6. MODEL 3D BANGUNAN & OBJEK RECREATE
     // ==========================================
     let flagClothMesh = null;
 
@@ -1163,13 +1554,51 @@
       }
 
       if (type === 'stairs') {
-        const stairMesh = buildStairSubMesh(stairStyle);
+        const stairMesh = buildStairSubMesh(stairStyle, 'standalone');
         g.add(stairMesh);
         enableShadows(g);
         return { mesh: g, roofGroup, stairsContainer };
       }
 
-      if (type === 'sd_mural_wall') {
+      if (type === 'sd_fence_unit') {
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xe5d3a3, roughness: 0.85 });
+        const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.4 });
+        const lowWall = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.9, 0.42), wallMat);
+        lowWall.position.y = 0.45;
+        g.add(lowWall);
+        for (const px of [-1.85, 1.85]) {
+          const pil = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.3, 0.5), wallMat);
+          pil.position.set(px, 1.15, 0);
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.16, 0.64), wallMat);
+          cap.position.set(px, 2.35, 0);
+          g.add(pil, cap);
+        }
+        for (let bx = -1.35; bx <= 1.35; bx += 0.45) {
+          const bar = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.2, 0.07), ironMat);
+          bar.position.set(bx, 1.5, 0);
+          g.add(bar);
+        }
+        const topRail = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.08, 0.1), ironMat);
+        topRail.position.y = 2.08;
+        g.add(topRail);
+      }
+
+      else if (type === 'sd_gate_unit') {
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xe5d3a3, roughness: 0.85 });
+        const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.45 });
+        for (const px of [-1.9, 1.9]) {
+          const pil = new THREE.Mesh(new THREE.BoxGeometry(0.55, 2.4, 0.55), wallMat);
+          pil.position.set(px, 1.2, 0);
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.18, 0.7), wallMat);
+          cap.position.set(px, 2.45, 0);
+          g.add(pil, cap);
+        }
+        const gateLeaf = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.55, 0.1), ironMat);
+        gateLeaf.position.set(0.45, 0.82, 0.16);
+        g.add(gateLeaf);
+      }
+
+      else if (type === 'sd_mural_wall') {
         const wall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 3.4, 34), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
         wall.position.y = 1.7;
         g.add(wall);
@@ -1383,103 +1812,182 @@
     }
 
     // ==========================================
-    // 7. MODEL 3D KARAKTER
+    // 7. MODEL 3D KARAKTER (GURU & MURID BERHIJAB + ARTIKULASI SHALAT & HORMAT)
     // ==========================================
     function createCharacterMesh(role, shirtColor, details = {}) {
       const group = new THREE.Group();
-      const isStudent = role === 'student';
-      const uInfo = isStudent ? UNIFORM_CATALOG[details.uniform || 'sd'] : null;
+      group.rotation.order = 'YXZ';
 
-      const bodyColor = isStudent ? uInfo.shirt : shirtColor;
-      const pantsColor = isStudent ? uInfo.pants : (role === 'teacher' ? 0x1e293b : 0x475569);
+      const bodyRoot = new THREE.Group();
+      group.add(bodyRoot);
+
+      const upperBody = new THREE.Group();
+      upperBody.position.set(0, 0.68, 0);
+      bodyRoot.add(upperBody);
+
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 0.98, 0);
+      upperBody.add(headGroup);
+
+      const isStudent = role === 'student';
+      const isTeacher = role === 'teacher';
+      const uInfo = isStudent ? resolveUniformInfo(details.uniform) : null;
+      const tInfo = isTeacher ? TEACHER_STYLE_CATALOG[details.uniform || 'teal'] : null;
+
+      const pantsColor = isStudent
+        ? uInfo.pants
+        : (isTeacher ? (tInfo ? tInfo.pants : 0x1e293b) : 0x475569);
       const skinColor = role === 'robot' ? 0xcbd5e1 : 0xfdba74;
 
+      let shirtMat;
+      if (isStudent && uInfo.isBatik) {
+        shirtMat = new THREE.MeshStandardMaterial({ map: batikHijauTex, roughness: 0.8 });
+      } else if (isTeacher && tInfo && tInfo.isBatik) {
+        shirtMat = new THREE.MeshStandardMaterial({ map: batikHijauTex, roughness: 0.8 });
+      } else {
+        const col = isStudent ? uInfo.shirt : (isTeacher && tInfo ? tInfo.color : shirtColor);
+        shirtMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.8 });
+      }
+
       const hitbox = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.72, 0.72, 2.3, 8),
+        new THREE.CylinderGeometry(0.75, 0.75, 2.3, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
       );
       hitbox.position.y = 1.15;
       hitbox.userData.isHitbox = true;
       group.add(hitbox);
 
-      const headGeo = role === 'robot' ? new THREE.BoxGeometry(0.54, 0.5, 0.54) : new THREE.SphereGeometry(0.31, 12, 12);
+      // Kepala (Wajah menghadap +Z)
+      const headGeo = role === 'robot' ? new THREE.BoxGeometry(0.54, 0.5, 0.54) : new THREE.SphereGeometry(0.30, 14, 14);
       const head = new THREE.Mesh(headGeo, new THREE.MeshStandardMaterial({ color: skinColor }));
-      head.position.y = 1.66;
-      group.add(head);
+      headGroup.add(head);
 
       const eyeMat = new THREE.MeshBasicMaterial({ color: role === 'robot' ? 0x22d3ee : 0x0f172a });
-      const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.042, 6, 6), eyeMat);
-      leftEye.position.set(-0.095, 1.68, 0.27);
-      const rightEye = leftEye.clone(); rightEye.position.x = 0.095;
-      group.add(leftEye, rightEye);
+      const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.044, 8, 8), eyeMat);
+      leftEye.position.set(-0.095, 0.02, 0.275);
+      const rightEye = leftEye.clone();
+      rightEye.position.x = 0.095;
+      headGroup.add(leftEye, rightEye);
+
+      if (role !== 'robot') {
+        const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfb7185 });
+        const lCheek = new THREE.Mesh(new THREE.SphereGeometry(0.036, 6, 6), cheekMat);
+        lCheek.position.set(-0.155, -0.06, 0.245);
+        const rCheek = lCheek.clone();
+        rCheek.position.x = 0.155;
+        headGroup.add(lCheek, rCheek);
+      }
+
+      const hasHijab = (isStudent || isTeacher) && (details.acc === 'hijab' || details.acc === 'hijab_glasses');
+      const hasGlasses = (isStudent || isTeacher) && (details.acc === 'glasses' || details.acc === 'hijab_glasses');
 
       if (role === 'robot') {
         const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x64748b }));
-        ant.position.y = 2.02;
-        group.add(ant);
+        ant.position.y = 0.36;
+        headGroup.add(ant);
       } else {
-        if (isStudent && details.acc === 'hijab') {
-          const hijabColor = details.uniform === 'pramuka' ? 0x78350f : 0xf8fafc;
-          const hijabHood = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.72), new THREE.MeshStandardMaterial({ color: hijabColor }));
-          hijabHood.position.y = 1.67; hijabHood.rotation.x = -0.15;
-          const hijabNeck = new THREE.Mesh(new THREE.ConeGeometry(0.36, 0.45, 10), new THREE.MeshStandardMaterial({ color: hijabColor }));
-          hijabNeck.position.set(0, 1.35, 0.04);
-          group.add(hijabHood, hijabNeck);
+        if (hasHijab) {
+          let hijabColor = 0xf8fafc;
+          if (isStudent) {
+            hijabColor = details.uniform === 'hw'
+              ? 0x78350f
+              : (details.uniform === 'batik_hijau' ? 0x166534 : 0xf8fafc);
+          } else if (isTeacher) {
+            hijabColor = tInfo ? tInfo.hijabColor : 0xf1f5f9;
+          }
+          const hijabMat = new THREE.MeshStandardMaterial({ color: hijabColor, roughness: 0.75 });
+
+          const hijabTop = new THREE.Mesh(
+            new THREE.SphereGeometry(0.33, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.35),
+            hijabMat
+          );
+          hijabTop.position.set(0, 0.03, -0.01);
+          headGroup.add(hijabTop);
+
+          const hijabWrap = new THREE.Mesh(
+            new THREE.SphereGeometry(0.335, 16, 12, Math.PI * 0.78, Math.PI * 1.44, Math.PI * 0.22, Math.PI * 0.68),
+            hijabMat
+          );
+          hijabWrap.position.set(0, 0, -0.02);
+          headGroup.add(hijabWrap);
+
+          const hijabShawl = new THREE.Mesh(
+            new THREE.ConeGeometry(0.38, 0.46, 12),
+            hijabMat
+          );
+          hijabShawl.position.set(0, 0.62, 0.0);
+          upperBody.add(hijabShawl);
         } else {
           const hairColors = [0x1e1b4b, 0x3f2305, 0x0f172a];
           const hair = new THREE.Mesh(
-            new THREE.SphereGeometry(0.33, 10, 10, 0, Math.PI * 2, 0, Math.PI * 0.56),
+            new THREE.SphereGeometry(0.32, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.52),
             new THREE.MeshStandardMaterial({ color: hairColors[(details.hairIdx || 0) % hairColors.length] })
           );
-          hair.position.y = 1.69;
-          group.add(hair);
+          hair.position.set(0, 0.03, -0.02);
+          hair.rotation.x = -0.18;
+          headGroup.add(hair);
 
           if (isStudent && details.acc === 'hat') {
             const capColor = uInfo.pants;
-            const capDome = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.45), new THREE.MeshStandardMaterial({ color: capColor }));
-            capDome.position.y = 1.72;
-            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.04, 0.24), new THREE.MeshStandardMaterial({ color: capColor }));
-            visor.position.set(0, 1.78, 0.31); visor.rotation.x = 0.1;
-            group.add(capDome, visor);
+            const capDome = new THREE.Mesh(
+              new THREE.SphereGeometry(0.34, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.42),
+              new THREE.MeshStandardMaterial({ color: capColor })
+            );
+            capDome.position.y = 0.08;
+            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.04, 0.22), new THREE.MeshStandardMaterial({ color: capColor }));
+            visor.position.set(0, 0.14, 0.30); visor.rotation.x = 0.08;
+            headGroup.add(capDome, visor);
           }
         }
 
-        if (isStudent && details.acc === 'glasses') {
+        if (hasGlasses) {
           const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
-          const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.014, 6, 12), frameMat);
-          lRim.position.set(-0.095, 1.68, 0.3);
+          const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.014, 6, 12), frameMat);
+          lRim.position.set(-0.095, 0.02, 0.295);
           const rRim = lRim.clone(); rRim.position.x = 0.095;
           const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.015), frameMat);
-          bridge.position.set(0, 1.68, 0.3);
-          group.add(lRim, rRim, bridge);
+          bridge.position.set(0, 0.02, 0.295);
+          headGroup.add(lRim, rRim, bridge);
         }
       }
 
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.33), new THREE.MeshStandardMaterial({ color: bodyColor }));
-      torso.position.y = 1.02;
-      group.add(torso);
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.33), shirtMat);
+      torso.position.y = 0.34;
+      upperBody.add(torso);
 
       if (isStudent) {
-        const tie = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.34, 0.04), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
-        tie.position.set(0, 1.13, 0.175);
+        const tie = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.34, 0.04), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
+        tie.position.set(0, 0.45, 0.175);
+        upperBody.add(tie);
+
+        if (uInfo.tieAccent !== uInfo.tie) {
+          const tieLine = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.34, 0.045), new THREE.MeshStandardMaterial({ color: uInfo.tieAccent }));
+          tieLine.position.set(0, 0.45, 0.178);
+          upperBody.add(tieLine);
+        }
+
         const belt = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
-        belt.position.y = 0.72;
+        belt.position.y = 0.04;
         const bag = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.48, 0.2), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-        bag.position.set(0, 1.05, -0.25);
+        bag.position.set(0, 0.37, -0.25);
         const bagStripe = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.1, 0.22), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
-        bagStripe.position.set(0, 1.1, -0.255);
-        group.add(tie, belt, bag, bagStripe);
+        bagStripe.position.set(0, 0.42, -0.255);
+        upperBody.add(belt, bag, bagStripe);
+      } else if (isTeacher) {
+        const lanyard = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.22, 0.04), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+        lanyard.position.set(0, 0.42, 0.175);
+        upperBody.add(lanyard);
       }
 
       const armGeo = new THREE.BoxGeometry(0.15, 0.54, 0.15);
       armGeo.translate(0, -0.21, 0);
-      const armMat = new THREE.MeshStandardMaterial({ color: bodyColor });
 
-      const leftArm = new THREE.Mesh(armGeo, armMat);
-      leftArm.position.set(-0.36, 1.28, 0);
-      const rightArm = new THREE.Mesh(armGeo, armMat);
-      rightArm.position.set(0.36, 1.28, 0);
-      group.add(leftArm, rightArm);
+      // Catatan: x = -0.36 adalah tangan kanan anatomis (menghadap +Z), x = +0.36 adalah tangan kiri anatomis
+      const leftArm = new THREE.Mesh(armGeo, shirtMat);
+      leftArm.position.set(-0.36, 0.60, 0);
+      const rightArm = new THREE.Mesh(armGeo, shirtMat);
+      rightArm.position.set(0.36, 0.60, 0);
+      upperBody.add(leftArm, rightArm);
 
       if (isStudent && details.item && details.item !== 'none') {
         if (details.item === 'book') {
@@ -1497,6 +2005,17 @@
         }
       }
 
+      let skirt = null;
+      if (hasHijab) {
+        const skirtH = isTeacher ? 0.56 : 0.45;
+        skirt = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.28, 0.39, skirtH, 10),
+          new THREE.MeshStandardMaterial({ color: pantsColor })
+        );
+        skirt.position.y = isTeacher ? 0.44 : 0.50;
+        bodyRoot.add(skirt);
+      }
+
       function buildLeg(xOffset) {
         const legPivot = new THREE.Group();
         legPivot.position.set(xOffset, 0.66, 0);
@@ -1512,14 +2031,17 @@
 
       const leftLeg = buildLeg(-0.14);
       const rightLeg = buildLeg(0.14);
-      group.add(leftLeg, rightLeg);
+      bodyRoot.add(leftLeg, rightLeg);
 
       enableShadows(group);
-      return { group, parts: { leftArm, rightArm, leftLeg, rightLeg } };
+      return {
+        group,
+        parts: { bodyRoot, upperBody, headGroup, leftArm, rightArm, leftLeg, rightLeg, skirt }
+      };
     }
 
     // ==========================================
-    // 8. LOGIKA BANGUNAN, GESER RUANG, JALAN & ORANG
+    // 8. LOGIKA BANGUNAN, GESER RUANG, JALAN & ANTI-TABRAK
     // ==========================================
     function getRotatedDims(type, rotation) {
       const info = BUILDING_CATALOG[type];
@@ -1640,7 +2162,7 @@
     }
 
     function canPlaceRoad(x, z) {
-      if (Math.abs(x) > 30 || Math.abs(z) > 30) return false;
+      if (Math.abs(x) > 33 || Math.abs(z) > 33) return false;
       const halfRoad = ROAD_STEP / 2;
       for (const b of state.buildings) {
         if (b.floor !== 1) continue;
@@ -1671,34 +2193,87 @@
       saveWorld();
     }
 
-    function isPointBlocked(px, pz) {
+    // --- DETEKSI POLIGON & ANTI-TABRAK TEMBOK ---
+    const WALKABLE_TYPES = ['court'];
+
+    function isInsidePolygon(px, pz, poly = SCHOOL_POLYGON) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, zi] = poly[i];
+        const [xj, zj] = poly[j];
+        const intersect = ((zi > pz) !== (zj > pz)) &&
+          (px < (xj - xi) * (pz - zi) / (zj - zi + 1e-9) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function isPointBlocked(px, pz, margin = 0.65) {
+      if (!isInsidePolygon(px, pz)) return true;
       for (const b of state.buildings) {
-        if (b.floor !== 1) continue;
-        if (Math.abs(px - b.x) < b.halfW + 0.55 && Math.abs(pz - b.z) < b.halfD + 0.55) {
+        if (b.floor !== 1 || WALKABLE_TYPES.includes(b.type)) continue;
+        if (Math.abs(px - b.x) < b.halfW + margin && Math.abs(pz - b.z) < b.halfD + margin) {
           return true;
         }
       }
       return false;
     }
 
-    function pickRandomWalkPoint() {
-      const insideRoads = state.roads.filter(r => r.z < 23 && r.x < 10.5 && !isPointBlocked(r.x, r.z));
-      if (insideRoads.length > 0 && Math.random() < 0.55) {
-        const rd = insideRoads[Math.floor(Math.random() * insideRoads.length)];
-        return { x: rd.x + (Math.random() - 0.5) * 1.2, z: rd.z + (Math.random() - 0.5) * 1.2 };
+    function hasClearPath(x1, z1, x2, z2) {
+      const dist = Math.hypot(x2 - x1, z2 - z1);
+      const steps = Math.max(1, Math.ceil(dist / 0.55));
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        if (isPointBlocked(x1 + (x2 - x1) * t, z1 + (z2 - z1) * t, 0.62)) return false;
       }
-      for (let attempt = 0; attempt < 25; attempt++) {
-        const rx = -21 + Math.random() * 29.5;
-        const rz = -11 + Math.random() * 32;
-        if (!isPointBlocked(rx, rz)) return { x: rx, z: rz };
+      return true;
+    }
+
+    function pickRandomWalkPoint(fromX = null, fromZ = null) {
+      const insideRoads = state.roads.filter(r => r.z < 27 && !isPointBlocked(r.x, r.z, 0.6));
+      const landmarks = [
+        { x: -3.8, z: -12.0 }, // Depan tiang bendera
+        { x: -12.0, z: -18.0 }, // Sisi barat laut lapangan
+        { x: 2.5, z: -16.0 },   // Sisi timur laut lapangan
+        { x: 1.5, z: 6.0 },     // Lorong dekat gedung barat
+        { x: 2.0, z: 16.0 },    // Lorong tengah selatan
+        { x: -13.5, z: -8.0 },  // Area barat dekat WC/toren
+        { x: -2.0, z: -20.0 }   // Area utara dekat gedung atas
+      ];
+
+      for (let attempt = 0; attempt < 50; attempt++) {
+        let rx, rz;
+        const roll = Math.random();
+
+        if (roll < 0.35 && landmarks.length > 0) {
+          const lm = landmarks[Math.floor(Math.random() * landmarks.length)];
+          rx = lm.x + (Math.random() - 0.5) * 4.5;
+          rz = lm.z + (Math.random() - 0.5) * 4.5;
+        } else if (roll < 0.65 && insideRoads.length > 0) {
+          const rd = insideRoads[Math.floor(Math.random() * insideRoads.length)];
+          rx = rd.x + (Math.random() - 0.5) * 2.2;
+          rz = rd.z + (Math.random() - 0.5) * 2.2;
+        } else {
+          rx = -19 + Math.random() * 31;
+          rz = -23 + Math.random() * 50;
+        }
+
+        if (!isPointBlocked(rx, rz, 0.62)) {
+          const minDist = (fromX !== null && fromZ !== null) ? 4.5 : 0;
+          const dist = (fromX !== null && fromZ !== null) ? Math.hypot(rx - fromX, rz - fromZ) : 99;
+          if (dist >= minDist && (fromX === null || hasClearPath(fromX, fromZ, rx, rz))) {
+            return { x: rx, z: rz };
+          }
+        }
       }
-      return { x: -12, z: 4 };
+
+      return { x: 1.5, z: 10 };
     }
 
     function resolveStudentDetails(customDetails = null) {
       if (customDetails) return customDetails;
-      const uniforms = ['sd', 'sd', 'pramuka'];
-      const accs = ['hat', 'hijab', 'glasses', 'none', 'none'];
+      const uniforms = ['merah_putih', 'batik_hijau', 'hw'];
+      const accs = ['hijab', 'hat', 'glasses', 'none'];
       const items = ['book', 'ball', 'bottle', 'none'];
       return {
         uniform: state.studentUniform === 'random' ? uniforms[Math.floor(Math.random() * uniforms.length)] : state.studentUniform,
@@ -1708,40 +2283,77 @@
       };
     }
 
+    function resolveTeacherDetails(customDetails = null) {
+      if (customDetails) return customDetails;
+      const styles = Object.keys(TEACHER_STYLE_CATALOG);
+      const accs = ['hijab', 'hijab_glasses', 'glasses', 'none'];
+      return {
+        uniform: state.teacherStyle === 'random' ? styles[Math.floor(Math.random() * styles.length)] : state.teacherStyle,
+        acc: state.teacherAcc === 'random' ? accs[Math.floor(Math.random() * accs.length)] : state.teacherAcc,
+        hairIdx: Math.floor(Math.random() * 3)
+      };
+    }
+
     const labelsLayer = document.getElementById('labels-layer');
 
     function addCharacter(role, customName, x, z, shirtColorOverride = null, savedDetails = null) {
       const catalog = ROLE_CATALOG[role];
-      const details = role === 'student' ? resolveStudentDetails(savedDetails) : {};
+      let details = {};
+      if (role === 'student') details = resolveStudentDetails(savedDetails);
+      else if (role === 'teacher') details = resolveTeacherDetails(savedDetails);
+
       const shirtColor = shirtColorOverride ?? (catalog.colors ? catalog.colors[Math.floor(Math.random() * catalog.colors.length)] : 0xffffff);
       const name = (customName && customName.trim()) ? customName.trim() : catalog.names[Math.floor(Math.random() * catalog.names.length)];
 
+      let spawnX = x;
+      let spawnZ = z;
+      if (isPointBlocked(spawnX, spawnZ, 0.55)) {
+        const safePt = pickRandomWalkPoint();
+        spawnX = safePt.x;
+        spawnZ = safePt.z;
+      }
+
       const { group, parts } = createCharacterMesh(role, shirtColor, details);
-      group.position.set(x, 0, z);
+      group.position.set(spawnX, 0, spawnZ);
       const id = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
       group.userData = { entityType: 'character', entityId: id };
       scene.add(group);
 
-      const badgeTxt = role === 'student' ? `[${UNIFORM_CATALOG[details.uniform].badge}] ` : '';
+      const uBadge = role === 'student'
+        ? resolveUniformInfo(details.uniform).badge
+        : (role === 'teacher' && (details.acc === 'hijab' || details.acc === 'hijab_glasses') ? 'Ibu' : '');
+      const badgeTxt = uBadge ? `[${uBadge}] ` : '';
       const labelEl = document.createElement('div');
       labelEl.className = 'char-tag';
-      labelEl.innerHTML = `<div class="char-bubble" style="display:none"></div><div class="char-name">${catalog.emoji} ${badgeTxt}${name}</div>`;
+      labelEl.innerHTML = `<div class="char-bubble" style="display:none"></div><div class="char-name">${SVG_ICONS[catalog.miniIcon]} <span>${badgeTxt}${name}</span></div>`;
       labelsLayer.appendChild(labelEl);
 
-      const target = pickRandomWalkPoint();
-      state.characters.push({
+      const target = pickRandomWalkPoint(spawnX, spawnZ);
+      const startRun = Math.random() < 0.35;
+      const ch = {
         id, role, name, details, shirtColor,
         mesh: group, parts, labelEl,
-        x, z, targetX: target.x, targetZ: target.z,
-        speed: role === 'teacher' ? 2.4 : (role === 'robot' ? 3.2 : 2.9 + Math.random() * 0.7),
+        x: spawnX, z: spawnZ, targetX: target.x, targetZ: target.z,
+        baseSpeed: role === 'teacher' ? 2.5 : (role === 'robot' ? 3.2 : 2.8 + Math.random() * 0.6),
         walkPhase: Math.random() * 10,
-        state: 'walk',
+        state: startRun ? 'run' : 'walk',
         stateTimer: 3 + Math.random() * 5,
-        bubbleTimer: 0
-      });
+        greetCooldown: 2 + Math.random() * 4,
+        waveTargetYaw: 0,
+        bubbleTimer: 0,
+        formationSlot: null,
+        soloAction: null,
+        soloTimer: 0
+      };
+      state.characters.push(ch);
+
+      if (state.activityMode !== 'free') {
+        assignAllFormationTargets(state.activityMode);
+      }
 
       updateStats();
       saveWorld();
+      return ch;
     }
 
     function removeEntity(entityType, entityId) {
@@ -2024,13 +2636,13 @@
               ghostMesh.rotation.y = baseB.rotation;
               ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostStackMat; });
               pendingBuildPlacement = { x: baseB.x, z: baseB.z, rotation: baseB.rotation, floor: 2, parentId: baseB.id, valid: true };
-              hintBanner.textContent = `⬆️ Klik untuk taruh di Lantai 2 atas ${BUILDING_CATALOG[baseB.type].label}!`;
+              hintBanner.textContent = `[Lantai 2] Klik untuk taruh di atas ${BUILDING_CATALOG[baseB.type].label}!`;
             } else {
               ghostMesh.position.set(baseB.x, FLOOR_HEIGHT * 2 + 0.04, baseB.z);
               ghostMesh.rotation.y = baseB.rotation;
               ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostInvalidMat; });
               pendingBuildPlacement = { valid: false };
-              hintBanner.textContent = '❌ Maksimal bangunan 2 lantai!';
+              hintBanner.textContent = 'Maksimal bangunan 2 lantai!';
             }
             return;
           }
@@ -2057,13 +2669,13 @@
         pendingBuildPlacement = { x: sx, z: sz, rotation: srot, floor: 1, parentId: null, valid };
 
         if (snap && valid) {
-          hintBanner.textContent = `🧲 Menempel rapi ke ${BUILDING_CATALOG[snap.attachedTo.type].label}! Klik untuk letakkan`;
+          hintBanner.textContent = `[Menempel] Rapat ke ${BUILDING_CATALOG[snap.attachedTo.type].label} - Klik untuk letakkan`;
         } else if (state.mode === 'move') {
-          hintBanner.textContent = `✋ Geser ${BUILDING_CATALOG[type].label} ke lokasi baru • [R] Putar • [Esc] Batal`;
+          hintBanner.textContent = `Geser ${BUILDING_CATALOG[type].label} ke lokasi baru • [R] Putar • [Esc] Batal`;
         } else {
           hintBanner.textContent = isStackable
-            ? '🏗️ Dekatkan ke sisi gedung untuk menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar'
-            : '🏗️ Klik area pulau untuk menempatkan objek • [R] Putar';
+            ? 'Dekatkan ke sisi gedung agar menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar'
+            : 'Klik area pulau untuk menempatkan pagar/objek • [R] Putar';
         }
       }
     }
@@ -2084,12 +2696,12 @@
           if (b) {
             const hasF2 = b.floor === 1 && state.buildings.some(item => item.parentId === b.id);
             hintBanner.textContent = hasF2
-              ? `✋ Klik untuk geser 1 blok 2 lantai: ${BUILDING_CATALOG[b.type].label}`
-              : `✋ Klik untuk geser: ${BUILDING_CATALOG[b.type].label} (Lt. ${b.floor})`;
+              ? `Klik untuk geser 1 blok 2 lantai: ${BUILDING_CATALOG[b.type].label}`
+              : `Klik untuk geser: ${BUILDING_CATALOG[b.type].label} (Lt. ${b.floor})`;
             return;
           }
         }
-        hintBanner.textContent = '✋ Mode Geser Ruang • Klik gedung/ruang mana saja untuk memindahkannya';
+        hintBanner.textContent = 'Mode Geser Ruang • Klik gedung/ruang/pagar mana saja untuk memindahkannya';
       } else {
         const mv = state.moving;
         const excludeIds = mv.child ? [mv.building.id, mv.child.id] : [mv.building.id];
@@ -2102,8 +2714,8 @@
       raycaster.setFromCamera(pointer, camera);
       const hits = raycaster.intersectObject(raycastPlane);
       if (hits.length > 0) {
-        const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -30, 30);
-        const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -30, 30);
+        const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -33, 33);
+        const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -33, 33);
         const valid = canPlaceRoad(gx, gz);
         ghostMesh.visible = true;
         ghostMesh.position.set(gx, 0.09, gz);
@@ -2130,25 +2742,26 @@
           if (entityType === 'character') {
             const ch = state.characters.find(c => c.id === entityId);
             if (ch) {
-              hintBanner.textContent = `🗑️ Klik untuk MENGHAPUS ${ROLE_CATALOG[ch.role].label}: ${ch.name}`;
+              hintBanner.textContent = `Klik untuk MENGHAPUS ${ROLE_CATALOG[ch.role].label}: ${ch.name}`;
               return;
             }
           } else if (entityType === 'building') {
             const b = state.buildings.find(item => item.id === entityId);
             if (b) {
-              hintBanner.textContent = `🗑️ Klik untuk MENGHAPUS ${BUILDING_CATALOG[b.type].label} (Lantai ${b.floor})`;
+              hintBanner.textContent = `Klik untuk MENGHAPUS ${BUILDING_CATALOG[b.type].label} (Lantai ${b.floor})`;
               return;
             }
           } else if (entityType === 'road') {
-            hintBanner.textContent = '🗑️ Klik untuk MENGHAPUS Petak Jalan ini';
+            hintBanner.textContent = 'Klik untuk MENGHAPUS Petak Jalan ini';
             return;
           }
         }
       }
-      hintBanner.textContent = '🗑️ Mode Hapus • Klik murid, guru, gedung, atau jalan yang ingin dihapus';
+      hintBanner.textContent = 'Mode Hapus • Klik murid, guru, pagar, gedung, atau jalan yang ingin dihapus';
     }
 
     renderer.domElement.addEventListener('pointermove', (e) => {
+      if (state.hudHidden) return;
       updatePointer(e);
       if (state.mode === 'build') evaluateBuildCursor();
       else if (state.mode === 'move') evaluateMoveCursor();
@@ -2158,7 +2771,7 @@
 
     renderer.domElement.addEventListener('pointerdown', (e) => {
       pointerDownPos = { x: e.clientX, y: e.clientY };
-      if (state.mode === 'road' && state.roadBrushDrag && e.button === 0) {
+      if (!state.hudHidden && state.mode === 'road' && state.roadBrushDrag && e.button === 0) {
         isRoadDragging = true;
         controls.enabled = false;
         updatePointer(e);
@@ -2178,6 +2791,43 @@
 
       updatePointer(e);
       raycaster.setFromCamera(pointer, camera);
+
+      if (state.hudHidden || state.mode === 'view') {
+        const charHits = raycaster.intersectObjects(state.characters.map(c => c.mesh), true);
+        if (charHits.length > 0) {
+          let curr = charHits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          if (curr) {
+            const ch = state.characters.find(c => c.id === curr.userData.entityId);
+            if (ch) {
+              triggerChatBubble(ch);
+              if (!state.hudHidden) openInspectCard(ch);
+              return;
+            }
+          }
+        }
+        if (state.hudHidden) return;
+
+        const bldHits = raycaster.intersectObjects(state.buildings.map(b => b.mesh), true).filter(h => isObjectVisible(h.object));
+        if (bldHits.length > 0) {
+          let curr = bldHits[0].object;
+          while (curr && !curr.userData.entityId) curr = curr.parent;
+          if (curr) {
+            let b = state.buildings.find(item => item.id === curr.userData.entityId);
+            if (b && b.floor === 2 && b.parentId) {
+              b = state.buildings.find(item => item.id === b.parentId);
+            }
+            if (b && BUILDING_CATALOG[b.type].stackable) {
+              const childF2 = state.buildings.find(item => item.parentId === b.id);
+              if (childF2) {
+                openBuildingCard(b, childF2);
+                return;
+              }
+            }
+          }
+        }
+        return;
+      }
 
       if (state.mode === 'build') {
         evaluateBuildCursor();
@@ -2204,8 +2854,8 @@
       else if (state.mode === 'road') {
         const hits = raycaster.intersectObject(raycastPlane);
         if (hits.length > 0) {
-          const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -30, 30);
-          const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -30, 30);
+          const gx = THREE.MathUtils.clamp(Math.round(hits[0].point.x / ROAD_STEP) * ROAD_STEP, -33, 33);
+          const gz = THREE.MathUtils.clamp(Math.round(hits[0].point.z / ROAD_STEP) * ROAD_STEP, -33, 33);
           addOrReplaceRoad(state.selectedRoad, gx, gz, state.roadRotation);
         }
       }
@@ -2235,43 +2885,33 @@
           }
         }
       }
-      else if (state.mode === 'view') {
-        const charHits = raycaster.intersectObjects(state.characters.map(c => c.mesh), true);
-        if (charHits.length > 0) {
-          let curr = charHits[0].object;
-          while (curr && !curr.userData.entityId) curr = curr.parent;
-          if (curr) {
-            const ch = state.characters.find(c => c.id === curr.userData.entityId);
-            if (ch) {
-              triggerChatBubble(ch);
-              openInspectCard(ch);
-              return;
-            }
-          }
-        }
-        const bldHits = raycaster.intersectObjects(state.buildings.map(b => b.mesh), true).filter(h => isObjectVisible(h.object));
-        if (bldHits.length > 0) {
-          let curr = bldHits[0].object;
-          while (curr && !curr.userData.entityId) curr = curr.parent;
-          if (curr) {
-            let b = state.buildings.find(item => item.id === curr.userData.entityId);
-            if (b && b.floor === 2 && b.parentId) {
-              b = state.buildings.find(item => item.id === b.parentId);
-            }
-            if (b && BUILDING_CATALOG[b.type].stackable) {
-              const childF2 = state.buildings.find(item => item.parentId === b.id);
-              if (childF2) {
-                openBuildingCard(b, childF2);
-                return;
-              }
-            }
-          }
-        }
-      }
     });
+
+    function toggleHudHidden(forceState = null) {
+      state.hudHidden = forceState !== null ? forceState : !state.hudHidden;
+      document.body.classList.toggle('hud-hidden', state.hudHidden);
+      if (state.hudHidden) {
+        if (ghostMesh) ghostMesh.visible = false;
+        roadGridHelper.visible = false;
+      } else {
+        if (state.mode === 'road') roadGridHelper.visible = true;
+      }
+    }
+
+    document.getElementById('btn-hide-hud').onclick = () => toggleHudHidden(true);
+    document.getElementById('btn-show-hud').onclick = () => toggleHudHidden(false);
+    document.getElementById('btn-clean-labels').onclick = () => {
+      state.showLabels = !state.showLabels;
+      applyLabelsVisibility();
+      saveWorld();
+    };
 
     window.addEventListener('keydown', (e) => {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+      if (e.key === 'h' || e.key === 'H') {
+        toggleHudHidden();
+        return;
+      }
       if (e.key === 'Escape' && state.mode === 'move' && state.moving) {
         cancelMove();
         return;
@@ -2291,13 +2931,13 @@
     });
 
     // ==========================================
-    // 10. PRESET KAMERA VIDEO & KARTU DETAIL
+    // 10. PRESET KAMERA VIDEO, KEGIATAN & KARTU DETAIL
     // ==========================================
     const CAM_PRESETS = {
-      gate:     { pos: [6, 9, 43], target: [2, 2.5, 16] },
-      corridor: { pos: [7, 4.8, 24], target: [3, 2.2, 2] },
-      yard:     { pos: [-5, 7, 17], target: [-14, 2, -12] },
-      overview: { pos: [30, 38, 42], target: [-4, 1, 2] }
+      gate:     { pos: [11, 8, 42],   target: [1, 2.2, 22] },
+      corridor: { pos: [3, 4.5, 25],  target: [-1, 2.2, 4] },
+      yard:     { pos: [10, 12, -2],  target: [-6, 2, -18] },
+      overview: { pos: [24, 42, 44],  target: [-4, 1, 0] }
     };
 
     document.querySelectorAll('#cam-bar button').forEach(btn => {
@@ -2310,6 +2950,187 @@
       });
     });
 
+    function getFlagpoleTarget() {
+      const fp = state.buildings.find(b => b.type === 'flagpole');
+      return fp ? { x: fp.x, z: fp.z } : { x: -3.8, z: -15.5 };
+    }
+
+    function assignAllFormationTargets(actMode) {
+      const chars = state.characters;
+      if (chars.length === 0) return;
+
+      const teachers = chars.filter(c => c.role === 'teacher');
+      const others = chars.filter(c => c.role !== 'teacher');
+
+      if (actMode === 'free') {
+        chars.forEach(c => {
+          c.formationSlot = null;
+          c.soloAction = null;
+          const pt = pickRandomWalkPoint(c.x, c.z);
+          c.targetX = pt.x;
+          c.targetZ = pt.z;
+          c.state = Math.random() < 0.35 ? 'run' : 'walk';
+          c.stateTimer = 3 + Math.random() * 5;
+        });
+        return;
+      }
+
+      if (actMode === 'ceremony') {
+        const fp = getFlagpoleTarget();
+        // Barisan menghadap tiang bendera dari sisi selatan tiang
+        const ordered = [...others, ...teachers];
+        const cols = 4;
+        const startZ = fp.z + 4.0;
+        let idx = 0;
+
+        // Guru berdiri di samping kanan barisan menghadap tiang bendera
+        teachers.forEach((t, ti) => {
+          const sx = fp.x + 4.8;
+          const sz = startZ + ti * 1.8;
+          const yaw = Math.atan2(fp.x - sx, fp.z - sz);
+          t.formationSlot = { x: sx, z: sz, yaw, arrived: false };
+          t.soloAction = null;
+        });
+
+        others.forEach((c) => {
+          let placed = false;
+          while (!placed && idx < 40) {
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            const sx = fp.x - 2.7 + col * 1.8;
+            const sz = startZ + row * 1.9;
+            idx++;
+            if (!isPointBlocked(sx, sz, 0.48)) {
+              const yaw = Math.atan2(fp.x - sx, fp.z - sz);
+              c.formationSlot = { x: sx, z: sz, yaw, arrived: false };
+              c.soloAction = null;
+              placed = true;
+            }
+          }
+          if (!placed) {
+            const pt = pickRandomWalkPoint();
+            c.formationSlot = { x: pt.x, z: pt.z, yaw: Math.atan2(fp.x - pt.x, fp.z - pt.z), arrived: false };
+          }
+        });
+        return;
+      }
+
+      if (actMode === 'prayer') {
+        // Shalat berjamaah menghadap Barat / arah Gerbang (+Z -> yaw = 0)
+        // Imam (guru pertama, atau karakter pertama) di barisan paling depan (z terbesar menghadap +Z)
+        const imam = teachers[0] || chars[0];
+        const makmum = chars.filter(c => c.id !== imam.id);
+        const yawGate = 0; // +Z mengarah langsung ke pagar & gerbang depan
+
+        const imamPos = !isPointBlocked(-2.0, -5.0, 0.45) ? { x: -2.0, z: -5.0 } : pickRandomWalkPoint();
+        imam.formationSlot = { x: imamPos.x, z: imamPos.z, yaw: yawGate, arrived: false, isImam: true };
+        imam.soloAction = null;
+        triggerChatBubble(imam, 'Ayo shalat berjamaah, luruskan shaf!');
+
+        const cols = 5;
+        let idx = 0;
+        makmum.forEach((c) => {
+          let placed = false;
+          while (!placed && idx < 45) {
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            // Shaf di belakang imam (z lebih kecil dari imamPos.z karena menghadap +Z)
+            const sx = imamPos.x - 3.6 + col * 1.8;
+            const sz = imamPos.z - 2.3 - row * 2.1;
+            idx++;
+            if (!isPointBlocked(sx, sz, 0.45)) {
+              c.formationSlot = { x: sx, z: sz, yaw: yawGate, arrived: false, isImam: false };
+              c.soloAction = null;
+              placed = true;
+            }
+          }
+          if (!placed) {
+            const pt = pickRandomWalkPoint();
+            c.formationSlot = { x: pt.x, z: pt.z, yaw: yawGate, arrived: false, isImam: false };
+          }
+        });
+        return;
+      }
+
+      if (actMode === 'exercise') {
+        const leader = teachers[0] || chars[0];
+        const followers = chars.filter(c => c.id !== leader.id);
+
+        leader.formationSlot = { x: -2.0, z: -11.5, yaw: 0, arrived: false, isLeader: true };
+        leader.soloAction = null;
+        triggerChatBubble(leader, 'Ayo senam pagi! 1.. 2.. 3..');
+
+        const cols = 4;
+        let idx = 0;
+        followers.forEach((c) => {
+          let placed = false;
+          while (!placed && idx < 40) {
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            const sx = -5.5 + col * 2.3;
+            const sz = -8.5 + row * 2.2;
+            idx++;
+            if (!isPointBlocked(sx, sz, 0.48)) {
+              c.formationSlot = { x: sx, z: sz, yaw: Math.PI, arrived: false, isLeader: false };
+              c.soloAction = null;
+              placed = true;
+            }
+          }
+          if (!placed) {
+            const pt = pickRandomWalkPoint();
+            c.formationSlot = { x: pt.x, z: pt.z, yaw: Math.PI, arrived: false, isLeader: false };
+          }
+        });
+        return;
+      }
+
+      if (actMode === 'play') {
+        // Membentuk lingkaran bermain di lapangan
+        const center = { x: -4.0, z: -8.5 };
+        const r = Math.min(4.2, Math.max(2.2, chars.length * 0.45));
+        chars.forEach((c, i) => {
+          const ang = (i / chars.length) * Math.PI * 2;
+          let px = center.x + Math.cos(ang) * r;
+          let pz = center.z + Math.sin(ang) * r;
+          if (isPointBlocked(px, pz, 0.5)) {
+            const pt = pickRandomWalkPoint();
+            px = pt.x; pz = pt.z;
+          }
+          c.formationSlot = {
+            x: px, z: pz,
+            yaw: Math.atan2(center.x - px, center.z - pz),
+            arrived: false,
+            playCenter: center,
+            playAngle: ang,
+            playRadius: r
+          };
+          c.soloAction = null;
+        });
+      }
+    }
+
+    function setActivityMode(actMode) {
+      state.activityMode = actMode;
+      state.activityStartTime = clock.elapsedTime;
+      document.querySelectorAll('#activity-bar button').forEach(b => {
+        b.classList.toggle('active-act', b.dataset.act === actMode);
+      });
+      assignAllFormationTargets(actMode);
+
+      const desc = {
+        free: 'Kegiatan: Bebas & Bermain • Murid berjalan, menyapa, dan bermain bersama',
+        ceremony: 'Kegiatan: Baris & Hormat Bendera • Semua berbaris menghadap Tiang Bendera',
+        prayer: 'Kegiatan: Shalat Berjamaah • Shaf rapi menghadap arah barat / gerbang sekolah',
+        exercise: 'Kegiatan: Senam Pagi • Guru memimpin senam di lapangan sekolah',
+        play: 'Kegiatan: Main Bersama • Siswa & guru berkumpul bermain riang di lapangan'
+      };
+      hintBanner.textContent = desc[actMode] || hintBanner.textContent;
+    }
+
+    document.querySelectorAll('#activity-bar button').forEach(btn => {
+      btn.addEventListener('click', () => setActivityMode(btn.dataset.act));
+    });
+
     const inspectCard = document.getElementById('inspect-card');
     const buildingCard = document.getElementById('building-card');
 
@@ -2317,21 +3138,48 @@
       closeBuildingCard();
       state.inspectedCharId = ch.id;
       const cat = ROLE_CATALOG[ch.role];
-      document.getElementById('ins-title').textContent = `${cat.emoji} ${ch.name}`;
+      document.getElementById('ins-title').innerHTML = `${SVG_ICONS[cat.icon]} <span>${ch.name}</span>`;
+
+      const actMap = {
+        walk: 'Jalan santai menjelajah',
+        run: 'Berlarian ceria',
+        wave: 'Menyapa teman!',
+        idle: 'Beristirahat sebentar',
+        play_circle: 'Bermain bersama teman!'
+      };
 
       if (ch.role === 'student') {
-        const u = UNIFORM_CATALOG[ch.details.uniform];
-        const accMap = { hat: 'Topi Sekolah', hijab: 'Berhijab', glasses: 'Berkacamata', none: 'Standar' };
-        const itemMap = { book: '📚 Buku Pelajaran', ball: '🏀 Bola Basket', bottle: '🥤 Botol Minum', none: 'Tidak ada' };
+        const u = resolveUniformInfo(ch.details.uniform);
+        const accMap = { hat: 'Topi Sekolah', hijab: 'Berhijab (Wajah Terbuka)', glasses: 'Berkacamata', none: 'Standar' };
+        const itemMap = { book: 'Buku Pelajaran', ball: 'Bola Basket', bottle: 'Botol Minum', none: 'Tidak ada' };
         document.getElementById('ins-role').textContent = `Siswa ${u.label}`;
         document.getElementById('ins-acc').textContent = accMap[ch.details.acc] || 'Standar';
         document.getElementById('ins-item').textContent = itemMap[ch.details.item] || 'Tidak ada';
+      } else if (ch.role === 'teacher') {
+        const tInfo = TEACHER_STYLE_CATALOG[ch.details.uniform || 'teal'];
+        const isHijab = ch.details.acc === 'hijab' || ch.details.acc === 'hijab_glasses';
+        const accTxtMap = {
+          hijab: 'Ibu Guru Berhijab',
+          hijab_glasses: 'Berhijab & Kacamata',
+          glasses: 'Berkacamata',
+          none: 'Standar'
+        };
+        document.getElementById('ins-role').textContent = isHijab ? 'Ibu Guru' : 'Bapak / Ibu Guru';
+        document.getElementById('ins-acc').textContent = `${accTxtMap[ch.details.acc || 'none']} (${tInfo ? tInfo.label : 'Guru'})`;
+        document.getElementById('ins-item').textContent = 'Kartu Nama Guru';
       } else {
         document.getElementById('ins-role').textContent = cat.label;
-        document.getElementById('ins-acc').textContent = ch.role === 'teacher' ? 'Seragam Guru' : 'Bodi Metalik AI';
+        document.getElementById('ins-acc').textContent = 'Bodi Metalik AI';
         document.getElementById('ins-item').textContent = '-';
       }
-      document.getElementById('ins-act').textContent = ch.state === 'walk' ? 'Sedang berkeliling' : 'Berhenti sejenak';
+
+      let curActLabel = actMap[ch.state] || 'Berkeliling ramah';
+      if (ch.soloAction === 'salute' || state.activityMode === 'ceremony') curActLabel = 'Hormat Bendera';
+      else if (ch.soloAction === 'pray' || state.activityMode === 'prayer') curActLabel = 'Shalat (Arah Gerbang/Barat)';
+      else if (state.activityMode === 'exercise') curActLabel = 'Senam Pagi Bersama';
+      else if (state.activityMode === 'play') curActLabel = 'Bermain Bersama di Lapangan';
+      document.getElementById('ins-act').textContent = curActLabel;
+
       inspectCard.classList.add('active');
     }
 
@@ -2340,10 +3188,65 @@
       inspectCard.classList.remove('active');
     }
     document.getElementById('ins-close').onclick = closeInspectCard;
+
     document.getElementById('ins-greet').onclick = () => {
       const ch = state.characters.find(c => c.id === state.inspectedCharId);
-      if (ch) triggerChatBubble(ch);
+      if (ch) {
+        ch.soloAction = null;
+        ch.state = 'wave';
+        ch.stateTimer = 2.4;
+        triggerChatBubble(ch);
+      }
     };
+
+    document.getElementById('ins-play').onclick = () => {
+      const ch = state.characters.find(c => c.id === state.inspectedCharId);
+      if (!ch) return;
+      // Cari 1-2 teman terdekat untuk bermain bersama
+      const buddies = state.characters
+        .filter(o => o.id !== ch.id)
+        .sort((a, b) => Math.hypot(a.x - ch.x, a.z - ch.z) - Math.hypot(b.x - ch.x, b.z - ch.z))
+        .slice(0, 2);
+
+      const center = { x: ch.x, z: ch.z };
+      const group = [ch, ...buddies];
+      group.forEach((member, idx) => {
+        const ang = (idx / group.length) * Math.PI * 2;
+        const tx = center.x + Math.cos(ang) * 1.45;
+        const tz = center.z + Math.sin(ang) * 1.45;
+        member.soloAction = 'play_circle';
+        member.soloTimer = 7.0;
+        member.soloData = { center, angle: ang, radius: 1.45 };
+        if (!isPointBlocked(tx, tz, 0.5)) {
+          member.targetX = tx;
+          member.targetZ = tz;
+        }
+        triggerChatBubble(member, idx === 0 ? 'Ayo main bersama!' : 'Siap, ayo!');
+      });
+      openInspectCard(ch);
+    };
+
+    document.getElementById('ins-salute').onclick = () => {
+      const ch = state.characters.find(c => c.id === state.inspectedCharId);
+      if (!ch) return;
+      const fp = getFlagpoleTarget();
+      ch.soloAction = 'salute';
+      ch.soloTimer = 6.0;
+      ch.soloData = { yaw: Math.atan2(fp.x - ch.x, fp.z - ch.z) };
+      triggerChatBubble(ch, 'Siap! Hormat bendera!');
+      openInspectCard(ch);
+    };
+
+    document.getElementById('ins-pray').onclick = () => {
+      const ch = state.characters.find(c => c.id === state.inspectedCharId);
+      if (!ch) return;
+      ch.soloAction = 'pray';
+      ch.soloTimer = 24.0;
+      ch.soloData = { startTime: clock.elapsedTime, lastPhase: -1 };
+      triggerChatBubble(ch, 'Allahu Akbar (Menghadap Gerbang/Barat)');
+      openInspectCard(ch);
+    };
+
     document.getElementById('ins-delete').onclick = () => {
       if (state.inspectedCharId) removeEntity('character', state.inspectedCharId);
     };
@@ -2351,8 +3254,8 @@
     function openBuildingCard(bFloor1, bFloor2) {
       closeInspectCard();
       state.inspectedBuildingId = bFloor1.id;
-      document.getElementById('bld-f1').textContent = `${BUILDING_CATALOG[bFloor1.type].emoji} ${BUILDING_CATALOG[bFloor1.type].label}`;
-      document.getElementById('bld-f2').textContent = `${BUILDING_CATALOG[bFloor2.type].emoji} ${BUILDING_CATALOG[bFloor2.type].label}`;
+      document.getElementById('bld-f1').textContent = BUILDING_CATALOG[bFloor1.type].label;
+      document.getElementById('bld-f2').textContent = BUILDING_CATALOG[bFloor2.type].label;
 
       const sideContainer = document.getElementById('stair-side-pills');
       sideContainer.innerHTML = '';
@@ -2402,219 +3305,287 @@
 
     function renderSubPanel() {
       subPanel.innerHTML = '';
-      roadGridHelper.visible = state.mode === 'road';
+      roadGridHelper.visible = !state.hudHidden && state.mode === 'road';
 
       if (state.mode === 'view') {
         subPanel.classList.remove('active');
-        hintBanner.textContent = '👀 Mode Jelajah • Klik murid/guru untuk profil, atau klik gedung 2 lantai untuk kustom tangga';
+        hintBanner.textContent = 'Mode Jelajah • Klik murid/guru untuk interaksi, atau pilih Kegiatan di kanan atas';
         return;
       }
 
       subPanel.classList.add('active');
 
       if (state.mode === 'build') {
-        hintBanner.textContent = '🏗️ Dekatkan ke sisi gedung agar menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar';
+        hintBanner.textContent = 'Pilih Gedung atau Pagar/Gerbang untuk dibangun ulang • [R] Putar';
+
+        const catRow = document.createElement('div');
+        catRow.className = 'sub-row';
+        const tabs = [
+          { id: 'buildings', label: 'Gedung & Tangga' },
+          { id: 'props', label: 'Pagar, Gerbang & Objek SD Mutu' }
+        ];
+        tabs.forEach(t => {
+          const tabBtn = document.createElement('button');
+          tabBtn.className = `cat-tab ${state.buildCategory === t.id ? 'active' : ''}`;
+          tabBtn.textContent = t.label;
+          tabBtn.onclick = () => {
+            state.buildCategory = t.id;
+            const firstOfCat = Object.keys(BUILDING_CATALOG).find(k => BUILDING_CATALOG[k].cat === t.id);
+            if (firstOfCat) state.selectedBuilding = firstOfCat;
+            renderSubPanel();
+            refreshGhostMesh();
+          };
+          catRow.appendChild(tabBtn);
+        });
+        subPanel.appendChild(catRow);
+
+        const itemsRow = document.createElement('div');
+        itemsRow.className = 'sub-row';
         for (const [key, info] of Object.entries(BUILDING_CATALOG)) {
-          if (info.hidden) continue;
+          if (info.cat !== state.buildCategory) continue;
           const btn = document.createElement('button');
           btn.className = `item-btn ${state.selectedBuilding === key ? 'selected' : ''}`;
-          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}${info.stackable ? ' ⬆️' : ''}</span>`;
+          btn.innerHTML = `<div class="item-icon">${SVG_ICONS[info.icon]}</div><span class="item-label">${info.label}${info.stackable ? ' (2Lt)' : ''}</span>`;
           btn.onclick = () => {
             state.selectedBuilding = key;
             renderSubPanel();
             refreshGhostMesh();
           };
-          subPanel.appendChild(btn);
+          itemsRow.appendChild(btn);
         }
 
-        const div = document.createElement('div');
-        div.className = 'divider-v';
-        subPanel.appendChild(div);
+        if (state.buildCategory === 'buildings') {
+          const div = document.createElement('div');
+          div.className = 'divider-v';
+          itemsRow.appendChild(div);
 
-        const selStair = document.createElement('select');
-        selStair.className = 'select-mini';
-        selStair.innerHTML = Object.entries(STAIR_STYLES)
-          .map(([k, v]) => `<option value="${k}">🪜 Tangga: ${v.label}</option>`).join('');
-        selStair.value = state.defaultStairStyle;
-        selStair.onchange = () => {
-          state.defaultStairStyle = selStair.value;
-          refreshGhostMesh();
-        };
-        subPanel.appendChild(selStair);
+          const selStair = document.createElement('select');
+          selStair.className = 'select-mini';
+          selStair.innerHTML = Object.entries(STAIR_STYLES)
+            .map(([k, v]) => `<option value="${k}">Tangga: ${v.label}</option>`).join('');
+          selStair.value = state.defaultStairStyle;
+          selStair.onchange = () => {
+            state.defaultStairStyle = selStair.value;
+            refreshGhostMesh();
+          };
+          itemsRow.appendChild(selStair);
+        }
 
         const rotBtn = document.createElement('button');
         rotBtn.className = 'action-chip';
-        rotBtn.textContent = '🔄 Putar (R)';
+        rotBtn.textContent = 'Putar (R)';
         rotBtn.onclick = () => {
           state.buildRotation = (state.buildRotation + Math.PI / 2) % (Math.PI * 2);
           evaluateBuildCursor();
         };
-        subPanel.appendChild(rotBtn);
+        itemsRow.appendChild(rotBtn);
+        subPanel.appendChild(itemsRow);
       }
 
       else if (state.mode === 'move') {
+        const row = document.createElement('div');
+        row.className = 'sub-row';
         if (!state.moving) {
-          hintBanner.textContent = '✋ Mode Geser Ruang • Klik ruang/gedung mana saja di pulau untuk memindahkannya';
+          hintBanner.textContent = 'Mode Geser Ruang • Klik ruang/gedung/pagar mana saja untuk memindahkannya';
           const info = document.createElement('div');
           info.style.cssText = 'font-size:12.5px;font-weight:700;color:#b45309;';
           info.textContent = 'Klik Lantai 1 untuk geser 1 blok penuh, atau klik Lantai 2 untuk pindah ruang atas saja';
-          subPanel.appendChild(info);
+          row.appendChild(info);
         } else {
           const mv = state.moving;
           const label = BUILDING_CATALOG[mv.building.type].label;
-          hintBanner.textContent = `✋ Menggeser ${label} • Klik posisi baru untuk meletakkan • [R] Putar`;
+          hintBanner.textContent = `Menggeser ${label} • Klik posisi baru untuk meletakkan • [R] Putar`;
 
           const info = document.createElement('div');
           info.style.cssText = 'font-size:12.5px;font-weight:800;color:#0f172a;margin-right:4px;';
-          info.textContent = `📦 Memindahkan: ${BUILDING_CATALOG[mv.building.type].emoji} ${label}${mv.child ? ' (2 Lt)' : ''}`;
-          subPanel.appendChild(info);
+          info.textContent = `Memindahkan: ${label}${mv.child ? ' (2 Lt)' : ''}`;
+          row.appendChild(info);
 
           const rotBtn = document.createElement('button');
           rotBtn.className = 'action-chip';
-          rotBtn.textContent = '🔄 Putar (R)';
+          rotBtn.textContent = 'Putar (R)';
           rotBtn.onclick = () => {
             if (state.moving) {
               state.moving.curRot = (state.moving.curRot + Math.PI / 2) % (Math.PI * 2);
               evaluateMoveCursor();
             }
           };
-          subPanel.appendChild(rotBtn);
+          row.appendChild(rotBtn);
 
           const cancelBtn = document.createElement('button');
           cancelBtn.className = 'action-chip danger';
-          cancelBtn.textContent = '❌ Batal (Esc)';
+          cancelBtn.textContent = 'Batal (Esc)';
           cancelBtn.onclick = cancelMove;
-          subPanel.appendChild(cancelBtn);
+          row.appendChild(cancelBtn);
         }
+        subPanel.appendChild(row);
       }
 
       else if (state.mode === 'road') {
         hintBanner.textContent = state.roadBrushDrag
-          ? '🖌️ Mode Kuas Aktif: Seret di rumput untuk menggambar jalan! • [R] Putar'
-          : '🛣️ Klik grid untuk membuat jalan • Aktifkan Mode Kuas untuk seret • [R] Putar';
+          ? 'Mode Kuas Aktif: Seret di rumput untuk menggambar jalan! • [R] Putar'
+          : 'Klik grid untuk membuat jalan • Aktifkan Mode Kuas untuk seret • [R] Putar';
 
+        const row = document.createElement('div');
+        row.className = 'sub-row';
         for (const [key, info] of Object.entries(ROAD_CATALOG)) {
           const btn = document.createElement('button');
           btn.className = `item-btn ${state.selectedRoad === key ? 'selected' : ''}`;
-          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}</span>`;
+          btn.innerHTML = `<div class="item-icon">${SVG_ICONS[info.icon]}</div><span class="item-label">${info.label}</span>`;
           btn.onclick = () => {
             state.selectedRoad = key;
             renderSubPanel();
             refreshGhostMesh();
           };
-          subPanel.appendChild(btn);
+          row.appendChild(btn);
         }
 
         const rotBtn = document.createElement('button');
         rotBtn.className = 'action-chip';
-        rotBtn.textContent = '🔄 Putar (R)';
+        rotBtn.textContent = 'Putar (R)';
         rotBtn.onclick = () => {
           state.roadRotation = (state.roadRotation + Math.PI / 2) % (Math.PI * 2);
           evaluateRoadCursor(false);
         };
-        subPanel.appendChild(rotBtn);
+        row.appendChild(rotBtn);
 
         const brushBtn = document.createElement('button');
         brushBtn.className = `action-chip ${state.roadBrushDrag ? 'active-toggle' : ''}`;
-        brushBtn.textContent = state.roadBrushDrag ? '🖌️ Kuas Drag: ON' : '🖌️ Kuas Drag: OFF';
+        brushBtn.textContent = state.roadBrushDrag ? 'Kuas Drag: ON' : 'Kuas Drag: OFF';
         brushBtn.onclick = () => {
           state.roadBrushDrag = !state.roadBrushDrag;
           renderSubPanel();
         };
-        subPanel.appendChild(brushBtn);
+        row.appendChild(brushBtn);
+        subPanel.appendChild(row);
       }
 
       else if (state.mode === 'character') {
-        hintBanner.textContent = '🧑‍🎓 Pilih peran & detail murid lalu klik di pulau, atau klik Tambah Acak';
+        hintBanner.textContent = 'Pilih Murid atau Guru (termasuk pilihan Hijab Ibu Guru) lalu klik di halaman sekolah';
+        const row = document.createElement('div');
+        row.className = 'sub-row';
+
         for (const [key, info] of Object.entries(ROLE_CATALOG)) {
           const btn = document.createElement('button');
           btn.className = `item-btn ${state.selectedRole === key ? 'selected' : ''}`;
-          btn.innerHTML = `<span class="item-emoji">${info.emoji}</span><span class="item-label">${info.label}</span>`;
+          btn.innerHTML = `<div class="item-icon">${SVG_ICONS[info.icon]}</div><span class="item-label">${info.label}</span>`;
           btn.onclick = () => {
             state.selectedRole = key;
             renderSubPanel();
           };
-          subPanel.appendChild(btn);
+          row.appendChild(btn);
         }
 
         if (state.selectedRole === 'student') {
           const div = document.createElement('div');
           div.className = 'divider-v';
-          subPanel.appendChild(div);
+          row.appendChild(div);
 
           const selUniform = document.createElement('select');
           selUniform.className = 'select-mini';
           selUniform.innerHTML = `
-            <option value="sd">🔴 SD (Merah)</option>
-            <option value="pramuka">⚜️ HW / Pramuka</option>
-            <option value="smp">🔵 SMP (Biru)</option>
-            <option value="sma">⚪ SMA (Abu)</option>
-            <option value="random">Seragam: Acak</option>`;
+            <option value="random">Seragam: Acak</option>
+            <option value="merah_putih">Merah Putih</option>
+            <option value="batik_hijau">Batik Hijau</option>
+            <option value="hw">Baju HW</option>`;
           selUniform.value = state.studentUniform;
           selUniform.onchange = () => state.studentUniform = selUniform.value;
-          subPanel.appendChild(selUniform);
+          row.appendChild(selUniform);
 
           const selAcc = document.createElement('select');
           selAcc.className = 'select-mini';
           selAcc.innerHTML = `
             <option value="random">Gaya: Acak</option>
-            <option value="hat">🧢 Topi Sekolah</option>
-            <option value="hijab">🧕 Hijab</option>
-            <option value="glasses">👓 Kacamata</option>
+            <option value="hijab">Hijab (Wajah Terlihat)</option>
+            <option value="hat">Topi Sekolah</option>
+            <option value="glasses">Kacamata</option>
             <option value="none">Polos</option>`;
           selAcc.value = state.studentAcc;
           selAcc.onchange = () => state.studentAcc = selAcc.value;
-          subPanel.appendChild(selAcc);
+          row.appendChild(selAcc);
 
           const selItem = document.createElement('select');
           selItem.className = 'select-mini';
           selItem.innerHTML = `
             <option value="random">Bawaan: Acak</option>
-            <option value="book">📚 Buku</option>
-            <option value="ball">🏀 Bola</option>
-            <option value="bottle">🥤 Botol</option>
+            <option value="book">Buku</option>
+            <option value="ball">Bola</option>
+            <option value="bottle">Botol</option>
             <option value="none">Kosong</option>`;
           selItem.value = state.studentItem;
           selItem.onchange = () => state.studentItem = selItem.value;
-          subPanel.appendChild(selItem);
+          row.appendChild(selItem);
+        }
+        else if (state.selectedRole === 'teacher') {
+          const div = document.createElement('div');
+          div.className = 'divider-v';
+          row.appendChild(div);
+
+          const selTeacherAcc = document.createElement('select');
+          selTeacherAcc.className = 'select-mini';
+          selTeacherAcc.innerHTML = `
+            <option value="random">Gaya Guru: Acak</option>
+            <option value="hijab">Ibu Guru (Berhijab)</option>
+            <option value="hijab_glasses">Ibu Guru (Hijab + Kacamata)</option>
+            <option value="glasses">Bapak Guru (Kacamata)</option>
+            <option value="none">Bapak Guru (Standar)</option>`;
+          selTeacherAcc.value = state.teacherAcc;
+          selTeacherAcc.onchange = () => state.teacherAcc = selTeacherAcc.value;
+          row.appendChild(selTeacherAcc);
+
+          const selTeacherStyle = document.createElement('select');
+          selTeacherStyle.className = 'select-mini';
+          selTeacherStyle.innerHTML = `
+            <option value="random">Seragam: Acak</option>
+            <option value="batik_hijau">Batik Hijau</option>
+            <option value="khaki">Seragam Khaki</option>
+            <option value="teal">Toska Guru</option>
+            <option value="purple">Ungu Guru</option>`;
+          selTeacherStyle.value = state.teacherStyle;
+          selTeacherStyle.onchange = () => state.teacherStyle = selTeacherStyle.value;
+          row.appendChild(selTeacherStyle);
         }
 
         const input = document.createElement('input');
         input.id = 'char-name-input';
         input.className = 'input-name';
         input.placeholder = 'Nama (opsional)...';
-        subPanel.appendChild(input);
+        row.appendChild(input);
 
         const spawnBtn = document.createElement('button');
         spawnBtn.className = 'action-chip';
-        spawnBtn.textContent = '✨ Tambah Acak';
+        spawnBtn.textContent = '+ Tambah Acak';
         spawnBtn.onclick = () => {
           const pt = pickRandomWalkPoint();
           addCharacter(state.selectedRole, input.value, pt.x, pt.z);
           input.value = '';
         };
-        subPanel.appendChild(spawnBtn);
+        row.appendChild(spawnBtn);
+        subPanel.appendChild(row);
       }
 
       else if (state.mode === 'delete') {
-        hintBanner.textContent = '🗑️ Mode Hapus • Klik murid, guru, gedung, atau jalan di pulau, atau gunakan tombol cepat';
+        hintBanner.textContent = 'Mode Hapus • Klik murid, guru, pagar, gedung, atau jalan di pulau, atau gunakan tombol cepat';
+        const row = document.createElement('div');
+        row.className = 'sub-row';
 
         const delStudents = document.createElement('button');
         delStudents.className = 'action-chip danger';
-        delStudents.textContent = '🎒 Hapus Semua Murid';
+        delStudents.textContent = 'Hapus Semua Murid';
         delStudents.onclick = () => clearCharactersByRole('student');
 
         const delTeachers = document.createElement('button');
         delTeachers.className = 'action-chip danger';
-        delTeachers.textContent = '👩‍🏫 Hapus Semua Guru';
+        delTeachers.textContent = 'Hapus Semua Guru';
         delTeachers.onclick = () => clearCharactersByRole('teacher');
 
         const delAllPeople = document.createElement('button');
         delAllPeople.className = 'action-chip danger';
-        delAllPeople.textContent = '🧹 Hapus Semua Orang & Guru';
+        delAllPeople.textContent = 'Hapus Semua Orang & Guru';
         delAllPeople.onclick = () => clearCharactersByRole(null);
 
-        subPanel.append(delStudents, delTeachers, delAllPeople);
+        row.append(delStudents, delTeachers, delAllPeople);
+        subPanel.appendChild(row);
       }
     }
 
@@ -2640,17 +3611,17 @@
         scene.background.setHex(0x9bd6f0); scene.fog.color.setHex(0x9bd6f0);
         dirLight.color.setHex(0xfffbeb); dirLight.intensity = 1.45; hemiLight.intensity = 0.9;
         windowMaterials.forEach(m => m.emissiveIntensity = 0);
-        btnTime.textContent = '☀️ Siang';
+        btnTime.textContent = 'Siang';
       } else if (state.timeMode === 1) {
         scene.background.setHex(0xfb923c); scene.fog.color.setHex(0xfb923c);
         dirLight.color.setHex(0xfed7aa); dirLight.intensity = 1.3; hemiLight.intensity = 0.65;
         windowMaterials.forEach(m => m.emissiveIntensity = 0.35);
-        btnTime.textContent = '🌇 Sore';
+        btnTime.textContent = 'Sore';
       } else {
         scene.background.setHex(0x0f172a); scene.fog.color.setHex(0x0f172a);
         dirLight.color.setHex(0x93c5fd); dirLight.intensity = 0.5; hemiLight.intensity = 0.35;
         windowMaterials.forEach(m => m.emissiveIntensity = 1.1);
-        btnTime.textContent = '🌙 Malam';
+        btnTime.textContent = 'Malam';
       }
     }
     btnTime.addEventListener('click', () => {
@@ -2662,7 +3633,8 @@
     const btnLabels = document.getElementById('btn-labels');
     function applyLabelsVisibility() {
       labelsLayer.style.display = state.showLabels ? 'block' : 'none';
-      btnLabels.textContent = state.showLabels ? '🏷️ Label: ON' : '🏷️ Label: OFF';
+      btnLabels.textContent = state.showLabels ? 'Label: ON' : 'Label: OFF';
+      document.getElementById('btn-clean-labels').textContent = state.showLabels ? 'Label: ON' : 'Label: OFF';
     }
     btnLabels.addEventListener('click', () => {
       state.showLabels = !state.showLabels;
@@ -2671,11 +3643,12 @@
     });
 
     document.getElementById('btn-reset').addEventListener('click', () => {
-      if (confirm('Kembalikan sekolah SD Mutu Tangkil Kulon ke susunan awal video?')) {
+      if (confirm('Kembalikan sekolah SD Mutu Tangkil Kulon ke susunan denah satelit asli?')) {
         if (state.moving) cancelMove();
         localStorage.removeItem(STORAGE_KEY);
         clearWorld();
         seedDefaultSchool();
+        setActivityMode('free');
       }
     });
 
@@ -2686,12 +3659,12 @@
     }
 
     // ==========================================
-    // 12. SAVE / EXPORT / IMPORT JSON & SEED AWAL
+    // 12. SAVE / EXPORT / IMPORT JSON & SEED DENAH ASLI
     // ==========================================
     function getWorldPayload() {
       return {
         app: 'SD Mutu Tangkil Kulon 3D',
-        version: 1,
+        version: 5,
         savedAt: new Date().toISOString(),
         timeMode: state.timeMode,
         showLabels: state.showLabels,
@@ -2740,22 +3713,19 @@
       (data.characters || []).forEach(c => addCharacter(c.role, c.name, c.x, c.z, c.shirtColor, c.details));
     }
 
-    // Export JSON File
     document.getElementById('btn-export').addEventListener('click', () => {
       if (state.moving) cancelMove();
       const jsonStr = JSON.stringify(getWorldPayload(), null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const dateTag = new Date().toISOString().slice(0, 10);
       a.href = url;
-      a.download = `denah-sd-mutu-${dateTag}.json`;
+      a.download = `denah-sd-mutu-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      hintBanner.textContent = '💾 File JSON denah & kondisi sekolah berhasil diunduh!';
+      hintBanner.textContent = 'File JSON denah & kondisi sekolah berhasil diunduh!';
     });
 
-    // Import JSON File
     const fileImportInput = document.getElementById('file-import');
     document.getElementById('btn-import').addEventListener('click', () => fileImportInput.click());
     fileImportInput.addEventListener('change', async (e) => {
@@ -2764,61 +3734,72 @@
       try {
         const text = await file.text();
         const data = JSON.parse(text);
-        if (!Array.isArray(data.buildings)) throw new Error('Format file tidak valid');
+        if (!Array.isArray(data.buildings)) throw new Error('Format tidak valid');
         if (state.moving) cancelMove();
         clearWorld();
         applyWorldData(data);
+        setActivityMode('free');
         saveWorld();
-        hintBanner.textContent = `📂 Berhasil memuat denah dari ${file.name}!`;
-      } catch (err) {
-        alert('Gagal membaca file JSON denah sekolah. Pastikan file berasal dari Export JSON aplikasi ini.');
+        hintBanner.textContent = `Berhasil memuat denah dari ${file.name}!`;
+      } catch {
+        alert('Gagal membaca file JSON denah sekolah.');
       } finally {
         fileImportInput.value = '';
       }
     });
 
     function seedDefaultSchool() {
-      addBuilding('sd_front_fence', -2.5, 25.5, 0, 1, null, 'b_fence', false);
-      addBuilding('sd_front_left', -16.5, 21.5, 0, 1, null, 'b_frontL', false);
-      addBuilding('sd_carport', -5.2, 18.8, 0, 1, null, 'b_carport', false);
+      // 1. Pagar Depan & Gerbang Tenggara (Selatan / Bawah)
+      addBuilding('sd_fence_unit', -7.2, 28.8, 0, 1, null, 'b_fence1', false);
+      addBuilding('sd_fence_unit', -3.2, 28.5, 0, 1, null, 'b_fence2', false);
+      addBuilding('sd_fence_unit',  0.8, 28.2, 0, 1, null, 'b_fence3', false);
+      addBuilding('sd_gate_unit',   4.6, 28.0, 0, 1, null, 'b_gate', false);
 
-      const f1Main = addBuilding('classroom', 0.2, 17.6, Math.PI / 2, 1, null, 'b_2f_base', false, 'front', 'blue_steel', { hasMading: true });
-      addBuilding('lab', 0.2, 17.6, Math.PI / 2, 2, f1Main, 'b_2f_top', false, 'none', 'blue_steel', { hasBanner: true });
+      // 2. Sayap Barat Memanjang Utara-Selatan (Gedung Utama 2 Lantai + Kelas)
+      addBuilding('classroom', -6.8, 22.8, Math.PI / 2, 1, null, 'b_west_front', false);
+      const f1Main = addBuilding('classroom', -6.8, 15.2, Math.PI / 2, 1, null, 'b_2f_base', false, 'front', 'blue_steel', { hasMading: true });
+      addBuilding('lab', -6.8, 15.2, Math.PI / 2, 2, f1Main, 'b_2f_top', false, 'none', 'blue_steel', { hasBanner: true });
+      addBuilding('classroom', -6.8, 7.6, Math.PI / 2, 1, null, 'b_west_north', false);
 
-      addBuilding('classroom', 0.2, 10.0, Math.PI / 2, 1, null, 'b_wing_1', false);
-      addBuilding('classroom', 0.2, 2.4, Math.PI / 2, 1, null, 'b_wing_2', false);
-      addBuilding('classroom', 0.2, -5.2, Math.PI / 2, 1, null, 'b_wing_3', false);
+      // 3. Tembok Mural Lorong Timur
+      addBuilding('sd_mural_wall', 7.0, 11.5, 0, 1, null, 'b_mural', false);
 
-      addBuilding('sd_mural_wall', 11.4, 8.5, 0, 1, null, 'b_mural', false);
-      addBuilding('sd_bike_shed', -5.2, 9.2, Math.PI / 2, 1, null, 'b_bikes', false);
-      addBuilding('sd_toren_wc', -23.5, 4.5, 0, 1, null, 'b_toren', false);
+      // 4. Gedung Utara Melintang Timur-Barat (Ujung Atas Halaman)
+      addBuilding('classroom', -11.4, -24.5, 0, 1, null, 'b_north_1', false);
+      addBuilding('classroom',  -3.8, -24.5, 0, 1, null, 'b_north_2', false, 'none', 'concrete', { roofTitle: true });
+      addBuilding('classroom',   3.8, -24.5, 0, 1, null, 'b_north_3', false);
 
-      addBuilding('sd_back_wall', -27.5, 2.0, 0, 1, null, 'b_wall_l', false);
-      addBuilding('sd_back_wall', -6.0, -21.5, Math.PI / 2, 1, null, 'b_wall_b', false);
+      // 5. Bangunan Sisi Barat Lapangan (WC & Toren Air) + Tiang Bendera
+      addBuilding('sd_toren_wc', -17.8, -12.8, Math.PI / 2, 1, null, 'b_toren', false);
+      addBuilding('flagpole', -3.8, -15.5, 0, 1, null, 'b_flag', false);
 
-      addBuilding('classroom', -19.8, -16.2, 0, 1, null, 'b_back_1', false);
-      addBuilding('classroom', -12.2, -16.2, 0, 1, null, 'b_back_2', false, 'none', 'concrete', { roofTitle: true });
-      addBuilding('classroom', -4.6, -16.2, 0, 1, null, 'b_back_3', false);
-      addBuilding('flagpole', -12.2, -9.2, 0, 1, null, 'b_flag', false);
-
-      for (const [tx, tz] of [[-25, -13], [-25, -5], [-25, 13], [-4, -24], [-18, -24], [13.5, -12], [13.5, 2]]) {
+      // 6. Kebun Pohon Pisang di Sekeliling Luar Batas Lahan
+      const bananaTrees = [
+        [-22, -30], [-14, -30], [-4, -30], [6, -30], [15, -30],
+        [-23, -22], [-23, -15], [-23, -8], [-17, -3], [-14, 4],
+        [15, -20], [13, -10], [11, 0]
+      ];
+      for (const [tx, tz] of bananaTrees) {
         addBuilding('tree_park', tx, tz, 0, 1, null, null, false);
       }
 
-      for (let x = -27; x <= 27; x += 3) addOrReplaceRoad('asphalt', x, 30, Math.PI / 2);
-      for (let z = -12; z <= 27; z += 3) {
-        addOrReplaceRoad('paving', 6, z, 0);
-        addOrReplaceRoad('paving', 9, z, 0);
+      // 7. Jalan Aspal Depan & Paving Lorong Masuk -> Lapangan
+      for (let x = -24; x <= 12; x += 3) addOrReplaceRoad('asphalt', x, 33, Math.PI / 2);
+      for (let z = -18; z <= 27; z += 3) {
+        addOrReplaceRoad('paving', 0, z, 0);
+        addOrReplaceRoad('paving', 3, z, 0);
       }
-      for (const px of [-3, 0, 3]) addOrReplaceRoad('paving', px, 24, 0);
+      for (const px of [-9, -6, -3]) addOrReplaceRoad('paving', px, -18, 0);
 
-      addCharacter('teacher', 'Pak Fatur', 6.5, 12);
-      addCharacter('student', 'Rayyan', 7.5, 4, null, { uniform: 'sd', acc: 'hat', item: 'book', hairIdx: 0 });
-      addCharacter('student', 'Rara', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
-      addCharacter('student', 'Nafis', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
-      addCharacter('student', 'Salman', 6.5, 19, null, { uniform: 'sd', acc: 'glasses', item: 'ball', hairIdx: 1 });
-      addCharacter('student', 'Syifa', -10, 2, null, { uniform: 'sd', acc: 'hijab', item: 'book', hairIdx: 1 });
-      addCharacter('student', 'Bayu', -14, -4, null, { uniform: 'pramuka', acc: 'hat', item: 'bottle', hairIdx: 2 });
+      // 8. Guru (termasuk Ibu Guru Berhijab) & Siswa SD Mutu
+      addCharacter('teacher', 'Bu Rivi', 1.5, 14, 0x0f766e, { uniform: 'batik_hijau', acc: 'hijab', hairIdx: 0 });
+      addCharacter('teacher', 'Pak Fatur', -2.5, -11, 0x15803d, { uniform: 'khaki', acc: 'glasses', hairIdx: 1 });
+      addCharacter('student', 'Salman', 2.0, 21, null, { uniform: 'merah_putih', acc: 'hat', item: 'book', hairIdx: 0 });
+      addCharacter('student', 'Syifa', -5.0, -10, null, { uniform: 'batik_hijau', acc: 'hijab', item: 'book', hairIdx: 1 });
+      addCharacter('student', 'Bayu', 1.5, -14, null, { uniform: 'hw', acc: 'hat', item: 'bottle', hairIdx: 2 });
+      addCharacter('student', 'Nafis', -10.0, -16, null, { uniform: 'merah_putih', acc: 'hijab', item: 'none', hairIdx: 0 });
+      addCharacter('student', 'Rara', 2.5, 4, null, { uniform: 'batik_hijau', acc: 'hijab', item: 'ball', hairIdx: 1 });
+	  addCharacter('student', 'Rayyan', -5.0, 4, null, { uniform: 'batik_hijau', acc: 'hat', item: 'ball', hairIdx: 1 });
     }
 
     function loadWorld() {
@@ -2834,14 +3815,275 @@
     }
 
     // ==========================================
-    // 13. LOOP ANIMASI & SLIDING COLLISION
+    // 13. AI EKSPLORATIF, HORMAT, SHALAT, SENAM & BERMAIN BERSAMA
     // ==========================================
-    function triggerChatBubble(ch) {
+    function triggerChatBubble(ch, customMsg = null) {
       const chats = ROLE_CATALOG[ch.role].chats;
       const bubble = ch.labelEl.querySelector('.char-bubble');
-      bubble.textContent = chats[Math.floor(Math.random() * chats.length)];
+      bubble.textContent = customMsg || chats[Math.floor(Math.random() * chats.length)];
       bubble.style.display = 'block';
-      ch.bubbleTimer = 3.2;
+      ch.bubbleTimer = 3.0;
+    }
+
+    const FRIENDLY_GREETINGS = [
+      'Assalamu\'alaikum!', 'Halo teman!', 'Apa kabar?', 'Main yuk!', 'Semangat ya!', 'Senang bertemu!'
+    ];
+
+    function rotateYawTowards(ch, targetYaw, factor = 0.18) {
+      let diff = targetYaw - ch.mesh.rotation.y;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      ch.mesh.rotation.y += diff * factor;
+    }
+	
+	function startGroupEncounter(seedChar, nearbyChars) {
+      const members = [seedChar, ...nearbyChars.slice(0, 3)];
+      const cx = THREE.MathUtils.clamp(
+        members.reduce((sum, m) => sum + m.x, 0) / members.length,
+        -16,
+        8
+      );
+      const cz = THREE.MathUtils.clamp(
+        members.reduce((sum, m) => sum + m.z, 0) / members.length,
+        -21,
+        24
+      );
+
+      const activityType = Math.random() < 0.65 ? 'play_circle' : 'cheer_group';
+      const radius = Math.min(2.2, Math.max(1.2, members.length * 0.45));
+
+      members.forEach((m, idx) => {
+        const ang = (idx / members.length) * Math.PI * 2;
+        const tx = cx + Math.cos(ang) * radius;
+        const tz = cz + Math.sin(ang) * radius;
+
+        m.soloAction = activityType;
+        m.soloTimer = 6.5;
+        m.greetCooldown = 15;
+        m.soloData = {
+          center: { x: cx, z: cz },
+          angle: ang,
+          radius,
+          yaw: Math.atan2(cx - tx, cz - tz)
+        };
+
+        if (!isPointBlocked(tx, tz, 0.5)) {
+          m.targetX = tx;
+          m.targetZ = tz;
+        }
+      });
+
+      triggerChatBubble(
+        seedChar,
+        activityType === 'play_circle' ? 'Ayo main bareng di sini!' : 'Hore, kita main bersama!'
+      );
+      if (members[1]) {
+        triggerChatBubble(members[1], 'Siap, ayo ikut!');
+      }
+    }
+
+
+    function lerpPose(ch, target, rate) {
+      const p = ch.parts;
+      p.bodyRoot.position.y = THREE.MathUtils.lerp(p.bodyRoot.position.y, target.bodyY ?? 0, rate);
+      p.upperBody.rotation.x = THREE.MathUtils.lerp(p.upperBody.rotation.x, target.upperX ?? 0, rate);
+      p.headGroup.rotation.y = THREE.MathUtils.lerp(p.headGroup.rotation.y, target.headY ?? 0, rate);
+      p.headGroup.rotation.x = THREE.MathUtils.lerp(p.headGroup.rotation.x, target.headX ?? 0, rate);
+
+      p.leftArm.rotation.x = THREE.MathUtils.lerp(p.leftArm.rotation.x, target.lArmX ?? 0, rate);
+      p.leftArm.rotation.z = THREE.MathUtils.lerp(p.leftArm.rotation.z, target.lArmZ ?? 0, rate);
+      p.rightArm.rotation.x = THREE.MathUtils.lerp(p.rightArm.rotation.x, target.rArmX ?? 0, rate);
+      p.rightArm.rotation.z = THREE.MathUtils.lerp(p.rightArm.rotation.z, target.rArmZ ?? 0, rate);
+
+      p.leftLeg.rotation.x = THREE.MathUtils.lerp(p.leftLeg.rotation.x, target.lLegX ?? 0, rate);
+      p.rightLeg.rotation.x = THREE.MathUtils.lerp(p.rightLeg.rotation.x, target.rLegX ?? 0, rate);
+
+      if (p.skirt) {
+        p.skirt.rotation.x = THREE.MathUtils.lerp(p.skirt.rotation.x, target.skirtX ?? 0, rate);
+        const baseSkirtY = ch.role === 'teacher' ? 0.44 : 0.50;
+        p.skirt.position.y = THREE.MathUtils.lerp(p.skirt.position.y, target.skirtY ?? baseSkirtY, rate);
+      }
+    }
+
+    function moveCharacterToward(ch, destX, destZ, moveSpeed, dt, elapsed) {
+      // Jika sedang di lorong selatan dan target di lapangan utara, lewat koridor utama (1.5, 1.5) agar tidak terhalang gedung barat
+      let tx = destX;
+      let tz = destZ;
+      if (ch.z > 3.5 && destZ < 2.0 && !hasClearPath(ch.x, ch.z, destX, destZ)) {
+        tx = 1.5;
+        tz = 1.5;
+      } else if (ch.z < 1.5 && destZ > 4.0 && !hasClearPath(ch.x, ch.z, destX, destZ)) {
+        tx = 1.5;
+        tz = 2.0;
+      }
+
+      const dx = tx - ch.x;
+      const dz = tz - ch.z;
+      const baseAngle = Math.atan2(dx, dz);
+      const steerOffsets = [0, 0.45, -0.45, 0.9, -0.9, 1.4, -1.4, Math.PI];
+      const lookAhead = 1.05;
+      let chosenAngle = null;
+
+      for (const offset of steerOffsets) {
+        const testAngle = baseAngle + offset;
+        const checkX = ch.x + Math.sin(testAngle) * lookAhead;
+        const checkZ = ch.z + Math.cos(testAngle) * lookAhead;
+        if (!isPointBlocked(checkX, checkZ, 0.58)) {
+          chosenAngle = testAngle;
+          break;
+        }
+      }
+
+      if (chosenAngle === null) {
+        chosenAngle = baseAngle;
+      }
+
+      const step = Math.min(Math.hypot(dx, dz), moveSpeed * dt);
+      const nx = ch.x + Math.sin(chosenAngle) * step;
+      const nz = ch.z + Math.cos(chosenAngle) * step;
+
+      if (!isPointBlocked(nx, nz, 0.52)) {
+        ch.x = nx;
+        ch.z = nz;
+      } else if (state.activityMode !== 'free') {
+        // Geser halus saat formasi agar tidak macet
+        ch.x += Math.sin(baseAngle) * step * 0.5;
+        ch.z += Math.cos(baseAngle) * step * 0.5;
+      }
+
+      rotateYawTowards(ch, chosenAngle, 0.2);
+
+      const isFast = moveSpeed > ch.baseSpeed * 1.3;
+      ch.walkPhase += dt * moveSpeed * (isFast ? 3.5 : 3.2);
+      const swingAmp = isFast ? 0.9 : 0.62;
+      const swing = Math.sin(ch.walkPhase) * swingAmp;
+      lerpPose(ch, {
+        lLegX: swing,
+        rLegX: -swing,
+        lArmX: -swing * 0.85,
+        rArmX: swing * 0.85
+      }, 0.35);
+
+      const bounce = isFast ? 0.14 : 0.07;
+      ch.mesh.position.set(ch.x, Math.abs(Math.sin(ch.walkPhase)) * bounce, ch.z);
+    }
+
+    function applySalutePose(ch, dt, targetYaw) {
+      rotateYawTowards(ch, targetYaw, 0.2);
+      ch.mesh.position.set(ch.x, 0, ch.z);
+      // Tangan kanan anatomis (leftArm pada x = -0.36) terangkat hormat ke pelipis!
+      lerpPose(ch, {
+        lArmX: -2.35,
+        lArmZ: 0.42,
+        rArmX: 0,
+        rArmZ: 0
+      }, Math.min(1, dt * 8));
+    }
+
+    function applyPrayerPose(ch, phaseSec, dt, isImam = false) {
+      rotateYawTowards(ch, 0, 0.2); // Menghadap +Z (Arah Barat / Gerbang Sekolah)
+      ch.mesh.position.set(ch.x, 0, ch.z);
+
+      const t = phaseSec % 24.0;
+      let phaseIdx = 0;
+      let pose = {};
+
+      if (t < 2.0) {
+        // Takbiratul Ihram
+        phaseIdx = 0;
+        pose = { lArmX: -2.45, lArmZ: -0.15, rArmX: -2.45, rArmZ: 0.15 };
+      } else if (t < 6.0) {
+        // Sedekap berdiri
+        phaseIdx = 1;
+        pose = { lArmX: -0.95, lArmZ: 0.65, rArmX: -0.95, rArmZ: -0.65 };
+      } else if (t < 9.0) {
+        // Rukuk
+        phaseIdx = 2;
+        pose = { upperX: 1.32, lArmX: -0.25, rArmX: -0.25 };
+      } else if (t < 11.0) {
+        // I'tidal
+        phaseIdx = 3;
+        pose = t < 10.0 ? { lArmX: -2.2, lArmZ: -0.15, rArmX: -2.2, rArmZ: 0.15 } : {};
+      } else if (t < 14.0) {
+        // Sujud Pertama
+        phaseIdx = 4;
+        pose = {
+          bodyY: -0.46, lLegX: 1.45, rLegX: 1.45,
+          upperX: 1.82, lArmX: -1.25, rArmX: -1.25,
+          skirtX: 0.85, skirtY: 0.42
+        };
+      } else if (t < 16.0) {
+        // Duduk di antara dua sujud
+        phaseIdx = 5;
+        pose = {
+          bodyY: -0.42, lLegX: 1.45, rLegX: 1.45,
+          upperX: 0.05, lArmX: -0.55, rArmX: -0.55,
+          skirtX: 0.35, skirtY: 0.46
+        };
+      } else if (t < 19.0) {
+        // Sujud Kedua
+        phaseIdx = 6;
+        pose = {
+          bodyY: -0.46, lLegX: 1.45, rLegX: 1.45,
+          upperX: 1.82, lArmX: -1.25, rArmX: -1.25,
+          skirtX: 0.85, skirtY: 0.42
+        };
+      } else if (t < 22.0) {
+        // Duduk Tasyahud
+        phaseIdx = 7;
+        pose = {
+          bodyY: -0.42, lLegX: 1.45, rLegX: 1.45,
+          upperX: 0.05, lArmX: -0.55, rArmX: -0.55,
+          skirtX: 0.35, skirtY: 0.46
+        };
+      } else {
+        // Salam kanan lalu kiri
+        phaseIdx = 8;
+        const headTurn = t < 23.0 ? -0.72 : 0.72;
+        pose = {
+          bodyY: -0.42, lLegX: 1.45, rLegX: 1.45,
+          upperX: 0.05, headY: headTurn,
+          lArmX: -0.55, rArmX: -0.55,
+          skirtX: 0.35, skirtY: 0.46
+        };
+      }
+
+      if (ch.lastPrayerPhase !== phaseIdx) {
+        ch.lastPrayerPhase = phaseIdx;
+        if (isImam || ch.soloAction === 'pray') {
+          const msgMap = {
+            0: 'Allahu Akbar!',
+            2: 'Allahu Akbar (Rukuk)',
+            3: 'Sami\'allahu liman hamidah',
+            4: 'Allahu Akbar (Sujud)',
+            5: 'Allahu Akbar (Duduk)',
+            6: 'Allahu Akbar (Sujud)',
+            8: 'Assalamu\'alaikum warahmatullah'
+          };
+          if (msgMap[phaseIdx]) triggerChatBubble(ch, msgMap[phaseIdx]);
+        }
+      }
+
+      lerpPose(ch, pose, Math.min(1, dt * 7.5));
+    }
+
+    function applyExercisePose(ch, elapsed, dt) {
+      const targetYaw = ch.formationSlot ? ch.formationSlot.yaw : 0;
+      rotateYawTowards(ch, targetYaw, 0.2);
+
+      const beat = elapsed * 5.0;
+      const jump = Math.max(0, Math.sin(beat)) * 0.16;
+      const armSpread = (Math.sin(beat) * 0.5 + 0.5) * 2.2 + 0.3;
+
+      ch.mesh.position.set(ch.x, jump, ch.z);
+      lerpPose(ch, {
+        lArmZ: -armSpread,
+        rArmZ: armSpread,
+        lArmX: -0.35,
+        rArmX: -0.35,
+        lLegX: Math.sin(beat * 0.5) * 0.25,
+        rLegX: -Math.sin(beat * 0.5) * 0.25
+      }, Math.min(1, dt * 10));
     }
 
     const clock = new THREE.Clock();
@@ -2866,68 +4108,166 @@
         pos.needsUpdate = true;
       }
 
+      // Interaksi otonom antar karakter di mode Bebas
+      if (state.activityMode === 'free') {
+        for (let i = 0; i < state.characters.length; i++) {
+          const a = state.characters[i];
+          if (a.soloAction || a.greetCooldown > 0 || a.state === 'wave') continue;
+
+          const nearby = [];
+          for (let j = 0; j < state.characters.length; j++) {
+            if (i === j) continue;
+            const b = state.characters[j];
+            if (b.soloAction || b.greetCooldown > 0 || b.state === 'wave') continue;
+            if (Math.hypot(a.x - b.x, a.z - b.z) < 2.6) {
+              nearby.push(b);
+            }
+          }
+
+          if (nearby.length > 0 && Math.random() < 0.08) {
+            startGroupEncounter(a, nearby);
+          }
+        }
+      }
+
       for (const ch of state.characters) {
         ch.stateTimer -= dt;
+        if (ch.greetCooldown > 0) ch.greetCooldown -= dt;
+
         if (ch.bubbleTimer > 0) {
           ch.bubbleTimer -= dt;
           if (ch.bubbleTimer <= 0) ch.labelEl.querySelector('.char-bubble').style.display = 'none';
         }
 
-        if (ch.state === 'idle') {
-          ch.parts.leftLeg.rotation.x *= 0.85;
-          ch.parts.rightLeg.rotation.x *= 0.85;
-          ch.parts.leftArm.rotation.x *= 0.85;
-          ch.parts.rightArm.rotation.x *= 0.85;
-          ch.mesh.position.y = 0;
+        // 1) PRIORITAS KEGIATAN SEKOLAH BERSAMA (#activity-bar)
+        if (state.activityMode !== 'free' && ch.formationSlot) {
+          const slot = ch.formationSlot;
+          const distToSlot = Math.hypot(slot.x - ch.x, slot.z - ch.z);
 
-          if (ch.stateTimer <= 0) {
-            const pt = pickRandomWalkPoint();
+          if (state.activityMode === 'play' && slot.playCenter) {
+            if (!slot.arrived && distToSlot > 0.6) {
+              moveCharacterToward(ch, slot.x, slot.z, ch.baseSpeed * 1.45, dt, elapsed);
+            } else {
+              slot.arrived = true;
+              slot.playAngle += dt * 1.35;
+              const nx = slot.playCenter.x + Math.cos(slot.playAngle) * slot.playRadius;
+              const nz = slot.playCenter.z + Math.sin(slot.playAngle) * slot.playRadius;
+              if (!isPointBlocked(nx, nz, 0.5)) {
+                moveCharacterToward(ch, nx, nz, ch.baseSpeed * 1.35, dt, elapsed);
+              }
+              if (Math.random() < 0.005) triggerChatBubble(ch, 'Seru sekali bermain bersama!');
+            }
+          } else {
+            if (!slot.arrived && distToSlot > 0.35) {
+              moveCharacterToward(ch, slot.x, slot.z, ch.baseSpeed * 1.35, dt, elapsed);
+            } else {
+              slot.arrived = true;
+              if (state.activityMode === 'ceremony') {
+                applySalutePose(ch, dt, slot.yaw);
+              } else if (state.activityMode === 'prayer') {
+                applyPrayerPose(ch, elapsed - state.activityStartTime, dt, slot.isImam);
+              } else if (state.activityMode === 'exercise') {
+                applyExercisePose(ch, elapsed, dt);
+              }
+            }
+          }
+        }
+        // 2) INTERAKSI INDIVIDU / KELOMPOK KECIL (klik tombol dari Inspect Card atau otonom)
+        else if (ch.soloAction) {
+          ch.soloTimer -= dt;
+          if (ch.soloAction === 'salute') {
+            applySalutePose(ch, dt, ch.soloData.yaw);
+          } else if (ch.soloAction === 'pray') {
+            applyPrayerPose(ch, elapsed - ch.soloData.startTime, dt, false);
+          } else if (ch.soloAction === 'play_circle' && ch.soloData) {
+            ch.soloData.angle += dt * 2.2;
+            const tx = ch.soloData.center.x + Math.cos(ch.soloData.angle) * ch.soloData.radius;
+            const tz = ch.soloData.center.z + Math.sin(ch.soloData.angle) * ch.soloData.radius;
+            if (!isPointBlocked(tx, tz, 0.5)) {
+              moveCharacterToward(ch, tx, tz, ch.baseSpeed * 1.45, dt, elapsed);
+            }
+          } else if (ch.soloAction === 'cheer_group' && ch.soloData) {
+            rotateYawTowards(ch, ch.soloData.yaw, 0.2);
+            const hop = Math.abs(Math.sin(elapsed * 7 + ch.walkPhase)) * 0.18;
+            ch.mesh.position.set(ch.x, hop, ch.z);
+            lerpPose(ch, {
+              lArmZ: -1.6 + Math.sin(elapsed * 9) * 0.4,
+              rArmZ: 1.6 - Math.sin(elapsed * 9) * 0.4,
+              lArmX: -0.5,
+              rArmX: -0.5
+            }, 0.3);
+          
+		  } 
+
+          if (ch.soloTimer <= 0) {
+            ch.soloAction = null;
+            ch.lastPrayerPhase = -1;
+            const pt = pickRandomWalkPoint(ch.x, ch.z);
             ch.targetX = pt.x; ch.targetZ = pt.z;
             ch.state = 'walk';
+            ch.stateTimer = 4 + Math.random() * 4;
+          }
+        }
+        // 3) MODE BEBAS (Menyapa / Diam / Jalan / Lari)
+        else if (ch.state === 'wave') {
+          rotateYawTowards(ch, ch.waveTargetYaw, 0.18);
+          ch.mesh.position.y = Math.abs(Math.sin(elapsed * 6)) * 0.05;
+          lerpPose(ch, {
+            rArmZ: 2.35 + Math.sin(elapsed * 13) * 0.35
+          }, 0.3);
+
+          if (ch.stateTimer <= 0) {
+            const pt = pickRandomWalkPoint(ch.x, ch.z);
+            ch.targetX = pt.x; ch.targetZ = pt.z;
+            ch.state = Math.random() < 0.45 ? 'run' : 'walk';
             ch.stateTimer = 4 + Math.random() * 6;
           }
-        } else {
-          const dx = ch.targetX - ch.x;
-          const dz = ch.targetZ - ch.z;
-          const dist = Math.hypot(dx, dz);
+        }
+        else if (ch.state === 'idle') {
+          ch.mesh.position.y = 0;
+          lerpPose(ch, {}, 0.2);
 
-          if (dist < 0.6 || ch.stateTimer <= 0) {
-            ch.state = 'idle';
-            ch.stateTimer = 1.2 + Math.random() * 2.0;
-            if (Math.random() < 0.35) triggerChatBubble(ch);
-          } else {
-            const step = ch.speed * dt;
-            const nx = THREE.MathUtils.clamp(ch.x + (dx / dist) * step, -25.5, 10.2);
-            const nz = THREE.MathUtils.clamp(ch.z + (dz / dist) * step, -12.5, 23.5);
+          if (ch.stateTimer <= 0) {
+            const pt = pickRandomWalkPoint(ch.x, ch.z);
+            ch.targetX = pt.x; ch.targetZ = pt.z;
+            ch.state = (ch.role === 'student' && Math.random() < 0.48) ? 'run' : 'walk';
+            ch.stateTimer = 4 + Math.random() * 6;
+          }
+        }
+        else {
+          const isRunning = ch.state === 'run';
+          const moveSpeed = isRunning ? ch.baseSpeed * 1.85 : ch.baseSpeed;
+          const dist = Math.hypot(ch.targetX - ch.x, ch.targetZ - ch.z);
 
-            let moved = false;
-            if (!isPointBlocked(nx, ch.z)) {
-              ch.x = nx;
-              moved = true;
-            }
-            if (!isPointBlocked(ch.x, nz)) {
-              ch.z = nz;
-              moved = true;
-            }
-
-            if (!moved) {
-              const pt = pickRandomWalkPoint();
+          if (dist < 0.7 || ch.stateTimer <= 0) {
+            if (Math.random() < 0.6) {
+              const pt = pickRandomWalkPoint(ch.x, ch.z);
               ch.targetX = pt.x; ch.targetZ = pt.z;
+              ch.state = (ch.role === 'student' && Math.random() < 0.45) ? 'run' : 'walk';
+              ch.stateTimer = 4 + Math.random() * 6;
+            } else {
+              ch.state = 'idle';
+              ch.stateTimer = 0.8 + Math.random() * 1.5;
+              if (Math.random() < 0.4) triggerChatBubble(ch);
             }
+          } else {
+            moveCharacterToward(ch, ch.targetX, ch.targetZ, moveSpeed, dt, elapsed);
 
-            const targetAngle = Math.atan2(dx, dz);
-            let diff = targetAngle - ch.mesh.rotation.y;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            ch.mesh.rotation.y += diff * 0.14;
-
-            ch.walkPhase += dt * ch.speed * 3.2;
-            const swing = Math.sin(ch.walkPhase) * 0.65;
-            ch.parts.leftLeg.rotation.x = swing;
-            ch.parts.rightLeg.rotation.x = -swing;
-            ch.parts.leftArm.rotation.x = -swing * 0.75;
-            ch.parts.rightArm.rotation.x = swing * 0.75;
-            ch.mesh.position.set(ch.x, Math.abs(Math.sin(ch.walkPhase)) * 0.08, ch.z);
+            // Hindari tumpang tindih antar karakter
+            for (const other of state.characters) {
+              if (other.id === ch.id) continue;
+              const sepX = ch.x - other.x;
+              const sepZ = ch.z - other.z;
+              const sepDist = Math.hypot(sepX, sepZ);
+              if (sepDist > 0.01 && sepDist < 0.75) {
+                const pushX = ch.x + (sepX / sepDist) * 1.4 * dt;
+                const pushZ = ch.z + (sepZ / sepDist) * 1.4 * dt;
+                if (!isPointBlocked(pushX, pushZ, 0.58)) {
+                  ch.x = pushX;
+                  ch.z = pushZ;
+                }
+              }
+            }
           }
         }
 
