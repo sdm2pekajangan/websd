@@ -4229,20 +4229,20 @@
           if (ch.stateTimer <= 0) {
             const pt = pickRandomWalkPoint(ch.x, ch.z);
             ch.targetX = pt.x; ch.targetZ = pt.z;
-            ch.state = (ch.role === 'student' && Math.random() < 0.48) ? 'run' : 'walk';
+            ch.state = (ch.role === 'student' && Math.random() < 0.85) ? 'run' : 'walk';
             ch.stateTimer = 4 + Math.random() * 6;
           }
         }
         else {
           const isRunning = ch.state === 'run';
-          const moveSpeed = isRunning ? ch.baseSpeed * 1.85 : ch.baseSpeed;
+          const moveSpeed = isRunning ? ch.baseSpeed * 2.05 : ch.baseSpeed;
           const dist = Math.hypot(ch.targetX - ch.x, ch.targetZ - ch.z);
 
           if (dist < 0.7 || ch.stateTimer <= 0) {
             if (Math.random() < 0.6) {
               const pt = pickRandomWalkPoint(ch.x, ch.z);
               ch.targetX = pt.x; ch.targetZ = pt.z;
-              ch.state = (ch.role === 'student' && Math.random() < 0.45) ? 'run' : 'walk';
+              ch.state = (ch.role === 'student' && Math.random() < 0.85) ? 'run' : 'walk';
               ch.stateTimer = 4 + Math.random() * 6;
             } else {
               ch.state = 'idle';
