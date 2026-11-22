@@ -793,11 +793,11 @@
       roadRotation: 0,
       roadBrushDrag: false,
       selectedRole: 'student',
-      studentUniform: 'random',
+      studentUniform: 'auto',
       studentAcc: 'random',
       studentItem: 'random',
       teacherAcc: 'random',
-      teacherStyle: 'random',
+      teacherStyle: 'auto',
       timeMode: 0,
       showLabels: true,
       inspectedCharId: null,
@@ -2270,13 +2270,72 @@
       return { x: 1.5, z: 10 };
     }
 
+    // ==========================================
+    // PENENTU SERAGAM OTOMATIS BERDASARKAN HARI
+    // ==========================================
+    function getTodayUniformConfig() {
+      const day = new Date().getDay(); // 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu
+      const allStudentUniforms = ['merah_putih', 'batik_hijau', 'hw'];
+      const allTeacherStyles = Object.keys(TEACHER_STYLE_CATALOG);
+
+      if (day === 1 || day === 2) {
+        // Senin & Selasa -> Merah Putih (Guru: Seragam Khaki)
+        return {
+          dayLabel: day === 1 ? 'Senin' : 'Selasa',
+          scheduleLabel: 'Merah Putih',
+          student: 'merah_putih',
+          teacher: 'khaki'
+        };
+      }
+      if (day === 3 || day === 4) {
+        // Rabu & Kamis -> Batik Hijau (Guru: Batik Hijau)
+        return {
+          dayLabel: day === 3 ? 'Rabu' : 'Kamis',
+          scheduleLabel: 'Batik Hijau',
+          student: 'batik_hijau',
+          teacher: 'batik_hijau'
+        };
+      }
+      if (day === 5 || day === 6) {
+        // Jumat & Sabtu -> Baju HW (Guru: Seragam Khaki)
+        return {
+          dayLabel: day === 5 ? 'Jumat' : 'Sabtu',
+          scheduleLabel: 'Baju HW',
+          student: 'hw',
+          teacher: 'khaki'
+        };
+      }
+
+      // Minggu (day === 0) -> Bebas (Acak)
+      return {
+        dayLabel: 'Minggu',
+        scheduleLabel: 'Bebas',
+        student: allStudentUniforms[Math.floor(Math.random() * allStudentUniforms.length)],
+        teacher: allTeacherStyles[Math.floor(Math.random() * allTeacherStyles.length)]
+      };
+    }
+
     function resolveStudentDetails(customDetails = null) {
-      if (customDetails) return customDetails;
       const uniforms = ['merah_putih', 'batik_hijau', 'hw'];
       const accs = ['hijab', 'hat', 'glasses', 'none'];
       const items = ['book', 'ball', 'bottle', 'none'];
+
+      if (customDetails) {
+        return {
+          ...customDetails,
+          uniform: customDetails.uniform || getTodayUniformConfig().student
+        };
+      }
+
+      let chosenUniform = state.studentUniform;
+      if (chosenUniform === 'auto') {
+        chosenUniform = getTodayUniformConfig().student;
+      } else if (chosenUniform === 'random') {
+        chosenUniform = uniforms[Math.floor(Math.random() * uniforms.length)];
+      }
+
       return {
-        uniform: state.studentUniform === 'random' ? uniforms[Math.floor(Math.random() * uniforms.length)] : state.studentUniform,
+        uniform: chosenUniform,
         acc: state.studentAcc === 'random' ? accs[Math.floor(Math.random() * accs.length)] : state.studentAcc,
         item: state.studentItem === 'random' ? items[Math.floor(Math.random() * items.length)] : state.studentItem,
         hairIdx: Math.floor(Math.random() * 3)
@@ -2284,11 +2343,25 @@
     }
 
     function resolveTeacherDetails(customDetails = null) {
-      if (customDetails) return customDetails;
       const styles = Object.keys(TEACHER_STYLE_CATALOG);
       const accs = ['hijab', 'hijab_glasses', 'glasses', 'none'];
+
+      if (customDetails) {
+        return {
+          ...customDetails,
+          uniform: customDetails.uniform || getTodayUniformConfig().teacher
+        };
+      }
+
+      let chosenStyle = state.teacherStyle;
+      if (chosenStyle === 'auto') {
+        chosenStyle = getTodayUniformConfig().teacher;
+      } else if (chosenStyle === 'random') {
+        chosenStyle = styles[Math.floor(Math.random() * styles.length)];
+      }
+
       return {
-        uniform: state.teacherStyle === 'random' ? styles[Math.floor(Math.random() * styles.length)] : state.teacherStyle,
+        uniform: chosenStyle,
         acc: state.teacherAcc === 'random' ? accs[Math.floor(Math.random() * accs.length)] : state.teacherAcc,
         hairIdx: Math.floor(Math.random() * 3)
       };
@@ -3481,10 +3554,13 @@
           div.className = 'divider-v';
           row.appendChild(div);
 
+          const todayInfo = getTodayUniformConfig();
+
           const selUniform = document.createElement('select');
           selUniform.className = 'select-mini';
           selUniform.innerHTML = `
-            <option value="random">Seragam: Acak</option>
+            <option value="auto">Seragam: Otomatis (${todayInfo.dayLabel} - ${todayInfo.scheduleLabel})</option>
+            <option value="random">Seragam: Bebas / Acak</option>
             <option value="merah_putih">Merah Putih</option>
             <option value="batik_hijau">Batik Hijau</option>
             <option value="hw">Baju HW</option>`;
@@ -3521,22 +3597,13 @@
           div.className = 'divider-v';
           row.appendChild(div);
 
-          const selTeacherAcc = document.createElement('select');
-          selTeacherAcc.className = 'select-mini';
-          selTeacherAcc.innerHTML = `
-            <option value="random">Gaya Guru: Acak</option>
-            <option value="hijab">Ibu Guru (Berhijab)</option>
-            <option value="hijab_glasses">Ibu Guru (Hijab + Kacamata)</option>
-            <option value="glasses">Bapak Guru (Kacamata)</option>
-            <option value="none">Bapak Guru (Standar)</option>`;
-          selTeacherAcc.value = state.teacherAcc;
-          selTeacherAcc.onchange = () => state.teacherAcc = selTeacherAcc.value;
-          row.appendChild(selTeacherAcc);
+          const todayInfo = getTodayUniformConfig();
 
           const selTeacherStyle = document.createElement('select');
           selTeacherStyle.className = 'select-mini';
           selTeacherStyle.innerHTML = `
-            <option value="random">Seragam: Acak</option>
+            <option value="auto">Seragam: Otomatis (${todayInfo.dayLabel})</option>
+            <option value="random">Seragam: Bebas / Acak</option>
             <option value="batik_hijau">Batik Hijau</option>
             <option value="khaki">Seragam Khaki</option>
             <option value="teal">Toska Guru</option>
@@ -3544,7 +3611,7 @@
           selTeacherStyle.value = state.teacherStyle;
           selTeacherStyle.onchange = () => state.teacherStyle = selTeacherStyle.value;
           row.appendChild(selTeacherStyle);
-        }
+                  }
 
         const input = document.createElement('input');
         input.id = 'char-name-input';
@@ -3710,7 +3777,14 @@
       f1.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 1, null, b.id, false, b.stairSide || 'right', b.stairStyle || 'blue_steel', b.extraOpts || {}));
       f2.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 2, b.parentId, b.id, false, 'none', 'blue_steel', b.extraOpts || {}));
       (data.roads || []).forEach(r => addOrReplaceRoad(r.type, r.x, r.z, r.rotation));
-      (data.characters || []).forEach(c => addCharacter(c.role, c.name, c.x, c.z, c.shirtColor, c.details));
+
+      // Otomatis sesuaikan seragam karakter tersimpan dengan jadwal hari ini
+      (data.characters || []).forEach(c => {
+        const syncedDetails = { ...(c.details || {}) };
+        if (c.role === 'student') syncedDetails.uniform = getTodayUniformConfig().student;
+        if (c.role === 'teacher') syncedDetails.uniform = getTodayUniformConfig().teacher;
+        addCharacter(c.role, c.name, c.x, c.z, c.shirtColor, syncedDetails);
+      });
     }
 
     document.getElementById('btn-export').addEventListener('click', () => {
@@ -3791,14 +3865,14 @@
       }
       for (const px of [-9, -6, -3]) addOrReplaceRoad('paving', px, -18, 0);
 
-      // 8. Guru (termasuk Ibu Guru Berhijab) & Siswa SD Mutu
-      addCharacter('teacher', 'Pak Fatur', -2.5, -11, 0x15803d, { uniform: 'khaki', acc: 'glasses', hairIdx: 1 });
-      addCharacter('student', 'Salman', 2.0, 21, null, { uniform: 'merah_putih', acc: 'hat', item: 'book', hairIdx: 0 });
-      addCharacter('student', 'Syifa', -5.0, -10, null, { uniform: 'batik_hijau', acc: 'hijab', item: 'book', hairIdx: 1 });
-      addCharacter('student', 'Bayu', 1.5, -14, null, { uniform: 'hw', acc: 'hat', item: 'bottle', hairIdx: 2 });
-      addCharacter('student', 'Nafis', -10.0, -16, null, { uniform: 'merah_putih', acc: 'glasses', item: 'none', hairIdx: 0 });
-      addCharacter('student', 'Rara', 2.5, 4, null, { uniform: 'batik_hijau', acc: 'hijab', item: 'ball', hairIdx: 1 });
-	  addCharacter('student', 'Rayyan', -5.0, 4, null, { uniform: 'batik_hijau', acc: 'hat', item: 'ball', hairIdx: 1 });
+      // 8. Guru & Siswa SD Mutu (Seragam otomatis mengikuti hari ini)
+      addCharacter('teacher', 'Pak Fatur', -2.5, -11, 0x15803d, { uniform: getTodayUniformConfig().teacher, acc: 'glasses', hairIdx: 1 });
+      addCharacter('student', 'Salman', 2.0, 21, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'book', hairIdx: 0 });
+      addCharacter('student', 'Syifa', -5.0, -10, null, { uniform: getTodayUniformConfig().student, acc: 'hijab', item: 'book', hairIdx: 1 });
+      addCharacter('student', 'Bayu', 1.5, -14, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'bottle', hairIdx: 2 });
+      addCharacter('student', 'Nafis', -10.0, -16, null, { uniform: getTodayUniformConfig().student, acc: 'glasses', item: 'none', hairIdx: 0 });
+      addCharacter('student', 'Rara', 2.5, 4, null, { uniform: getTodayUniformConfig().student, acc: 'hijab', item: 'ball', hairIdx: 1 });
+      addCharacter('student', 'Rayyan', -5.0, 4, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'ball', hairIdx: 1 });
     }
 
     function loadWorld() {
