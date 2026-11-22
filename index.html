@@ -2463,7 +2463,7 @@
       }
       else if (entityType === 'character') {
         const idx = state.characters.findIndex(c => c.id === entityId);
-        if (idx !== -1) {
+        if (idx !== -1 && !state.characters[idx].linked) {
           scene.remove(state.characters[idx].mesh);
           state.characters[idx].labelEl.remove();
           state.characters.splice(idx, 1);
@@ -2475,12 +2475,12 @@
     }
 
     function clearCharactersByRole(roleFilter = null) {
-      const toRemove = state.characters.filter(c => !roleFilter || c.role === roleFilter);
+      const toRemove = state.characters.filter(c => !c.linked && (!roleFilter || c.role === roleFilter));
       toRemove.forEach(c => {
         scene.remove(c.mesh);
         c.labelEl.remove();
       });
-      state.characters = state.characters.filter(c => roleFilter && c.role !== roleFilter);
+      state.characters = state.characters.filter(c => c.linked || (roleFilter && c.role !== roleFilter));
       closeInspectCard();
       updateStats();
       saveWorld();
@@ -2802,7 +2802,7 @@
       if (state.mode !== 'delete') return;
       raycaster.setFromCamera(pointer, camera);
       const targets = [
-        ...state.characters.map(c => c.mesh),
+        ...state.characters.filter(c => c.mesh.visible).map(c => c.mesh),
         ...state.buildings.map(b => b.mesh),
         ...state.roads.map(r => r.mesh)
       ];
@@ -2866,7 +2866,7 @@
       raycaster.setFromCamera(pointer, camera);
 
       if (state.hudHidden || state.mode === 'view') {
-        const charHits = raycaster.intersectObjects(state.characters.map(c => c.mesh), true);
+        const charHits = raycaster.intersectObjects(state.characters.filter(c => c.mesh.visible).map(c => c.mesh), true);
         if (charHits.length > 0) {
           let curr = charHits[0].object;
           while (curr && !curr.userData.entityId) curr = curr.parent;
@@ -2944,7 +2944,7 @@
       }
       else if (state.mode === 'delete') {
         const targets = [
-          ...state.characters.map(c => c.mesh),
+          ...state.characters.filter(c => c.mesh.visible).map(c => c.mesh),
           ...state.buildings.map(b => b.mesh),
           ...state.roads.map(r => r.mesh)
         ];
@@ -3253,6 +3253,8 @@
       else if (state.activityMode === 'play') curActLabel = 'Bermain Bersama di Lapangan';
       document.getElementById('ins-act').textContent = curActLabel;
 
+      document.getElementById('ins-delete').style.display = ch.linked ? 'none' : '';
+      if (ch.linked) duniaIsiInspect(ch);
       inspectCard.classList.add('active');
     }
 
@@ -3741,7 +3743,7 @@
           stairStyle: b.stairStyle, extraOpts: b.extraOpts
         })),
         roads: state.roads.map(r => ({ type: r.type, x: r.x, z: r.z, rotation: r.rotation })),
-        characters: state.characters.map(c => ({
+        characters: state.characters.filter(c => !c.linked).map(c => ({
           role: c.role, name: c.name, shirtColor: c.shirtColor, details: c.details, x: c.x, z: c.z
         }))
       };
@@ -3756,7 +3758,7 @@
       state.buildings = [];
       state.roads.forEach(r => scene.remove(r.mesh));
       state.roads = [];
-      state.characters.forEach(c => { scene.remove(c.mesh); c.labelEl.remove(); });
+      state.characters.forEach(c => { scene.remove(c.mesh); c.labelEl.remove(); if (c.dunia && c.dunia.cincin) scene.remove(c.dunia.cincin); });
       state.characters = [];
       closeInspectCard();
       closeBuildingCard();
@@ -4204,6 +4206,7 @@
       }
 
       for (const ch of state.characters) {
+        if (ch.linked && !ch.mesh.visible) continue; // karakter tersembunyi (mis. murid tidak hadir) tidak perlu dianimasikan
         ch.stateTimer -= dt;
         if (ch.greetCooldown > 0) ch.greetCooldown -= dt;
 
@@ -4344,6 +4347,7 @@
           }
         }
 
+        if (ch.linked) duniaAnimasi(ch, elapsed);
         if (state.showLabels) {
           tempVec.set(ch.x, 2.4, ch.z);
           tempVec.project(camera);
@@ -4395,7 +4399,7 @@
           if (touchState.moved || touchState.maxFingers > 1) return;
           updatePointer(e.touches[0]);
           raycaster.setFromCamera(pointer, camera);
-          const charHits = raycaster.intersectObjects(state.characters.map(c => c.mesh), true);
+          const charHits = raycaster.intersectObjects(state.characters.filter(c => c.mesh.visible).map(c => c.mesh), true);
           if (charHits.length > 0) {
             let curr = charHits[0].object;
             while (curr && !curr.userData.entityId) curr = curr.parent;
@@ -4453,9 +4457,429 @@
     }, { passive: true });
 
 
+    // ==========================================
+    // 14. DUNIA TERHUBUNG DATA SHEET (aksi "dunia" di Gerbang)
+    // ==========================================
+    const DUNIA = {
+      API_URL: 'https://script.google.com/macros/s/AKfycbwoFDqMkCY9KRmH0mRZ--saBEmyGpF4_2lW8ioewN80PpZpvXp0BJLuoasSPf5RPSCP/exec',          // URL Web App Gerbang (berakhiran /exec). Kosong = mode demo.
+      POLL_DETIK: 60,       // memuat ulang data sheet tiap N detik
+      SIMULASI_DETIK: 7     // kecepatan mode demo
+    };
+    const KELAS_BANGUNAN = { 1: 'b_2f_base', 2: 'b_west_north', 3: 'b_west_front', 4: 'b_north_1', 5: 'b_north_2', 6: 'b_north_3' };
+    const ABSEN_WARNA = { H: 0x22c55e, D: 0xa855f7, I: 0xf59e0b, S: 0x3b82f6, A: 0xef4444 };
+    const WARNA_BELUM = 0x64748b;
+    const IKON_BINTANG = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path fill="#facc15" stroke="#b45309" stroke-width="1" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/></svg>';
+    const IKON_CENTANG = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#22c55e"/><path d="M7 12.5l3 3 7-7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const IKON_BELUM = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#94a3b8" stroke-width="2.2"/></svg>';
+    const IKON_CENTANG_BESAR = IKON_CENTANG.replace('width="12" height="12"', 'width="16" height="16"');
+
+    function bentukBintang(luar, dalam) {
+      const s = new THREE.Shape();
+      for (let i = 0; i < 10; i++) {
+        const r = i % 2 ? dalam : luar, a = Math.PI / 2 + i * Math.PI / 5;
+        if (i === 0) s.moveTo(Math.cos(a) * r, Math.sin(a) * r); else s.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+      }
+      s.closePath();
+      return s;
+    }
+    const bintangGeo = new THREE.ExtrudeGeometry(bentukBintang(0.3, 0.13), { depth: 0.05, bevelEnabled: true, bevelSize: 0.02, bevelThickness: 0.02, bevelSegments: 1 });
+    const matBintangEmas = new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xf59e0b, emissiveIntensity: 0.55, roughness: 0.35 });
+    const matBintangPerak = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, emissive: 0x94a3b8, emissiveIntensity: 0.3, roughness: 0.35 });
+    const lampuGeo = new THREE.SphereGeometry(0.13, 14, 10);
+    const cincinGeo = new THREE.RingGeometry(0.42, 0.6, 32);
+    cincinGeo.rotateX(-Math.PI / 2);
+
+    const dunia = { data: null, terbuka: false, mode: 'memuat', sim: null, timer: null, rayakanTanggal: '' };
+
+    function dnEsc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function duniaTokenBaca() { try { return sessionStorage.getItem('dunia_token') || ''; } catch (e) { return ''; } }
+
+    // Papan panel di pojok kanan atas (isi data + formulir masuk guru)
+    const duniaCss = document.createElement('style');
+    duniaCss.textContent = `
+      .dunia-board{position:fixed;top:110px;right:12px;width:262px;max-height:calc(100vh - 140px);overflow:auto;z-index:20;padding:12px 14px;font-size:12px;line-height:1.45}
+      .dunia-board h3{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:6px}
+      .dunia-board .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:rgba(148,163,184,.18);margin-bottom:6px}
+      .dunia-board .chip.on{background:rgba(34,197,94,.2)}
+      .dunia-board .chip.off{background:rgba(239,68,68,.18)}
+      .dunia-board .chip.demo{background:rgba(250,204,21,.25)}
+      .dunia-board .bar{height:6px;border-radius:4px;background:rgba(148,163,184,.25);overflow:hidden;margin:4px 0 6px}
+      .dunia-board .bar i{display:block;height:100%;background:linear-gradient(90deg,#facc15,#22c55e);transition:width .6s}
+      .dunia-board .list{margin:4px 0 8px;color:#475569}
+      .dunia-board .list span{display:inline-block;margin:1px 3px 1px 0;padding:1px 6px;border-radius:6px;background:rgba(148,163,184,.16)}
+      .dunia-board .mini{font-size:11px;color:#64748b}
+      .dunia-board form{display:grid;gap:5px;margin-top:8px}
+      .dunia-board input{padding:6px 8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;background:#fff;color:#0f172a}
+      .dunia-board .dn-btn{padding:6px 8px;border-radius:8px;border:0;background:#0f766e;color:#fff;font:inherit;cursor:pointer}
+      .char-name .dn-badge{display:inline-flex;vertical-align:middle;margin-left:4px}
+      .char-name .dn-badge svg{width:12px;height:12px;display:block}
+      .dunia-board .dn-toggle{display:none;width:100%;margin-bottom:6px}
+      .char-tag.dn-jauh .char-name > span:not(.dn-badge){display:none}
+      @media (max-width:960px){
+        .dunia-board{top:auto;bottom:96px;left:12px;right:12px;width:auto;max-height:34vh}
+        .dunia-board .dn-toggle{display:block}
+        .dunia-board.kecil #dn-isi,.dunia-board.kecil #dn-masuk{display:none}
+        .dunia-board.kecil{top:auto;bottom:auto;left:auto;right:12px;top:118px;width:auto;max-height:none;padding:0;background:none;box-shadow:none;border:0}
+        .dunia-board.kecil .dn-toggle{width:auto;margin:0;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+      }
+    `;
+    document.head.appendChild(duniaCss);
+    const boardEl = document.createElement('div');
+    boardEl.id = 'dunia-board';
+    boardEl.className = 'hud-panel dunia-board';
+    boardEl.innerHTML = '<button class="dn-btn dn-toggle" id="dn-toggle" type="button" aria-expanded="true">Sembunyikan papan</button><div id="dn-isi"></div><div id="dn-masuk"></div>';
+    if (window.matchMedia('(max-width: 960px)').matches) boardEl.classList.add('kecil');
+    const tombolPapan = boardEl.querySelector('#dn-toggle');
+    function duniaPapanToggle() {
+      const kecil = boardEl.classList.toggle('kecil');
+      tombolPapan.textContent = kecil ? 'Tampilkan papan hari ini' : 'Sembunyikan papan';
+      tombolPapan.setAttribute('aria-expanded', String(!kecil));
+    }
+    tombolPapan.onclick = duniaPapanToggle;
+    if (boardEl.classList.contains('kecil')) tombolPapan.textContent = 'Tampilkan papan hari ini';
+    document.body.appendChild(boardEl);
+
+    function duniaGambarPapan() {
+      const j = dunia.data, el = document.getElementById('dn-isi');
+      const chip = {
+        memuat: '<span class="chip">Memuat...</span>',
+        live: '<span class="chip on">Tersambung ke sheet</span>',
+        demo: '<span class="chip demo">Mode demo (belum tersambung)</span>',
+        offline: '<span class="chip off">Offline, menampilkan data terakhir</span>'
+      }[dunia.mode] || '';
+      let h = `<h3>${IKON_CENTANG_BESAR} Hari ini</h3>${chip}`;
+      if (!j) h += '<p class="mini">Menunggu data...</p>';
+      else if (!j.terbuka) h += '<p class="mini">Status setor dan absen disembunyikan untuk pengunjung. Guru dapat masuk di bawah untuk melihatnya.</p>';
+      else {
+        const murid = j.murid, sudah = murid.filter(m => m.setor === 'lancar' || m.setor === 'ulang').length;
+        const belum = murid.filter(m => m.setor === 'belum');
+        const pct = murid.length ? Math.round(sudah / murid.length * 100) : 0;
+        h += `<div class="mini">Murid sudah setor</div><div class="bar"><i style="width:${pct}%"></i></div>`;
+        h += `<p style="margin:0 0 4px"><b>${sudah}</b> dari ${murid.length} murid</p>`;
+        h += `<div class="list">${belum.length ? belum.slice(0, 14).map(m => `<span>${dnEsc(m.nama)}${m.kelas ? ' · ' + m.kelas : ''}</span>`).join('') + (belum.length > 14 ? `<span>+${belum.length - 14} lagi</span>` : '') : 'Semua murid sudah setor atau absen hari ini'}</div>`;
+        const absen = j.guru.filter(g => g.absen).length, gBelum = j.guru.filter(g => !g.absen);
+        const pctG = j.guru.length ? Math.round(absen / j.guru.length * 100) : 0;
+        h += `<div class="mini">Guru sudah absen</div><div class="bar"><i style="width:${pctG}%"></i></div>`;
+        h += `<p style="margin:0 0 4px"><b>${absen}</b> dari ${j.guru.length} guru</p>`;
+        h += `<div class="list">${gBelum.length ? gBelum.map(g => `<span>${dnEsc(g.panggilan)}</span>`).join('') : 'Semua guru sudah absen'}</div>`;
+        h += `<div class="mini">Penanda: bintang emas = setor lancar, bintang perak = perlu diulang, abu-abu = belum setor. Lampu hijau, ungu, kuning, biru, merah = hadir, dinas, izin, sakit, alpa. Lampu abu-abu = belum absen.</div>`;
+      }
+      el.innerHTML = h;
+    }
+
+    function duniaGambarMasuk() {
+      const el = document.getElementById('dn-masuk');
+      if (!DUNIA.API_URL) { el.innerHTML = '<p class="mini">Mode demo. Isi DUNIA.API_URL untuk menyambung ke sheet.</p>'; return; }
+      let nama = ''; try { nama = sessionStorage.getItem('dunia_nama') || ''; } catch (e) {}
+      if (duniaTokenBaca()) {
+        el.innerHTML = `<p class="mini">Masuk sebagai ${dnEsc(nama || 'guru')}. Status lengkap terlihat.</p><button class="dn-btn" id="dn-keluar" type="button">Keluar</button>`;
+        el.querySelector('#dn-keluar').onclick = duniaKeluar;
+        return;
+      }
+      el.innerHTML = `<form id="dn-form"><label class="mini" for="dn-id">Kode guru, untuk melihat status lengkap</label><input id="dn-id" name="username" placeholder="mis. G07" autocomplete="username" required><label class="mini" for="dn-pin">PIN</label><input id="dn-pin" name="password" type="password" inputmode="numeric" autocomplete="current-password" required><button class="dn-btn" type="submit">Masuk</button><span class="mini" id="dn-msg" role="status"></span></form>`;
+      el.querySelector('#dn-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('dn-msg');
+        msg.textContent = 'Memeriksa...';
+        try { await duniaMasuk(document.getElementById('dn-id').value.trim(), document.getElementById('dn-pin').value); }
+        catch (err) { msg.textContent = err.message || 'Gagal masuk'; }
+      };
+    }
+
+    async function duniaMasuk(id, pin) {
+      const r = await fetch(DUNIA.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'guru_login', id, pin }) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'Gagal masuk');
+      try { sessionStorage.setItem('dunia_token', j.token); sessionStorage.setItem('dunia_nama', j.user.panggilan || j.user.nama); } catch (e) {}
+      duniaGambarMasuk();
+      await duniaAmbil();
+    }
+    function duniaKeluar() {
+      try { sessionStorage.removeItem('dunia_token'); sessionStorage.removeItem('dunia_nama'); } catch (e) {}
+      duniaGambarMasuk();
+      duniaAmbil();
+    }
+
+    // ---- Penanda 3D & lencana label ----
+    function duniaBadge(ch, svg) {
+      const nm = ch.labelEl.querySelector('.char-name');
+      if (!nm) return;
+      let b = nm.querySelector('.dn-badge');
+      if (!b) { b = document.createElement('span'); b.className = 'dn-badge'; nm.appendChild(b); }
+      b.innerHTML = svg;
+    }
+
+    // Abu-abukan warna badan (tanpa mengubah tekstur); amt 0 = normal, 1 = abu-abu penuh
+    function tintChar(ch, amt) {
+      if (ch.dunia.abu === amt) return;
+      ch.dunia.abu = amt;
+      ch.mesh.traverse(o => {
+        if (!o.isMesh || o.userData.isHitbox || o.userData.dnKeep || !o.material || !o.material.color) return;
+        const m = o.material;
+        if (!m.userData.dnBase) m.userData.dnBase = m.color.clone();
+        const b = m.userData.dnBase, l = b.r * 0.3 + b.g * 0.59 + b.b * 0.11;
+        m.color.setRGB(l, l, l).lerp(b, 1 - amt);
+      });
+    }
+
+    function duniaSpawn(role, d) {
+      let x = 6.5 + Math.random() * 3, z = 10 + Math.random() * 3;
+      if (role === 'student') {
+        const b = state.buildings.find(q => q.id === KELAS_BANGUNAN[d.kelas]);
+        if (b) { x = b.x + (Math.random() - 0.5) * 3; z = b.z + 3 + Math.random() * 2.5; }
+        x = THREE.MathUtils.clamp(x, -25, 10); z = THREE.MathUtils.clamp(z, -12, 23);
+      }
+      if (isPointBlocked(x, z)) { const p = pickRandomWalkPoint(); x = p.x; z = p.z; }
+      // Murid: penampilan mengikuti jenis kelamin dari sheet. Jilbab hanya untuk perempuan.
+      let detail = null;
+      if (role === 'student') {
+        const acc = d.jk === 'P'
+          ? ['hijab', 'hijab', 'hijab_glasses', 'hat', 'glasses', 'none'][Math.floor(Math.random() * 6)]
+          : ['hat', 'glasses', 'none'][Math.floor(Math.random() * 3)];
+        detail = {
+          uniform: ['merah_putih', 'batik_hijau', 'hw'][Math.floor(Math.random() * 3)],
+          acc, item: ['book', 'ball', 'bottle', 'none'][Math.floor(Math.random() * 4)],
+          hairIdx: Math.floor(Math.random() * 3)
+        };
+      }
+      addCharacter(role, role === 'student' ? (d.nama || 'Murid') : (d.panggilan || d.nama || 'Guru'), x, z, null, detail);
+      const ch = state.characters[state.characters.length - 1];
+      ch.linked = true;
+      ch.jk = d.jk || '';
+      // Karakter data tidak perlu bayangan (hemat draw call); bayangan jatuh tetap dari karakter dekoratif
+      ch.mesh.traverse(o => { if (o.isMesh) o.castShadow = false; });
+      ch.linkId = role + ':' + d.id;
+      ch.dunia = { star: null, lampu: null, cincin: null, abu: -1 };
+      if (role === 'student') {
+        ch.dunia.star = new THREE.Mesh(bintangGeo, matBintangEmas);
+        ch.dunia.star.position.set(0, 2.75, 0);
+        ch.dunia.star.visible = false;
+        ch.dunia.star.userData.dnKeep = true;
+        ch.mesh.add(ch.dunia.star);
+      } else {
+        ch.dunia.lampu = new THREE.Mesh(lampuGeo, new THREE.MeshBasicMaterial({ color: WARNA_BELUM }));
+        ch.dunia.lampu.position.set(0, 2.7, 0);
+        ch.dunia.lampu.userData.dnKeep = true;
+        ch.dunia.lampu.visible = false;
+        ch.mesh.add(ch.dunia.lampu);
+        ch.dunia.cincin = new THREE.Mesh(cincinGeo, new THREE.MeshBasicMaterial({ color: WARNA_BELUM, transparent: true, opacity: 0.55, depthWrite: false }));
+        ch.dunia.cincin.visible = false;
+        scene.add(ch.dunia.cincin);
+      }
+      return ch;
+    }
+
+    function duniaBuang(ch) {
+      scene.remove(ch.mesh);
+      if (ch.dunia && ch.dunia.cincin) scene.remove(ch.dunia.cincin);
+      ch.labelEl.remove();
+      state.characters = state.characters.filter(c => c !== ch);
+      if (state.inspectedCharId === ch.id) closeInspectCard();
+    }
+
+    function duniaMarkiMurid(ch, m) {
+      const d = ch.dunia, s = m.setor;     // s undefined = status disembunyikan
+      ch.setor = s;
+      const tampil = s !== 'tidak';        // tidak hadir: di rumah, tidak tampil
+      ch.mesh.visible = tampil;
+      ch.labelEl.style.display = tampil ? '' : 'none';
+      d.star.visible = s === 'lancar' || s === 'ulang';
+      d.star.material = s === 'ulang' ? matBintangPerak : matBintangEmas;
+      tintChar(ch, s === 'belum' ? 0.6 : 0);
+      duniaBadge(ch, s === 'lancar' ? IKON_BINTANG : s === 'ulang' ? IKON_CENTANG : s === 'belum' ? IKON_BELUM : '');
+      ch.labelEl.querySelector('.char-name').style.opacity = s === 'belum' ? '0.6' : '1';
+    }
+
+    function duniaMarkiGuru(ch, g) {
+      const d = ch.dunia, a = g.absen;     // undefined = disembunyikan, null = belum absen
+      if (a === undefined) {
+        ch.setor = undefined;
+        d.lampu.visible = false; d.cincin.visible = false;
+        tintChar(ch, 0); duniaBadge(ch, '');
+        return;
+      }
+      const kode = a ? (a.sd || (a.masuk ? 'H' : '') || a.sp || '') : '';
+      const warna = ABSEN_WARNA[kode] ?? null;
+      ch.setor = warna !== null ? 'absen' : 'belum';
+      d.lampu.visible = true;
+      d.lampu.material.color.setHex(warna ?? WARNA_BELUM);
+      d.cincin.visible = warna !== null;
+      if (warna !== null) d.cincin.material.color.setHex(warna);
+      tintChar(ch, warna !== null ? 0 : 0.85);
+      duniaBadge(ch, warna !== null ? IKON_CENTANG : IKON_BELUM);
+      ch.labelEl.querySelector('.char-name').style.opacity = warna !== null ? '1' : '0.65';
+    }
+
+    function duniaAnimasi(ch, t) {
+      const d = ch.dunia;
+      if (!d) return;
+      if (ch.role === 'teacher') ch.labelEl.classList.toggle('dn-jauh', camera.position.distanceTo(tempVec.set(ch.x, 2.4, ch.z)) > 55);
+      if (d.star && d.star.visible) {
+        d.star.rotation.y = t * 2.2;
+        d.star.position.y = 2.75 + Math.sin(t * 3 + ch.walkPhase) * 0.06;
+      }
+      if (d.lampu && d.lampu.visible) d.lampu.scale.setScalar(1 + Math.sin(t * 2.6 + ch.walkPhase) * 0.12);
+      if (d.cincin && d.cincin.visible) {
+        d.cincin.position.set(ch.x, 0.03, ch.z);
+        const sc = 1 + Math.sin(t * 2.6) * 0.06;
+        d.cincin.scale.set(sc, 1, sc);
+      }
+    }
+
+    function duniaIsiInspect(ch) {
+      const teks = ch.role === 'teacher'
+        ? (ch.setor === 'absen' ? 'Sudah absen hari ini' : ch.setor === 'belum' ? 'Belum absen hari ini' : 'Status absen tersembunyi')
+        : (ch.setor === 'lancar' ? 'Sudah setor hari ini (lancar)' : ch.setor === 'ulang' ? 'Sudah setor, perlu diulang' : ch.setor === 'belum' ? 'Belum setor hari ini' : 'Status setor tersembunyi');
+      document.getElementById('ins-act').textContent = teks;
+    }
+
+    // Terapkan data (dari sheet atau demo) ke dunia: buat / perbarui / buang karakter tersambung
+    function duniaTerapkan(j) {
+      dunia.data = j;
+      dunia.terbuka = !!j.terbuka;
+      const idMurid = new Set(j.murid.map(m => m.id));
+      state.characters.filter(c => c.linked && c.role === 'student' && !idMurid.has(c.linkId.slice(8))).forEach(duniaBuang);
+      j.murid.forEach(m => {
+        const ch = state.characters.find(c => c.linked && c.linkId === 'student:' + m.id) || duniaSpawn('student', m);
+        duniaMarkiMurid(ch, m);
+      });
+      const idGuru = new Set(j.guru.map(g => g.id));
+      state.characters.filter(c => c.linked && c.role === 'teacher' && !idGuru.has(c.linkId.slice(8))).forEach(duniaBuang);
+      j.guru.forEach(g => {
+        const ch = state.characters.find(c => c.linked && c.linkId === 'teacher:' + g.id) || duniaSpawn('teacher', g);
+        duniaMarkiGuru(ch, g);
+      });
+      // Karakter dekoratif contoh disembunyikan begitu data hadir
+      state.characters.forEach(c => { if (!c.linked && c.role !== 'robot') { c.mesh.visible = false; c.labelEl.style.display = 'none'; } });
+      updateStats();
+
+      const semuaBeres = j.terbuka && j.murid.length && j.murid.every(m => m.setor === 'lancar' || m.setor === 'ulang' || m.setor === 'tidak');
+      if (semuaBeres && dunia.rayakanTanggal !== j.tanggal) {
+        dunia.rayakanTanggal = j.tanggal;
+        hintBanner.textContent = 'Semua murid sudah setor atau absen hari ini. Alhamdulillah!';
+      }
+      duniaGambarPapan();
+    }
+
+    async function duniaAmbil() {
+      const tok = duniaTokenBaca();
+      try {
+        const r = await fetch(DUNIA.API_URL + '?action=dunia' + (tok ? '&token=' + encodeURIComponent(tok) : ''), { cache: 'no-store' });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'Data tidak tersedia');
+        if (tok && !j.terbuka) { try { sessionStorage.removeItem('dunia_token'); } catch (e) {} duniaGambarMasuk(); }
+        dunia.mode = 'live';
+        duniaTerapkan(j);
+      } catch (err) {
+        dunia.mode = 'offline';
+        duniaGambarPapan();
+      }
+    }
+
+    // ---- Mode demo: data pura-pura yang berjalan sendiri ----
+    const SIM_MURID = ['Aisyah', 'Budi', 'Citra', 'Dimas', 'Eka', 'Fajar', 'Gita', 'Hana', 'Ilham', 'Jihan', 'Kaisa', 'Lutfi', 'Maya', 'Nabil', 'Oki', 'Putri', 'Qais', 'Rizky', 'Salsa', 'Tegar', 'Ulfa', 'Vino', 'Wulan', 'Yusuf', 'Zahra', 'Abdul', 'Bintang', 'Dinda', 'Farhan', 'Galih'];
+    const SIM_GURU = ['Bu Nada', 'Pak Fatih', 'Bu Sri', 'Bu Dewi', 'Bu Nur', 'Bu Ratna', 'Pak Irfan', 'Bu Riviani', 'Pak Nafin', 'Bu Nikmah', 'Bu Ike', 'Pak Dodik'];
+    function duniaSimBuat() {
+      dunia.sim = {
+        murid: SIM_MURID.map((n, i) => {
+          const r = Math.random();
+          return { id: 'S' + String(i + 1).padStart(3, '0'), nama: n, kelas: (i % 6) + 1, jk: i % 2 ? 'P' : 'L', setor: r < 0.06 ? 'tidak' : (r < 0.45 ? (Math.random() < 0.8 ? 'lancar' : 'ulang') : 'belum') };
+        }),
+        guru: SIM_GURU.map((p, i) => ({
+          id: 'GS' + String(i + 1).padStart(2, '0'), nama: p, panggilan: p,
+          absen: Math.random() < 0.4 ? { sd: 'H', sp: '', masuk: '06:4' + Math.floor(Math.random() * 9), pulang: '', ket: '' } : null
+        }))
+      };
+    }
+    function duniaSimLangkah() {
+      const s = dunia.sim;
+      if (!s) return;
+      const belum = s.murid.filter(m => m.setor === 'belum'), gBelum = s.guru.filter(g => !g.absen);
+      if (!belum.length && !gBelum.length) {
+        s.murid.forEach(m => { if (m.setor !== 'tidak') m.setor = 'belum'; });
+        s.guru.forEach(g => { g.absen = null; });
+      } else {
+        if (belum.length) belum[Math.floor(Math.random() * belum.length)].setor = Math.random() < 0.85 ? 'lancar' : 'ulang';
+        if (gBelum.length) gBelum[Math.floor(Math.random() * gBelum.length)].absen = { sd: Math.random() < 0.9 ? 'H' : 'I', sp: '', masuk: '06:50', pulang: '', ket: '' };
+      }
+      dunia.mode = 'demo';
+      duniaTerapkan({ ok: true, tanggal: 'demo', terbuka: true, sekolah: 'SD Mutu (demo)', murid: s.murid, guru: s.guru });
+    }
+
+    function duniaMulai() {
+      duniaGambarMasuk();
+      duniaGambarPapan();
+      if (DUNIA.API_URL) {
+        duniaAmbil();
+        dunia.timer = setInterval(duniaAmbil, DUNIA.POLL_DETIK * 1000);
+      } else {
+        duniaSimBuat();
+        duniaSimLangkah();
+        dunia.timer = setInterval(duniaSimLangkah, DUNIA.SIMULASI_DETIK * 1000);
+      }
+    }
+    // ==========================================
+    // 15. CIUTKAN PANEL MENU SATU PER SATU
+    // ==========================================
+    const HUD_LABEL = {
+      'brand-card': 'SD Mutu', 'quick-links': 'Aplikasi', 'stats-bar': 'Menu', 'cam-bar': 'Sudut Video',
+      'hint-banner': 'Petunjuk', 'inspect-card': 'Info Orang', 'building-card': 'Info Gedung',
+      'sub-panel': 'Alat', 'mode-dock': 'Mode'
+    };
+    const HUD_KEY = 'sd_mutu_hud_min_v1';
+    let hudTersimpan = {};
+    try { hudTersimpan = JSON.parse(localStorage.getItem(HUD_KEY) || '{}') || {}; } catch (e) { hudTersimpan = {}; }
+
+    const hudCss = document.createElement('style');
+    hudCss.textContent = `
+      .hud-min-btn{position:absolute;top:-9px;right:-9px;z-index:2;display:flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(15,23,42,.12);border-radius:999px;background:#fff;color:#334155;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+      .hud-min-btn:hover{background:#f1f5f9}
+      .hud-min-btn:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+      .hud-min-btn svg{width:12px;height:12px;flex:none;transition:transform .2s}
+      .hud-min-btn .lbl{display:none}
+      .hud-panel.hud-min{padding:0 !important;width:auto !important;min-width:0 !important;height:auto !important;max-width:none !important;max-height:none !important;border-radius:999px !important;overflow:visible !important}
+      .hud-panel.hud-min > :not(.hud-min-btn){display:none !important}
+      .hud-panel.hud-min > .hud-min-btn{position:static;width:auto;height:auto;border:0;box-shadow:none;background:none;padding:7px 14px;font-size:12px;font-weight:600;color:#0f172a;gap:6px;display:flex;align-items:center}
+      .hud-panel.hud-min > .hud-min-btn:hover{background:rgba(15,23,42,.06)}
+      .hud-panel.hud-min > .hud-min-btn .lbl{display:inline}
+      .hud-panel.hud-min > .hud-min-btn svg{transform:rotate(180deg)}
+    `;
+    document.head.appendChild(hudCss);
+
+    function hudTerapkan(el, min) {
+      el.classList.toggle('hud-min', min);
+      const b = el.querySelector(':scope > .hud-min-btn');
+      if (b) {
+        b.setAttribute('aria-expanded', String(!min));
+        b.title = min ? 'Tampilkan panel' : 'Ciutkan panel';
+      }
+    }
+
+    document.querySelectorAll('.hud-panel').forEach(el => {
+      if (el.id === 'dunia-board') return;             // papan dunia punya tombolnya sendiri
+      const kunci = el.id && HUD_LABEL[el.id] ? el.id : [...el.classList].find(c => HUD_LABEL[c]) || el.id || '';
+      if (!kunci) return;
+      const label = HUD_LABEL[kunci];
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hud-min-btn';
+      b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg><span class="lbl">${label}</span>`;
+      el.appendChild(b);
+      hudTerapkan(el, !!hudTersimpan[kunci]);
+      b.onclick = (e) => {
+        e.stopPropagation();
+        const m = !el.classList.contains('hud-min');
+        hudTerapkan(el, m);
+        hudTersimpan[kunci] = m;
+        try { localStorage.setItem(HUD_KEY, JSON.stringify(hudTersimpan)); } catch (err) {}
+      };
+    });
+
     loadWorld();
     renderSubPanel();
     animate();
+    duniaMulai();
   </script>
 </body>
 </html>
