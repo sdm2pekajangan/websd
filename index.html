@@ -4637,7 +4637,7 @@
           ? ['hijab', 'hijab', 'hijab_glasses', 'hat', 'glasses', 'none'][Math.floor(Math.random() * 6)]
           : ['hat', 'glasses', 'none'][Math.floor(Math.random() * 3)];
         detail = {
-          uniform: ['merah_putih', 'batik_hijau', 'hw'][Math.floor(Math.random() * 3)],
+          uniform: seragamMurid(),
           acc, item: ['book', 'ball', 'bottle', 'none'][Math.floor(Math.random() * 4)],
           hairIdx: Math.floor(Math.random() * 3)
         };
@@ -4667,6 +4667,14 @@
         scene.add(ch.dunia.cincin);
       }
       return ch;
+    }
+
+    // Seragam murid mengikuti pengaturan yang sama dengan karakter lain: auto = sesuai jadwal hari ini
+    function seragamMurid() {
+      const u = state.studentUniform;
+      if (u === 'random') return ['merah_putih', 'batik_hijau', 'hw'][Math.floor(Math.random() * 3)];
+      if (!u || u === 'auto') return getTodayUniformConfig().student;
+      return u;
     }
 
     function duniaBuang(ch) {
