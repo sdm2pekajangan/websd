@@ -4205,6 +4205,7 @@
         }
       }
 
+      turUpdate(dt);
       for (const ch of state.characters) {
         if (ch.linked && !ch.mesh.visible) continue; // karakter tersembunyi (mis. murid tidak hadir) tidak perlu dianimasikan
         ch.stateTimer -= dt;
@@ -4278,7 +4279,7 @@
           if (ch.soloTimer <= 0) {
             ch.soloAction = null;
             ch.lastPrayerPhase = -1;
-            const pt = pickRandomWalkPoint(ch.x, ch.z);
+            const pt = duniaTitikJalan(ch);
             ch.targetX = pt.x; ch.targetZ = pt.z;
             ch.state = 'walk';
             ch.stateTimer = 4 + Math.random() * 4;
@@ -4293,7 +4294,7 @@
           }, 0.3);
 
           if (ch.stateTimer <= 0) {
-            const pt = pickRandomWalkPoint(ch.x, ch.z);
+            const pt = duniaTitikJalan(ch);
             ch.targetX = pt.x; ch.targetZ = pt.z;
             ch.state = Math.random() < 0.45 ? 'run' : 'walk';
             ch.stateTimer = 4 + Math.random() * 6;
@@ -4304,7 +4305,7 @@
           lerpPose(ch, {}, 0.2);
 
           if (ch.stateTimer <= 0) {
-            const pt = pickRandomWalkPoint(ch.x, ch.z);
+            const pt = duniaTitikJalan(ch);
             ch.targetX = pt.x; ch.targetZ = pt.z;
             ch.state = (ch.role === 'student' && Math.random() < 0.85) ? 'run' : 'walk';
             ch.stateTimer = 4 + Math.random() * 6;
@@ -4317,7 +4318,7 @@
 
           if (dist < 0.7 || ch.stateTimer <= 0) {
             if (Math.random() < 0.6) {
-              const pt = pickRandomWalkPoint(ch.x, ch.z);
+              const pt = duniaTitikJalan(ch);
               ch.targetX = pt.x; ch.targetZ = pt.z;
               ch.state = (ch.role === 'student' && Math.random() < 0.85) ? 'run' : 'walk';
               ch.stateTimer = 4 + Math.random() * 6;
@@ -4446,7 +4447,11 @@
             const nextIdx = (ACTIVITY_SEQUENCE.indexOf(state.activityMode) + 1) % ACTIVITY_SEQUENCE.length;
             setActivityMode(ACTIVITY_SEQUENCE[nextIdx]);
             if (navigator.vibrate) navigator.vibrate(30);
-          } else if (touchState.maxFingers >= 3) {
+          } else if (touchState.maxFingers >= 4) {
+            // Tap 4 jari -> Tur sinematik
+            turToggle();
+            if (navigator.vibrate) navigator.vibrate(40);
+          } else if (touchState.maxFingers === 3) {
             // Tap 3 jari -> Sembunyikan / Tampilkan Menu HUD
             toggleHudHidden();
             if (navigator.vibrate) navigator.vibrate([25, 40, 25]);
@@ -4566,6 +4571,7 @@
       const ch = state.characters[state.characters.length - 1];
       ch.linked = true;
       ch.jk = d.jk || '';
+      ch.kelas = d.kelas || null;
       // Karakter data tidak perlu bayangan (hemat draw call); bayangan jatuh tetap dari karakter dekoratif
       ch.mesh.traverse(o => { if (o.isMesh) o.castShadow = false; });
       ch.linkId = role + ':' + d.id;
@@ -4602,6 +4608,25 @@
       if (u === 'random') { const k = Object.keys(TEACHER_STYLE_CATALOG); return k[Math.floor(Math.random() * k.length)]; }
       if (!u || u === 'auto') return getTodayUniformConfig().teacher;
       return u;
+    }
+
+    // Guru belum absen menunggu di gerbang; murid belum setor menunggu di depan kelasnya.
+    // Yang sudah absen/setor (atau status belum diketahui) berkeliling seperti biasa.
+    const GERBANG_PUSAT = { x: 1, z: 22 };
+    function duniaTitikJalan(ch) {
+      const tahan = ch.setor === 'belum' && (ch.role === 'teacher' || ch.role === 'student');
+      if (!tahan) return pickRandomWalkPoint(ch.x, ch.z);
+      let pusat = GERBANG_PUSAT, r = 1.6;
+      if (ch.role === 'student') {
+        const b = state.buildings.find(q => q.id === KELAS_BANGUNAN[ch.kelas]);
+        if (b) { pusat = { x: b.x, z: b.z }; r = (b.halfD || 2.5) + 1.2; }
+      }
+      for (let k = 0; k < 14; k++) {
+        const a = Math.random() * Math.PI * 2, rr = r * (0.85 + Math.random() * 0.3);
+        const x = pusat.x + Math.cos(a) * rr, z = pusat.z + Math.sin(a) * rr;
+        if (!isPointBlocked(x, z, 0.5)) return { x, z };
+      }
+      return pickRandomWalkPoint(ch.x, ch.z);
     }
 
     function duniaBuang(ch) {
@@ -4809,6 +4834,114 @@
         hudTersimpan[kunci] = m;
         try { localStorage.setItem(HUD_KEY, JSON.stringify(hudTersimpan)); } catch (err) {}
       };
+    });
+    // ==========================================
+    // 16. TUR SINEMATIK (4 jari / tombol T) & IKUTI PAK FATUR (F)
+    // ==========================================
+    const TUR_SHOTS = [
+      { nama: 'Gerbang', kamera: 'gate', lama: 6 },
+      { nama: 'Lorong kelas', kamera: 'corridor', lama: 6 },
+      { nama: 'Lapangan', kamera: 'yard', lama: 6 },
+      { nama: 'Pandangan atas', kamera: 'overview', lama: 6 },
+      { nama: 'Ikuti Pak Fatur', ikut: true, lama: 10 }
+    ];
+    const tur = { aktif: false, ikut: false, i: 0, fase: 'gerak', t: 0, dari: null, ke: null, tapKeyX: 0, tapKeyY: 0 };
+    const turChip = document.createElement('div');
+    turChip.id = 'tur-chip';
+    turChip.setAttribute('role', 'status');
+    turChip.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:30;padding:7px 14px;border-radius:999px;background:rgba(15,23,42,.82);color:#f8fafc;font:600 12px/1.2 system-ui,sans-serif;display:none;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(turChip);
+    function turTampilChip(teks) { turChip.textContent = teks; turChip.style.display = teks ? '' : 'none'; }
+
+    function turCariFatur() {
+      return state.characters.find(c => /Fatur|Fatih/i.test(c.name) && c.mesh.visible)
+        || state.characters.find(c => c.role === 'teacher' && c.mesh.visible) || null;
+    }
+    function turMulaiShot(i) {
+      tur.i = i;
+      const s = TUR_SHOTS[i];
+      tur.t = 0;
+      if (s.ikut) {
+        tur.fase = 'ikut';
+        tur.dari = { p: camera.position.clone(), t: controls.target.clone() };
+        turTampilChip('Mengikuti Pak Fatur. Geser layar atau tekan F untuk berhenti');
+        return;
+      }
+      const p = CAM_PRESETS[s.kamera];
+      tur.dari = { p: camera.position.clone(), t: controls.target.clone() };
+      tur.ke = { p: new THREE.Vector3(...p.pos), t: new THREE.Vector3(...p.target) };
+      tur.fase = 'gerak';
+      turTampilChip(s.nama + ' • Geser layar atau tekan T untuk berhenti');
+    }
+    function turMulai() {
+      if (tur.ikut) turIkutStop();
+      tur.aktif = true;
+      turMulaiShot(0);
+    }
+    function turBerhenti() {
+      tur.aktif = false;
+      turTampilChip('');
+    }
+    function turToggle() { tur.aktif ? turBerhenti() : turMulai(); }
+
+    function turIkutStart() {
+      if (tur.aktif) turBerhenti();
+      const f = turCariFatur();
+      if (!f) { turTampilChip('Pak Fatur belum ada di dunia'); setTimeout(() => turTampilChip(''), 2000); return; }
+      tur.ikut = true;
+      tur.dari = { p: camera.position.clone(), t: controls.target.clone() };
+      turTampilChip('Mengikuti Pak Fatur. Geser layar atau tekan F untuk berhenti');
+    }
+    function turIkutStop() { tur.ikut = false; turTampilChip(''); }
+    function turIkutToggle() { tur.ikut ? turIkutStop() : turIkutStart(); }
+
+    // Kamera gerak halus ke tiap sudut, tahan sebentar, lalu lanjut (berulang)
+    function turUpdate(dt) {
+      if (tur.ikut) {
+        const f = turCariFatur();
+        if (!f) { turIkutStop(); return; }
+        const a = 1 - Math.exp(-dt * 3);
+        camera.position.lerp(new THREE.Vector3(f.x + 3.2, 3.4, f.z + 5.5), a);
+        controls.target.lerp(new THREE.Vector3(f.x, 1.6, f.z), a);
+        controls.update();
+        return;
+      }
+      if (!tur.aktif) return;
+      const s = TUR_SHOTS[tur.i];
+      tur.t += dt;
+      if (s.ikut) {
+        // Pandangan "ikuti" di dalam tur: sama seperti mode ikuti, lalu lanjut ke awal
+        const f = turCariFatur();
+        if (f) {
+          const a = 1 - Math.exp(-dt * 3);
+          camera.position.lerp(new THREE.Vector3(f.x + 3.2, 3.4, f.z + 5.5), a);
+          controls.target.lerp(new THREE.Vector3(f.x, 1.6, f.z), a);
+        }
+        if (tur.t >= s.lama) turMulaiShot((tur.i + 1) % TUR_SHOTS.length);
+      } else if (tur.fase === 'gerak') {
+        const k = Math.min(1, tur.t / 2.6);
+        const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        camera.position.lerpVectors(tur.dari.p, tur.ke.p, e);
+        controls.target.lerpVectors(tur.dari.t, tur.ke.t, e);
+        if (k >= 1) { tur.fase = 'tahan'; tur.t = 0; }
+      } else if (tur.t >= s.lama) {
+        turMulaiShot((tur.i + 1) % TUR_SHOTS.length);
+      }
+      controls.update();
+    }
+
+    // Geser/cubit layar menghentikan tur dan mode ikuti
+    let turTitikTekan = null;
+    renderer.domElement.addEventListener('pointerdown', (e) => { turTitikTekan = { x: e.clientX, y: e.clientY }; });
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      if (!turTitikTekan || (!tur.aktif && !tur.ikut)) return;
+      if (Math.hypot(e.clientX - turTitikTekan.x, e.clientY - turTitikTekan.y) > 12) { turBerhenti(); turIkutStop(); turTitikTekan = null; }
+    });
+    renderer.domElement.addEventListener('wheel', () => { if (tur.aktif) turBerhenti(); if (tur.ikut) turIkutStop(); }, { passive: true });
+    window.addEventListener('keydown', (e) => {
+      if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+      if (e.key === 't' || e.key === 'T') turToggle();
+      if (e.key === 'f' || e.key === 'F') turIkutToggle();
     });
 
     loadWorld();
