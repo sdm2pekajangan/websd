@@ -774,7 +774,7 @@
     // ==========================================
     // 1. KONFIGURASI & CATALOG
     // ==========================================
-    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v7';
+    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v8';
     const ISLAND_LIMIT = 36;
     const ROAD_STEP = 3;
     const FLOOR_HEIGHT = 3.5;
@@ -3824,57 +3824,92 @@
       }
     });
 
+    // Denah awal = hasil ekspor denah terbaru
+    // Untuk memindahkan bangunan: ubah nilai x dan z pada baris bangunan yang diinginkan.
+    // Satu bangunan per baris. Jalan (roads) ada di bagian bawah.
+    const DENAH_AWAL = {
+      timeMode: 0, showLabels: false,
+      buildings: [
+        {"id": "b_2f_base", "type": "classroom", "x": -20, "z": 12.9, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "front", "stairStyle": "blue_steel", "extraOpts": {"hasMading": true}},
+        {"id": "b_west_north", "type": "classroom", "x": -20, "z": 5.3, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_mural", "type": "sd_mural_wall", "x": 9, "z": 15, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_north_1", "type": "classroom", "x": -11.4, "z": -24.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_north_2", "type": "classroom", "x": -3.8, "z": -24.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "none", "stairStyle": "concrete", "extraOpts": {"roofTitle": true}},
+        {"id": "b_north_3", "type": "classroom", "x": 3.8, "z": -24.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_toren", "type": "sd_toren_wc", "x": -21.5, "z": -13, "rotation": 4.71238898038469, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_flag", "type": "flagpole", "x": -3.8, "z": -15.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684399_ceut", "type": "tree_park", "x": -22, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684400_wihq", "type": "tree_park", "x": -14, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684401_uxfw", "type": "tree_park", "x": -4, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_50mu", "type": "tree_park", "x": 6, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_hjtq", "type": "tree_park", "x": 15, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_lzbj", "type": "tree_park", "x": -23, "z": -22, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684404_g1ko", "type": "tree_park", "x": 15, "z": -20, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_gd4g", "type": "tree_park", "x": 13, "z": -10, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_6iy7", "type": "tree_park", "x": 11, "z": 0, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440180955_mhnr", "type": "classroom", "x": -20, "z": 20.5, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440207472_19n7", "type": "classroom", "x": -20, "z": 20.5, "rotation": 1.5707963267948966, "floor": 2, "parentId": "b_1795440180955_mhnr", "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440461171_qcft", "type": "sd_front_fence", "x": -4, "z": 33.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440719292_icp6", "type": "sd_back_wall", "x": -25, "z": 11.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440778607_1y2x", "type": "sd_carport", "x": -20.5, "z": 27, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440848180_wacs", "type": "sd_bike_shed", "x": -20, "z": -1, "rotation": 3.141592653589793, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}}
+      ],
+      roads: [
+        {"type": "paving", "x": 0, "z": -18, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -18, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -15, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -15, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -12, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -12, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -9, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -9, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -6, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -6, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -3, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -3, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 0, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 0, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 3, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 3, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 6, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 6, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 9, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 9, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 12, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 12, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 15, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 15, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 18, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 18, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 21, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 21, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 24, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 24, "rotation": 0},
+        {"type": "paving", "x": -9, "z": -18, "rotation": 0},
+        {"type": "paving", "x": -6, "z": -18, "rotation": 0},
+        {"type": "paving", "x": -3, "z": -18, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 3, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 6, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 9, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 12, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 15, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 18, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 21, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 24, "rotation": 0},
+        {"type": "plaza", "x": 6, "z": 27, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 30, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 30, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 27, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 27, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 30, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 30, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 30, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 30, "rotation": 0}
+      ],
+      characters: []
+    };
     function seedDefaultSchool() {
-      // 1. Pagar Depan & Gerbang Tenggara (Selatan / Bawah)
-      addBuilding('sd_fence_unit', -7.2, 28.8, 0, 1, null, 'b_fence1', false);
-      addBuilding('sd_fence_unit', -3.2, 28.5, 0, 1, null, 'b_fence2', false);
-      addBuilding('sd_fence_unit',  0.8, 28.2, 0, 1, null, 'b_fence3', false);
-      addBuilding('sd_gate_unit',   4.6, 28.0, 0, 1, null, 'b_gate', false);
-
-      // 2. Sayap Barat Memanjang Utara-Selatan (Gedung Utama 2 Lantai + Kelas)
-      addBuilding('classroom', -6.8, 22.8, Math.PI / 2, 1, null, 'b_west_front', false);
-      const f1Main = addBuilding('classroom', -6.8, 15.2, Math.PI / 2, 1, null, 'b_2f_base', false, 'front', 'blue_steel', { hasMading: true });
-      addBuilding('lab', -6.8, 15.2, Math.PI / 2, 2, f1Main, 'b_2f_top', false, 'none', 'blue_steel', { hasBanner: true });
-      addBuilding('classroom', -6.8, 7.6, Math.PI / 2, 1, null, 'b_west_north', false);
-
-      // 3. Tembok Mural Lorong Timur
-      addBuilding('sd_mural_wall', 7.0, 11.5, 0, 1, null, 'b_mural', false);
-
-      // 4. Gedung Utara Melintang Timur-Barat (Ujung Atas Halaman)
-      addBuilding('classroom', -11.4, -24.5, 0, 1, null, 'b_north_1', false);
-      addBuilding('classroom',  -3.8, -24.5, 0, 1, null, 'b_north_2', false, 'none', 'concrete', { roofTitle: true });
-      addBuilding('classroom',   3.8, -24.5, 0, 1, null, 'b_north_3', false);
-
-      // 5. Bangunan Sisi Barat Lapangan (WC & Toren Air) + Tiang Bendera
-      addBuilding('sd_toren_wc', -17.8, -12.8, Math.PI / 2, 1, null, 'b_toren', false);
-      addBuilding('flagpole', -3.8, -15.5, 0, 1, null, 'b_flag', false);
-
-      // 6. Kebun Pohon Pisang di Sekeliling Luar Batas Lahan
-      const bananaTrees = [
-        [-22, -30], [-14, -30], [-4, -30], [6, -30], [15, -30],
-        [-23, -22], [-23, -15], [-23, -8], [-17, -3], [-14, 4],
-        [15, -20], [13, -10], [11, 0]
-      ];
-      for (const [tx, tz] of bananaTrees) {
-        addBuilding('tree_park', tx, tz, 0, 1, null, null, false);
-      }
-
-      // 7. Jalan Aspal Depan & Paving Lorong Masuk -> Lapangan
-      for (let x = -24; x <= 12; x += 3) addOrReplaceRoad('asphalt', x, 33, Math.PI / 2);
-      for (let z = -18; z <= 27; z += 3) {
-        addOrReplaceRoad('paving', 0, z, 0);
-        addOrReplaceRoad('paving', 3, z, 0);
-      }
-      for (const px of [-9, -6, -3]) addOrReplaceRoad('paving', px, -18, 0);
-
-      // 8. Guru & Siswa SD Mutu (Seragam otomatis mengikuti hari ini)
-      addCharacter('teacher', 'Pak Fatur', -2.5, -11, 0x15803d, { uniform: getTodayUniformConfig().teacher, acc: 'glasses', hairIdx: 1 });
-      addCharacter('student', 'Salman', 2.0, 21, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'book', hairIdx: 0 });
-      addCharacter('student', 'Syifa', -5.0, -10, null, { uniform: getTodayUniformConfig().student, acc: 'hijab', item: 'book', hairIdx: 1 });
-      addCharacter('student', 'Bayu', 1.5, -14, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'bottle', hairIdx: 2 });
-      addCharacter('student', 'Nafis', -10.0, -16, null, { uniform: getTodayUniformConfig().student, acc: 'glasses', item: 'none', hairIdx: 0 });
-      addCharacter('student', 'Rara', 2.5, 4, null, { uniform: getTodayUniformConfig().student, acc: 'hijab', item: 'ball', hairIdx: 1 });
-      addCharacter('student', 'Rayyan', -5.0, 4, null, { uniform: getTodayUniformConfig().student, acc: 'hat', item: 'ball', hairIdx: 1 });
+      applyWorldData(DENAH_AWAL);
     }
 
     function loadWorld() {
@@ -4470,7 +4505,7 @@
       POLL_DETIK: 60,       // memuat ulang data sheet tiap N detik
       SIMULASI_DETIK: 7     // kecepatan mode demo
     };
-    const KELAS_BANGUNAN = { 1: 'b_north_1', 2: 'b_north_2', 3: 'b_north_3', 4: 'b_west_north', 5: 'b_2f_base', 6: 'b_west_front' };
+    const KELAS_BANGUNAN = { 1: 'b_north_1', 2: 'b_north_2', 3: 'b_north_3', 4: 'b_west_north', 5: 'b_2f_base', 6: 'b_1795440180955_mhnr' };
     const ABSEN_WARNA = { H: 0x22c55e, D: 0xa855f7, I: 0xf59e0b, S: 0x3b82f6, A: 0xef4444 };
     const WARNA_BELUM = 0x64748b;
     const IKON_BINTANG = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path fill="#facc15" stroke="#b45309" stroke-width="1" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9z"/></svg>';
@@ -4551,8 +4586,9 @@
       // Murid: penampilan mengikuti jenis kelamin dari sheet. Jilbab hanya untuk perempuan.
       let detail = null;
       if (role === 'student') {
+        // Semua murid perempuan berkerudung (hijab, sebagian pakai kacamata)
         const acc = d.jk === 'P'
-          ? ['hijab', 'hijab', 'hijab_glasses', 'hat', 'glasses', 'none'][Math.floor(Math.random() * 6)]
+          ? (Math.random() < 0.5 ? 'hijab' : 'hijab_glasses')
           : ['hat', 'glasses', 'none'][Math.floor(Math.random() * 3)];
         detail = {
           uniform: seragamMurid(),
@@ -4562,8 +4598,9 @@
       }
       if (role === 'teacher') {
         // Guru: jilbab hanya untuk guru perempuan (jk = P dari sheet). Tanpa data jk, tidak diberi jilbab.
+        // Semua guru perempuan berkerudung
         const acc = d.jk === 'P'
-          ? ['hijab', 'hijab', 'hijab_glasses', 'glasses', 'none'][Math.floor(Math.random() * 5)]
+          ? (Math.random() < 0.5 ? 'hijab' : 'hijab_glasses')
           : ['glasses', 'none'][Math.floor(Math.random() * 2)];
         detail = { uniform: seragamGuru(), acc, hairIdx: Math.floor(Math.random() * 3) };
       }
