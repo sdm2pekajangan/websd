@@ -4650,9 +4650,20 @@
     // Guru belum absen menunggu di gerbang; murid belum setor menunggu di depan kelasnya.
     // Yang sudah absen/setor (atau status belum diketahui) berkeliling seperti biasa.
     const GERBANG_PUSAT = { x: 1, z: 22 };
+    // Menjelajah: ambil beberapa titik acak di seluruh halaman, pilih yang paling jauh dari posisi sekarang
+    function duniaJelajah(ch) {
+      let terbaik = null, jarakTerbaik = -1;
+      for (let k = 0; k < 8; k++) {
+        const x = -25 + Math.random() * 35, z = -12 + Math.random() * 35;
+        if (isPointBlocked(x, z, 0.6)) continue;
+        const jarak = Math.hypot(x - ch.x, z - ch.z);
+        if (jarak > jarakTerbaik) { jarakTerbaik = jarak; terbaik = { x, z }; }
+      }
+      return terbaik || pickRandomWalkPoint(ch.x, ch.z);
+    }
     function duniaTitikJalan(ch) {
       const tahan = ch.setor === 'belum' && (ch.role === 'teacher' || ch.role === 'student');
-      if (!tahan) return pickRandomWalkPoint(ch.x, ch.z);
+      if (!tahan) return Math.random() < 0.8 ? duniaJelajah(ch) : pickRandomWalkPoint(ch.x, ch.z);
       let pusat = GERBANG_PUSAT, r = 1.6;
       if (ch.role === 'student') {
         const b = state.buildings.find(q => q.id === KELAS_BANGUNAN[ch.kelas]);
