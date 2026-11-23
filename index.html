@@ -4461,7 +4461,7 @@
     // 14. DUNIA TERHUBUNG DATA SHEET (aksi "dunia" di Gerbang)
     // ==========================================
     const DUNIA = {
-      API_URL: 'https://script.google.com/macros/s/AKfycbwoFDqMkCY9KRmH0mRZ--saBEmyGpF4_2lW8ioewN80PpZpvXp0BJLuoasSPf5RPSCP/exec',          // URL Web App Gerbang (berakhiran /exec). Kosong = mode demo.
+      API_URL: 'https://script.google.com/macros/s/AKfycbwoFDqMkCY9KRmH0mRZ--saBEmyGpF4_2lW8ioewN80PpZpvXp0BJLuoasSPf5RPSCP/exec', // URL Web App Gerbang. Kosong = mode demo.
       POLL_DETIK: 60,       // memuat ulang data sheet tiap N detik
       SIMULASI_DETIK: 7     // kecepatan mode demo
     };
@@ -4494,97 +4494,10 @@
     function dnEsc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function duniaTokenBaca() { try { return sessionStorage.getItem('dunia_token') || ''; } catch (e) { return ''; } }
 
-    // Papan panel di pojok kanan atas (isi data + formulir masuk guru)
-    const duniaCss = document.createElement('style');
-    duniaCss.textContent = `
-      .dunia-board{position:fixed;top:110px;right:12px;width:262px;max-height:calc(100vh - 140px);overflow:auto;z-index:20;padding:12px 14px;font-size:12px;line-height:1.45}
-      .dunia-board h3{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:6px}
-      .dunia-board .chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:rgba(148,163,184,.18);margin-bottom:6px}
-      .dunia-board .chip.on{background:rgba(34,197,94,.2)}
-      .dunia-board .chip.off{background:rgba(239,68,68,.18)}
-      .dunia-board .chip.demo{background:rgba(250,204,21,.25)}
-      .dunia-board .bar{height:6px;border-radius:4px;background:rgba(148,163,184,.25);overflow:hidden;margin:4px 0 6px}
-      .dunia-board .bar i{display:block;height:100%;background:linear-gradient(90deg,#facc15,#22c55e);transition:width .6s}
-      .dunia-board .list{margin:4px 0 8px;color:#475569}
-      .dunia-board .list span{display:inline-block;margin:1px 3px 1px 0;padding:1px 6px;border-radius:6px;background:rgba(148,163,184,.16)}
-      .dunia-board .mini{font-size:11px;color:#64748b}
-      .dunia-board form{display:grid;gap:5px;margin-top:8px}
-      .dunia-board input{padding:6px 8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;background:#fff;color:#0f172a}
-      .dunia-board .dn-btn{padding:6px 8px;border-radius:8px;border:0;background:#0f766e;color:#fff;font:inherit;cursor:pointer}
-      .char-name .dn-badge{display:inline-flex;vertical-align:middle;margin-left:4px}
-      .char-name .dn-badge svg{width:12px;height:12px;display:block}
-      .dunia-board .dn-toggle{display:none;width:100%;margin-bottom:6px}
-      .char-tag.dn-jauh .char-name > span:not(.dn-badge){display:none}
-      @media (max-width:960px){
-        .dunia-board{top:auto;bottom:96px;left:12px;right:12px;width:auto;max-height:34vh}
-        .dunia-board .dn-toggle{display:block}
-        .dunia-board.kecil #dn-isi,.dunia-board.kecil #dn-masuk{display:none}
-        .dunia-board.kecil{top:auto;bottom:auto;left:auto;right:12px;top:118px;width:auto;max-height:none;padding:0;background:none;box-shadow:none;border:0}
-        .dunia-board.kecil .dn-toggle{width:auto;margin:0;padding:6px 10px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-      }
-    `;
-    document.head.appendChild(duniaCss);
-    const boardEl = document.createElement('div');
-    boardEl.id = 'dunia-board';
-    boardEl.className = 'hud-panel dunia-board';
-    boardEl.innerHTML = '<button class="dn-btn dn-toggle" id="dn-toggle" type="button" aria-expanded="true">Sembunyikan papan</button><div id="dn-isi"></div><div id="dn-masuk"></div>';
-    if (window.matchMedia('(max-width: 960px)').matches) boardEl.classList.add('kecil');
-    const tombolPapan = boardEl.querySelector('#dn-toggle');
-    function duniaPapanToggle() {
-      const kecil = boardEl.classList.toggle('kecil');
-      tombolPapan.textContent = kecil ? 'Tampilkan papan hari ini' : 'Sembunyikan papan';
-      tombolPapan.setAttribute('aria-expanded', String(!kecil));
-    }
-    tombolPapan.onclick = duniaPapanToggle;
-    if (boardEl.classList.contains('kecil')) tombolPapan.textContent = 'Tampilkan papan hari ini';
-    document.body.appendChild(boardEl);
 
-    function duniaGambarPapan() {
-      const j = dunia.data, el = document.getElementById('dn-isi');
-      const chip = {
-        memuat: '<span class="chip">Memuat...</span>',
-        live: '<span class="chip on">Tersambung ke sheet</span>',
-        demo: '<span class="chip demo">Mode demo (belum tersambung)</span>',
-        offline: '<span class="chip off">Offline, menampilkan data terakhir</span>'
-      }[dunia.mode] || '';
-      let h = `<h3>${IKON_CENTANG_BESAR} Hari ini</h3>${chip}`;
-      if (!j) h += '<p class="mini">Menunggu data...</p>';
-      else if (!j.terbuka) h += '<p class="mini">Status setor dan absen disembunyikan untuk pengunjung. Guru dapat masuk di bawah untuk melihatnya.</p>';
-      else {
-        const murid = j.murid, sudah = murid.filter(m => m.setor === 'lancar' || m.setor === 'ulang').length;
-        const belum = murid.filter(m => m.setor === 'belum');
-        const pct = murid.length ? Math.round(sudah / murid.length * 100) : 0;
-        h += `<div class="mini">Murid sudah setor</div><div class="bar"><i style="width:${pct}%"></i></div>`;
-        h += `<p style="margin:0 0 4px"><b>${sudah}</b> dari ${murid.length} murid</p>`;
-        h += `<div class="list">${belum.length ? belum.slice(0, 14).map(m => `<span>${dnEsc(m.nama)}${m.kelas ? ' · ' + m.kelas : ''}</span>`).join('') + (belum.length > 14 ? `<span>+${belum.length - 14} lagi</span>` : '') : 'Semua murid sudah setor atau absen hari ini'}</div>`;
-        const absen = j.guru.filter(g => g.absen).length, gBelum = j.guru.filter(g => !g.absen);
-        const pctG = j.guru.length ? Math.round(absen / j.guru.length * 100) : 0;
-        h += `<div class="mini">Guru sudah absen</div><div class="bar"><i style="width:${pctG}%"></i></div>`;
-        h += `<p style="margin:0 0 4px"><b>${absen}</b> dari ${j.guru.length} guru</p>`;
-        h += `<div class="list">${gBelum.length ? gBelum.map(g => `<span>${dnEsc(g.panggilan)}</span>`).join('') : 'Semua guru sudah absen'}</div>`;
-        h += `<div class="mini">Penanda: bintang emas = setor lancar, bintang perak = perlu diulang, abu-abu = belum setor. Lampu hijau, ungu, kuning, biru, merah = hadir, dinas, izin, sakit, alpa. Lampu abu-abu = belum absen.</div>`;
-      }
-      el.innerHTML = h;
-    }
-
-    function duniaGambarMasuk() {
-      const el = document.getElementById('dn-masuk');
-      if (!DUNIA.API_URL) { el.innerHTML = '<p class="mini">Mode demo. Isi DUNIA.API_URL untuk menyambung ke sheet.</p>'; return; }
-      let nama = ''; try { nama = sessionStorage.getItem('dunia_nama') || ''; } catch (e) {}
-      if (duniaTokenBaca()) {
-        el.innerHTML = `<p class="mini">Masuk sebagai ${dnEsc(nama || 'guru')}. Status lengkap terlihat.</p><button class="dn-btn" id="dn-keluar" type="button">Keluar</button>`;
-        el.querySelector('#dn-keluar').onclick = duniaKeluar;
-        return;
-      }
-      el.innerHTML = `<form id="dn-form"><label class="mini" for="dn-id">Kode guru, untuk melihat status lengkap</label><input id="dn-id" name="username" placeholder="mis. G07" autocomplete="username" required><label class="mini" for="dn-pin">PIN</label><input id="dn-pin" name="password" type="password" inputmode="numeric" autocomplete="current-password" required><button class="dn-btn" type="submit">Masuk</button><span class="mini" id="dn-msg" role="status"></span></form>`;
-      el.querySelector('#dn-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const msg = document.getElementById('dn-msg');
-        msg.textContent = 'Memeriksa...';
-        try { await duniaMasuk(document.getElementById('dn-id').value.trim(), document.getElementById('dn-pin').value); }
-        catch (err) { msg.textContent = err.message || 'Gagal masuk'; }
-      };
-    }
+    // Papan "Hari ini" sudah dihapus. Fungsi ini dibiarkan kosong agar pemanggilannya tidak error.
+    function duniaGambarPapan() {}
+    function duniaGambarMasuk() {}
 
     async function duniaMasuk(id, pin) {
       const r = await fetch(DUNIA.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'guru_login', id, pin }) });
@@ -4642,6 +4555,13 @@
           hairIdx: Math.floor(Math.random() * 3)
         };
       }
+      if (role === 'teacher') {
+        // Guru: jilbab hanya untuk guru perempuan (jk = P dari sheet). Tanpa data jk, tidak diberi jilbab.
+        const acc = d.jk === 'P'
+          ? ['hijab', 'hijab', 'hijab_glasses', 'glasses', 'none'][Math.floor(Math.random() * 5)]
+          : ['glasses', 'none'][Math.floor(Math.random() * 2)];
+        detail = { uniform: seragamGuru(), acc, hairIdx: Math.floor(Math.random() * 3) };
+      }
       addCharacter(role, role === 'student' ? (d.nama || 'Murid') : (d.panggilan || d.nama || 'Guru'), x, z, null, detail);
       const ch = state.characters[state.characters.length - 1];
       ch.linked = true;
@@ -4674,6 +4594,13 @@
       const u = state.studentUniform;
       if (u === 'random') return ['merah_putih', 'batik_hijau', 'hw'][Math.floor(Math.random() * 3)];
       if (!u || u === 'auto') return getTodayUniformConfig().student;
+      return u;
+    }
+
+    function seragamGuru() {
+      const u = state.teacherStyle;
+      if (u === 'random') { const k = Object.keys(TEACHER_STYLE_CATALOG); return k[Math.floor(Math.random() * k.length)]; }
+      if (!u || u === 'auto') return getTodayUniformConfig().teacher;
       return u;
     }
 
@@ -4794,7 +4721,7 @@
           return { id: 'S' + String(i + 1).padStart(3, '0'), nama: n, kelas: (i % 6) + 1, jk: i % 2 ? 'P' : 'L', setor: r < 0.06 ? 'tidak' : (r < 0.45 ? (Math.random() < 0.8 ? 'lancar' : 'ulang') : 'belum') };
         }),
         guru: SIM_GURU.map((p, i) => ({
-          id: 'GS' + String(i + 1).padStart(2, '0'), nama: p, panggilan: p,
+          id: 'GS' + String(i + 1).padStart(2, '0'), nama: p, panggilan: p, jk: p.startsWith('Bu') ? 'P' : 'L',
           absen: Math.random() < 0.4 ? { sd: 'H', sp: '', masuk: '06:4' + Math.floor(Math.random() * 9), pulang: '', ket: '' } : null
         }))
       };
