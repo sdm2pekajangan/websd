@@ -900,7 +900,7 @@
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 400);
     camera.position.set(16, 26, 46);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -4996,6 +4996,486 @@
     renderSubPanel();
     animate();
     duniaMulai();
+	// ==========================================
+    // 17. TEASER STUDIO & AUTO VIDEO RECORDER
+    // ==========================================
+    (function initTeaserStudio() {
+      const TS_DURATION = 43.0;
+      const ts = {
+        playing: false,
+        recording: false,
+        ratio: '16:9',
+        music: true,
+        t: 0,
+        lastMs: 0,
+        triggered: new Set(),
+        savedState: null,
+        tempProp: null,
+        recorder: null,
+        chunks: [],
+        audioCtx: null,
+        audioTimer: null,
+        audioDest: null
+      };
+
+      // --- UI Launcher & Bar Kontrol ---
+      const launcher = document.createElement('button');
+      launcher.id = 'ts-launcher';
+      launcher.type = 'button';
+      launcher.innerHTML = '▶ Buat Video Teaser';
+      launcher.style.cssText = 'position:fixed;bottom:14px;left:14px;z-index:35;border:none;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:9px 15px;border-radius:999px;font:700 12px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(37,99,235,0.4);';
+      document.body.appendChild(launcher);
+
+      const panel = document.createElement('div');
+      panel.id = 'ts-panel';
+      panel.style.cssText = 'position:fixed;bottom:56px;left:14px;z-index:36;display:none;flex-direction:column;gap:8px;padding:12px 14px;border-radius:16px;background:rgba(15,23,42,0.92);color:#f8fafc;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.18);width:270px;font:600 12px/1.3 system-ui,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,0.35);';
+      panel.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:800;font-size:13px;">🎬 Teaser Studio (43s)</span>
+          <button id="ts-close" style="border:none;background:rgba(255,255,255,0.15);color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;">&times;</button>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <select id="ts-ratio" style="flex:1;padding:6px 8px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#fff;font-size:11.5px;font-weight:700;">
+            <option value="16:9">16:9 Landscape (HD)</option>
+            <option value="9:16">9:16 Reels / TikTok</option>
+          </select>
+          <button id="ts-music" style="padding:6px 10px;border-radius:8px;border:none;background:#0f766e;color:#fff;font-size:11.5px;font-weight:700;cursor:pointer;">Musik: ON</button>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button id="ts-play" style="flex:1;padding:8px;border-radius:9px;border:none;background:#2563eb;color:#fff;font-weight:800;cursor:pointer;">▶ Preview</button>
+          <button id="ts-rec" style="flex:1;padding:8px;border-radius:9px;border:none;background:#dc2626;color:#fff;font-weight:800;cursor:pointer;">● Rekam Video</button>
+        </div>
+        <div id="ts-status" style="font-size:11px;color:#94a3b8;">Siap memutar &amp; merekam fitur SD Mutu 3D.</div>
+      `;
+      document.body.appendChild(panel);
+
+      // Canvas Overlay Layar & Canvas Offscreen Perekam
+      const overlay = document.createElement('canvas');
+      overlay.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:32;display:none;';
+      document.body.appendChild(overlay);
+      const ovCtx = overlay.getContext('2d');
+
+      const recCanvas = document.createElement('canvas');
+      const recCtx = recCanvas.getContext('2d');
+
+      const stopBtn = document.createElement('button');
+      stopBtn.textContent = '■ Hentikan Teaser';
+      stopBtn.style.cssText = 'position:fixed;top:14px;right:14px;z-index:45;display:none;border:none;background:rgba(220,38,38,0.92);color:#fff;padding:8px 14px;border-radius:999px;font:700 12px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+      document.body.appendChild(stopBtn);
+
+      // --- Keyframe Kamera & Babak Cerita ---
+      const SHOTS = [
+        { t: 0.0,  pos: [30, 34, 48],   tgt: [-2, 1.5, 4] },
+        { t: 6.5,  pos: [10, 7.5, 38],  tgt: [0, 2.2, 20] },
+        { t: 14.0, pos: [2.5, 4.2, 16], tgt: [-3, 2.2, -2] },
+        { t: 18.5, pos: [10, 10.5, -2], tgt: [-3.8, 2.2, -14] },
+        { t: 22.5, pos: [6, 8.5, -3],   tgt: [-2, 1.8, -7] },
+        { t: 26.5, pos: [-7, 7.8, 25],  tgt: [-18, 3.0, 14] },
+        { t: 30.5, pos: [14, 13, 30],   tgt: [-5, 2.0, 2] },
+        { t: 37.5, pos: [-8, 11, 35],   tgt: [-3, 2.0, 0] },
+        { t: 43.0, pos: [24, 38, 44],   tgt: [-4, 1.0, 0] }
+      ];
+
+      const CAPTIONS = [
+        { s: 0.4,  e: 6.2,  tag: 'TUR VIRTUAL SEKOLAH', title: 'SD Mutu Tangkil Kulon 3D', sub: 'Denah Interaktif, Simulasi Warga Sekolah & Manajemen Visual' },
+        { s: 6.8,  e: 13.7, tag: 'TERINTEGRASI DATA LIVE', title: 'Setoran BTQ & Absensi Guru', sub: 'Bintang emas untuk hafalan lancar, indikator kehadiran guru, serta akses cepat BTQ • RPP • INDUK' },
+        { s: 14.3, e: 18.3, tag: 'KEGIATAN BERSAMA', title: 'Hormat Bendera & Upacara', sub: 'Siswa dan guru otomatis berbaris rapi menghadap tiang bendera' },
+        { s: 18.6, e: 22.3, tag: 'PEMBIASAAN ISLAMI', title: 'Shalat Berjamaah Otomatis', sub: 'Membentuk shaf rapi menghadap arah barat dengan gerakan takbir hingga salam' },
+        { s: 22.8, e: 30.2, tag: 'DESAIN & KUSTOM DENAH', title: 'Bangun 2 Lantai & Geser Ruang', sub: 'Tambahkan ruang kelas, pilih model tangga, gambar jalan paving, hingga atur seragam harian otomatis' },
+        { s: 30.8, e: 37.2, tag: 'SUASANA REAL-TIME', title: 'Transisi Siang • Sore • Malam', sub: 'Pencahayaan dinamis dengan jendela kelas menyala saat senja dan malam hari' },
+        { s: 37.6, e: 43.0, tag: 'SD MUTU 3D', title: 'Kelola Sekolah Lebih Hidup', sub: 'Mode Layar Bersih (H) • Export/Import JSON • Tur Sinematik (T)' }
+      ];
+
+      function easeInOut(x) {
+        return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      }
+
+      function rRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
+
+      function drawCover(ctx, src, dw, dh) {
+        const sw = src.width, sh = src.height;
+        if (!sw || !sh) return;
+        const sr = sw / sh, dr = dw / dh;
+        let sx = 0, sy = 0, sW = sw, sH = sh;
+        if (sr > dr) { sW = sh * dr; sx = (sw - sW) / 2; }
+        else { sH = sw / dr; sy = (sh - sH) / 2; }
+        ctx.drawImage(src, sx, sy, sW, sH, 0, 0, dw, dh);
+      }
+
+      function wrapText(ctx, text, x, y, maxW, lineH) {
+        const words = text.split(' ');
+        let line = '', cy = y;
+        for (let i = 0; i < words.length; i++) {
+          const test = line + words[i] + ' ';
+          if (ctx.measureText(test).width > maxW && i > 0) {
+            ctx.fillText(line.trim(), x, cy);
+            line = words[i] + ' ';
+            cy += lineH;
+          } else line = test;
+        }
+        ctx.fillText(line.trim(), x, cy);
+      }
+
+      function drawTeaserGraphics(ctx, w, h, t) {
+        const isPort = h > w;
+        const barH = Math.round(h * (isPort ? 0.09 : 0.08));
+
+        // Letterbox bars + vignette bawah
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.88)';
+        ctx.fillRect(0, 0, w, barH);
+        ctx.fillRect(0, h - barH, w, barH);
+
+        const grad = ctx.createLinearGradient(0, h * 0.55, 0, h - barH);
+        grad.addColorStop(0, 'rgba(2,6,23,0)');
+        grad.addColorStop(1, 'rgba(2,6,23,0.78)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, h * 0.55, w, h * 0.45 - barH);
+
+        // Watermark kecil atas
+        ctx.fillStyle = 'rgba(248, 250, 252, 0.9)';
+        ctx.font = `700 ${Math.round(w * (isPort ? 0.026 : 0.013))}px "Segoe UI", system-ui, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText('SD MUTU TANGKIL KULON 3D', Math.round(w * 0.035), Math.round(barH * 0.62));
+
+        // Recording dot / Timecode
+        ctx.textAlign = 'right';
+        ctx.fillStyle = ts.recording ? '#f87171' : '#94a3b8';
+        const secStr = String(Math.floor(t)).padStart(2, '0');
+        ctx.fillText((ts.recording ? '● REC  ' : '') + `00:${secStr} / 00:${TS_DURATION}`, w - Math.round(w * 0.035), Math.round(barH * 0.62));
+
+        // Caption card aktif
+        const cap = CAPTIONS.find(c => t >= c.s && t <= c.e);
+        if (cap) {
+          const fadeIn = Math.min(1, (t - cap.s) / 0.45);
+          const fadeOut = Math.min(1, (cap.e - t) / 0.45);
+          const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
+          const slide = (1 - alpha) * 18;
+
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          const padX = Math.round(w * 0.045);
+          const boxW = Math.min(w - padX * 2, isPort ? w * 0.9 : w * 0.58);
+          const baseY = h - barH - Math.round(h * (isPort ? 0.21 : 0.22)) + slide;
+
+          // Pill badge
+          const tagFont = Math.round(w * (isPort ? 0.025 : 0.0115));
+          ctx.font = `800 ${tagFont}px "Segoe UI", system-ui, sans-serif`;
+          const pillW = ctx.measureText(cap.tag).width + 26;
+          const pillH = Math.round(tagFont * 1.9);
+          rRect(ctx, padX, baseY, pillW, pillH, pillH / 2);
+          ctx.fillStyle = '#2563eb';
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.fillText(cap.tag, padX + 13, baseY + pillH * 0.68);
+
+          // Title
+          const titleFont = Math.round(w * (isPort ? 0.056 : 0.03));
+          ctx.font = `800 ${titleFont}px "Segoe UI", system-ui, sans-serif`;
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(0,0,0,0.55)';
+          ctx.shadowBlur = 10;
+          ctx.fillText(cap.title, padX, baseY + pillH + titleFont * 1.15);
+
+          // Subtitle
+          const subFont = Math.round(w * (isPort ? 0.032 : 0.0155));
+          ctx.font = `600 ${subFont}px "Segoe UI", system-ui, sans-serif`;
+          ctx.fillStyle = '#e2e8f0';
+          wrapText(ctx, cap.sub, padX, baseY + pillH + titleFont * 1.15 + subFont * 1.45, boxW, subFont * 1.35);
+          ctx.restore();
+        }
+
+        // Progress bar di bawah
+        const prog = Math.min(1, t / TS_DURATION);
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        ctx.fillRect(0, h - 4, w, 4);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(0, h - 4, w * prog, 4);
+      }
+
+      // --- Musik Latar Prosedural Lembut (Web Audio API) ---
+      function startMusic() {
+        if (!ts.music) return null;
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AC();
+          const master = ctx.createGain();
+          master.gain.value = 0.16;
+          master.connect(ctx.destination);
+          const dest = ctx.createMediaStreamDestination();
+          master.connect(dest);
+
+          const scale = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25];
+          const pattern = [0, 2, 4, 5, 4, 2, 3, 1, 0, 4, 5, 7, 5, 4, 2, 0];
+          let step = 0;
+
+          ts.audioCtx = ctx;
+          ts.audioDest = dest;
+          ts.audioTimer = setInterval(() => {
+            if (!ts.playing) return;
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(scale[pattern[step % pattern.length]], now);
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.exponentialRampToValueAtTime(0.45, now + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+            osc.connect(g);
+            g.connect(master);
+            osc.start(now);
+            osc.stop(now + 0.45);
+            step++;
+          }, 360);
+          return dest.stream;
+        } catch {
+          return null;
+        }
+      }
+
+      function stopMusic() {
+        if (ts.audioTimer) { clearInterval(ts.audioTimer); ts.audioTimer = null; }
+        if (ts.audioCtx) { ts.audioCtx.close().catch(() => {}); ts.audioCtx = null; }
+        ts.audioDest = null;
+      }
+
+      function runCue(id, fn) {
+        if (ts.triggered.has(id)) return;
+        ts.triggered.add(id);
+        fn();
+      }
+
+      function stepCues(t) {
+        runCue('init', () => {
+          if (tur.aktif) turBerhenti();
+          if (tur.ikut) turIkutStop();
+          closeInspectCard();
+          closeBuildingCard();
+          toggleHudHidden(true);
+          state.timeMode = 0; applyTimeMode();
+          state.showLabels = true; applyLabelsVisibility();
+          setActivityMode('free');
+
+          // Pastikan suasana ramai jika data belum termuat
+          if (state.characters.filter(c => c.mesh.visible).length < 6) {
+            duniaSimBuat();
+            duniaSimLangkah();
+          }
+        });
+
+        if (t >= 6.8) runCue('greet', () => {
+          const teacher = state.characters.find(c => c.role === 'teacher' && c.mesh.visible);
+          if (teacher) triggerChatBubble(teacher, 'Assalamu\'alaikum! Selamat datang di SD Mutu!');
+        });
+
+        if (t >= 14.0) runCue('ceremony', () => {
+          state.showLabels = false; applyLabelsVisibility();
+          setActivityMode('ceremony');
+        });
+
+        if (t >= 18.5) runCue('prayer', () => {
+          setActivityMode('prayer');
+        });
+
+        if (t >= 22.8) runCue('play_and_build', () => {
+          setActivityMode('play');
+          // Pop-in ruang lantai 2 demo sementara (tidak mengganggu save user)
+          const res = createBuildingMesh('library', 2, 'blue_steel', {});
+          res.mesh.position.set(-20, FLOOR_HEIGHT, 12.9);
+          res.mesh.rotation.y = Math.PI / 2;
+          res.mesh.scale.setScalar(0.05);
+          scene.add(res.mesh);
+          ts.tempProp = { mesh: res.mesh, born: t };
+        });
+
+        if (t >= 30.5) runCue('sunset', () => {
+          state.timeMode = 1; applyTimeMode();
+        });
+
+        if (t >= 34.0) runCue('night', () => {
+          state.timeMode = 2; applyTimeMode();
+        });
+
+        if (t >= 37.5) runCue('outro', () => {
+          state.timeMode = 0; applyTimeMode();
+          setActivityMode('free');
+        });
+      }
+
+      function updateCamera(t) {
+        let a = SHOTS[0], b = SHOTS[SHOTS.length - 1];
+        for (let i = 0; i < SHOTS.length - 1; i++) {
+          if (t >= SHOTS[i].t && t <= SHOTS[i + 1].t) {
+            a = SHOTS[i]; b = SHOTS[i + 1]; break;
+          }
+        }
+        const span = Math.max(0.001, b.t - a.t);
+        const k = easeInOut(Math.min(1, Math.max(0, (t - a.t) / span)));
+        camera.position.set(
+          a.pos[0] + (b.pos[0] - a.pos[0]) * k,
+          a.pos[1] + (b.pos[1] - a.pos[1]) * k,
+          a.pos[2] + (b.pos[2] - a.pos[2]) * k
+        );
+        controls.target.set(
+          a.tgt[0] + (b.tgt[0] - a.tgt[0]) * k,
+          a.tgt[1] + (b.tgt[1] - a.tgt[1]) * k,
+          a.tgt[2] + (b.tgt[2] - a.tgt[2]) * k
+        );
+        controls.update();
+      }
+
+      function loopTeaser(now) {
+        if (!ts.playing) return;
+        const dt = (now - ts.lastMs) / 1000;
+        ts.lastMs = now;
+        ts.t += Math.min(dt, 0.08);
+
+        stepCues(ts.t);
+        updateCamera(ts.t);
+
+        // Animasi pop-in bangunan demo sementara
+        if (ts.tempProp) {
+          const p = Math.min(1, (ts.t - ts.tempProp.born) / 0.45);
+          ts.tempProp.mesh.scale.setScalar(1 - Math.pow(1 - p, 3));
+        }
+
+        // Gambar overlay layar
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const ow = Math.round(window.innerWidth * dpr), oh = Math.round(window.innerHeight * dpr);
+        if (overlay.width !== ow || overlay.height !== oh) { overlay.width = ow; overlay.height = oh; }
+        ovCtx.clearRect(0, 0, ow, oh);
+        drawTeaserGraphics(ovCtx, ow, oh, ts.t);
+
+        // Jika sedang merekam, komposit WebGL + Motion Graphics ke recCanvas
+        if (ts.recording) {
+          drawCover(recCtx, renderer.domElement, recCanvas.width, recCanvas.height);
+          drawTeaserGraphics(recCtx, recCanvas.width, recCanvas.height, ts.t);
+        }
+
+        if (ts.t >= TS_DURATION) {
+          stopTeaser(true);
+          return;
+        }
+        requestAnimationFrame(loopTeaser);
+      }
+
+      function startTeaser(withRecord) {
+        if (ts.playing) return;
+        ts.savedState = {
+          camPos: camera.position.clone(),
+          camTgt: controls.target.clone(),
+          hudHidden: state.hudHidden,
+          timeMode: state.timeMode,
+          showLabels: state.showLabels,
+          activityMode: state.activityMode
+        };
+
+        ts.playing = true;
+        ts.recording = !!withRecord;
+        ts.t = 0;
+        ts.triggered.clear();
+        ts.lastMs = performance.now();
+
+        controls.enabled = false;
+        controls.enableDamping = false;
+        overlay.style.display = 'block';
+        stopBtn.style.display = 'block';
+        panel.style.display = 'none';
+        launcher.style.display = 'none';
+
+        const audioStream = startMusic();
+
+        if (withRecord) {
+          const isPort = ts.ratio === '9:16';
+          recCanvas.width = isPort ? 720 : 1280;
+          recCanvas.height = isPort ? 1280 : 720;
+          ts.chunks = [];
+
+          const vidStream = recCanvas.captureStream(30);
+          if (audioStream) {
+            audioStream.getAudioTracks().forEach(tr => vidStream.addTrack(tr));
+          }
+          const mime = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']
+            .find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
+
+          ts.recorder = new MediaRecorder(vidStream, { mimeType: mime, videoBitsPerSecond: 4500000 });
+          ts.recorder.ondataavailable = (e) => { if (e.data.size > 0) ts.chunks.push(e.data); };
+          ts.recorder.onstop = () => {
+            const blob = new Blob(ts.chunks, { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `teaser-sd-mutu-3d-${ts.ratio.replace(':', 'x')}.webm`;
+            a.click();
+            URL.revokeObjectURL(url);
+            document.getElementById('ts-status').textContent = '✅ Video berhasil direkam & diunduh!';
+          };
+          ts.recorder.start(250);
+        }
+
+        requestAnimationFrame(loopTeaser);
+      }
+
+      function stopTeaser(finished = false) {
+        if (!ts.playing) return;
+        ts.playing = false;
+        stopMusic();
+
+        if (ts.recording && ts.recorder && ts.recorder.state !== 'inactive') {
+          ts.recorder.stop();
+        }
+        ts.recording = false;
+
+        if (ts.tempProp) {
+          scene.remove(ts.tempProp.mesh);
+          ts.tempProp = null;
+        }
+
+        if (ts.savedState) {
+          camera.position.copy(ts.savedState.camPos);
+          controls.target.copy(ts.savedState.camTgt);
+          state.timeMode = ts.savedState.timeMode; applyTimeMode();
+          state.showLabels = ts.savedState.showLabels; applyLabelsVisibility();
+          setActivityMode(ts.savedState.activityMode);
+          toggleHudHidden(ts.savedState.hudHidden);
+        }
+
+        controls.enableDamping = true;
+        controls.enabled = true;
+        controls.update();
+        overlay.style.display = 'none';
+        stopBtn.style.display = 'none';
+        launcher.style.display = 'block';
+        if (finished) panel.style.display = 'flex';
+      }
+
+      // Event listeners UI
+      launcher.onclick = () => {
+        panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+      };
+      document.getElementById('ts-close').onclick = () => { panel.style.display = 'none'; };
+      document.getElementById('ts-ratio').onchange = (e) => { ts.ratio = e.target.value; };
+      document.getElementById('ts-music').onclick = (e) => {
+        ts.music = !ts.music;
+        e.target.textContent = ts.music ? 'Musik: ON' : 'Musik: OFF';
+        e.target.style.background = ts.music ? '#0f766e' : '#475569';
+      };
+      document.getElementById('ts-play').onclick = () => startTeaser(false);
+      document.getElementById('ts-rec').onclick = () => startTeaser(true);
+      stopBtn.onclick = () => stopTeaser(false);
+    })();
   </script>
 </body>
 </html>
