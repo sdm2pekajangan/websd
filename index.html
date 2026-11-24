@@ -5360,6 +5360,10 @@
 
         // Jika sedang merekam, komposit WebGL + Motion Graphics ke recCanvas
         if (ts.recording) {
+          // Render ulang tepat sebelum disalin agar bingkai rekaman tidak kosong (hitam di sebagian HP)
+          renderer.render(scene, camera);
+          recCtx.fillStyle = '#9bd6f0';
+          recCtx.fillRect(0, 0, recCanvas.width, recCanvas.height);
           drawCover(recCtx, renderer.domElement, recCanvas.width, recCanvas.height);
           drawTeaserGraphics(recCtx, recCanvas.width, recCanvas.height, ts.t);
         }
