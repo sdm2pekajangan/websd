@@ -758,6 +758,13 @@
       bike:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5L9 11l4-2 2 3h3"/></svg>',
       toren:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.2"><rect x="7" y="4" width="10" height="8" rx="2"/><line x1="8" y1="12" x2="6" y2="21"/><line x1="16" y1="12" x2="18" y2="21"/><line x1="7" y1="17" x2="17" y2="17"/></svg>',
       flag:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2"><path d="M4 22V3"/><path d="M4 4h14l-2 4 2 4H4" fill="#ef4444" fill-opacity="0.25"/></svg>',
+      mango:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.2"><path d="M12 22v-7"/><circle cx="8" cy="9" r="4.5"/><circle cx="16" cy="9" r="4.5"/><circle cx="12" cy="5" r="3.5"/></svg>',
+      palm:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2"><path d="M12 22c0-6 1-10 2-14"/><path d="M14 8c-3-3-7-2-9 1"/><path d="M14 8c2-4 6-4 8-2"/><path d="M14 8c-1-4 0-6 2-7"/><path d="M14 8c3 1 5 4 4 7"/></svg>',
+      cemara:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.2"><path d="M12 22v-3"/><path d="M12 2l5 7h-3l4 6H6l4-6H7z"/></svg>',
+      bush:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65a30d" stroke-width="2.2"><path d="M4 18h16"/><circle cx="7" cy="13" r="4"/><circle cx="13" cy="11" r="5"/><circle cx="18" cy="14" r="3"/></svg>',
+      hedge:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.2"><rect x="2" y="11" width="20" height="8" rx="3"/><path d="M6 11V9M12 11V8M18 11V9"/></svg>',
+      flower:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2.2"><circle cx="12" cy="8" r="2"/><circle cx="8" cy="11" r="2"/><circle cx="16" cy="11" r="2"/><circle cx="12" cy="13" r="2"/><path d="M12 15v7"/></svg>',
+      grass:       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2"><path d="M6 22L4 11M10 22V8M14 22l1-12M18 22l2-8"/></svg>',
       tree:        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2"><path d="M12 22V10"/><path d="M12 10c-4 0-7-2-8-5 4 0 7 2 8 5z"/><path d="M12 10c4 0 7-2 8-5-4 0-7 2-8 5z"/><path d="M12 7c-3-3-3-5 0-5s3 2 0 5z"/></svg>',
       paving:      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2.2"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>',
       asphalt:     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2"><path d="M5 20L8 4h8l3 16z"/><line x1="12" y1="7" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="17"/></svg>',
@@ -778,6 +785,7 @@
     const ISLAND_LIMIT = 36;
     const ROAD_STEP = 3;
     const FLOOR_HEIGHT = 3.5;
+    const MAX_LANTAI = 4;
 
     const state = {
       mode: 'view',
@@ -825,7 +833,15 @@
       sd_bike_shed:    { cat: 'props', label: 'Parkir Sepeda', icon: 'bike', w: 4.8, d: 3.4, stackable: false },
       sd_toren_wc:     { cat: 'props', label: 'WC & Toren Air', icon: 'toren', w: 4.4, d: 3.8, stackable: false },
       flagpole:        { cat: 'props', label: 'Tiang Bendera', icon: 'flag', w: 2.0, d: 2.0, stackable: false },
-      tree_park:       { cat: 'props', label: 'Pohon Pisang', icon: 'tree', w: 2.8, d: 2.8, stackable: false }
+      tree_park:       { cat: 'props', label: 'Pohon Pisang', icon: 'tree', w: 2.8, d: 2.8, stackable: false },
+      tree_mango:      { cat: 'props', label: 'Pohon Mangga', icon: 'mango', w: 3.2, d: 3.2, stackable: false },
+      tree_palm:       { cat: 'props', label: 'Pohon Kelapa', icon: 'palm', w: 2.4, d: 2.4, stackable: false },
+      tree_cemara:     { cat: 'props', label: 'Pohon Cemara', icon: 'cemara', w: 2.2, d: 2.2, stackable: false },
+      bush_round:      { cat: 'props', label: 'Semak Bulat', icon: 'bush', w: 1.8, d: 1.8, stackable: false },
+      bush_hedge:      { cat: 'props', label: 'Pagar Tanaman', icon: 'hedge', w: 6.0, d: 1.2, stackable: false },
+      bush_flower:     { cat: 'props', label: 'Semak Bunga', icon: 'flower', w: 1.8, d: 1.8, stackable: false },
+      flower_bed:      { cat: 'props', label: 'Bedengan Bunga', icon: 'flower', w: 3.0, d: 1.6, stackable: false },
+      grass_tuft:      { cat: 'props', label: 'Rumput', icon: 'grass', w: 1.4, d: 1.4, stackable: false }
     };
 
     const STAIR_SIDES = { none: 'Tanpa', right: 'Kanan', left: 'Kiri', front: 'Depan', back: 'Belakang' };
@@ -1529,7 +1545,7 @@
           roofGroup.add(awning);
         }
 
-        if (floor === 2) {
+        if (floor >= 2) {
           const corridor = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.2, 0.95), new THREE.MeshStandardMaterial({ color: 0xcbd5e1 }));
           corridor.position.set(0, 0.1, 3.15);
           const pinkParapet = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.88, 0.16), new THREE.MeshStandardMaterial({ color: 0xbe7c89, roughness: 0.8 }));
@@ -1786,6 +1802,106 @@
           leaf.rotation.y = ang;
           leaf.rotation.x = 0.35;
           g.add(leaf);
+        }
+      }
+      else if (type === 'tree_mango') {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 2.2, 7), new THREE.MeshStandardMaterial({ color: 0x78350f }));
+        trunk.position.y = 1.1;
+        g.add(trunk);
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x3f7d20, flatShading: true });
+        [[0, 3.1, 0, 1.25], [-0.9, 2.7, 0.4, 0.95], [0.85, 2.8, -0.3, 1.0], [0.2, 3.9, 0.3, 0.9], [-0.3, 2.6, -0.8, 0.85]].forEach(([x, y, z, r]) => {
+          const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), leafMat);
+          leaves.position.set(x, y, z);
+          g.add(leaves);
+        });
+      }
+      else if (type === 'tree_palm') {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.17, 4.6, 7), new THREE.MeshStandardMaterial({ color: 0x92400e }));
+        trunk.position.set(0.1, 2.3, 0);
+        trunk.rotation.z = -0.08;
+        g.add(trunk);
+        const frondMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
+        for (let i = 0; i < 7; i++) {
+          const ang = (i / 7) * Math.PI * 2;
+          const frond = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 2.2), frondMat);
+          frond.position.set(0.1 + Math.sin(ang) * 1.0, 4.6, Math.cos(ang) * 1.0);
+          frond.rotation.y = ang;
+          frond.rotation.x = 0.45;
+          g.add(frond);
+        }
+        const kelapaMat = new THREE.MeshStandardMaterial({ color: 0x854d0e });
+        for (let i = 0; i < 3; i++) {
+          const buah = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), kelapaMat);
+          buah.position.set(0.1 + (i - 1) * 0.12, 4.45, 0.1);
+          g.add(buah);
+        }
+      }
+      else if (type === 'tree_cemara') {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.16, 1.2, 6), new THREE.MeshStandardMaterial({ color: 0x57534e }));
+        trunk.position.y = 0.6;
+        g.add(trunk);
+        const coneMat = new THREE.MeshStandardMaterial({ color: 0x14532d, flatShading: true });
+        [[1.1, 1.8, 1.6], [0.85, 1.6, 2.55], [0.6, 1.4, 3.3]].forEach(([r, h, y]) => {
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 8), coneMat);
+          cone.position.y = y;
+          g.add(cone);
+        });
+      }
+      else if (type === 'bush_round') {
+        const bushMat = new THREE.MeshStandardMaterial({ color: 0x4d7c0f, flatShading: true });
+        [[0, 0.5, 0, 0.6], [-0.45, 0.4, 0.25, 0.45], [0.45, 0.42, -0.2, 0.48]].forEach(([x, y, z, r]) => {
+          const s = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), bushMat);
+          s.position.set(x, y, z);
+          g.add(s);
+        });
+      }
+      else if (type === 'bush_hedge') {
+        const hedgeMat = new THREE.MeshStandardMaterial({ color: 0x15803d, flatShading: true });
+        const body = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.9, 1.0), hedgeMat);
+        body.position.y = 0.45;
+        const top = new THREE.Mesh(new THREE.BoxGeometry(6.02, 0.12, 1.02), new THREE.MeshStandardMaterial({ color: 0x84cc16 }));
+        top.position.y = 0.95;
+        g.add(body, top);
+      }
+      else if (type === 'bush_flower') {
+        const bushMat = new THREE.MeshStandardMaterial({ color: 0x4d7c0f, flatShading: true });
+        [[0, 0.5, 0, 0.6], [-0.4, 0.42, 0.3, 0.45], [0.42, 0.44, -0.25, 0.48]].forEach(([x, y, z, r]) => {
+          const s = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), bushMat);
+          s.position.set(x, y, z);
+          g.add(s);
+        });
+        const bungaCol = [0xf472b6, 0xef4444, 0xfde047, 0xffffff];
+        for (let i = 0; i < 12; i++) {
+          const a = i * 2.4;
+          const rr = 0.25 + (i % 3) * 0.15;
+          const bunga = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 4), new THREE.MeshStandardMaterial({ color: bungaCol[i % bungaCol.length] }));
+          bunga.position.set(Math.cos(a) * rr, 0.7 + (i % 2) * 0.18, Math.sin(a) * rr);
+          g.add(bunga);
+        }
+      }
+      else if (type === 'flower_bed') {
+        const tanah = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.2, 1.6), new THREE.MeshStandardMaterial({ color: 0x78350f }));
+        tanah.position.y = 0.1;
+        g.add(tanah);
+        const bungaCol = [0xf472b6, 0xfacc15, 0xef4444, 0xa855f7, 0xffffff];
+        for (let ix = 0; ix < 5; ix++) {
+          for (let iz = 0; iz < 2; iz++) {
+            const bunga = new THREE.Mesh(new THREE.SphereGeometry(0.16, 7, 5), new THREE.MeshStandardMaterial({ color: bungaCol[(ix + iz * 2) % bungaCol.length] }));
+            bunga.position.set(-1.2 + ix * 0.6, 0.38, -0.4 + iz * 0.8);
+            g.add(bunga);
+          }
+        }
+      }
+      else if (type === 'grass_tuft') {
+        const rumputMat = [0x4ade80, 0x22c55e, 0x84cc16].map(c => new THREE.MeshStandardMaterial({ color: c }));
+        for (let i = 0; i < 9; i++) {
+          const a = i * 2.1;
+          const r = 0.1 + (i % 3) * 0.14;
+          const helai = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.7 + (i % 2) * 0.25, 3), rumputMat[i % 3]);
+          helai.position.set(Math.cos(a) * r, 0.35, Math.sin(a) * r);
+          helai.rotation.z = Math.cos(a) * 0.25;
+          helai.rotation.x = Math.sin(a) * 0.25;
+          g.add(helai);
         }
       }
       else if (type === 'flagpole') {
@@ -2065,6 +2181,39 @@
       return true;
     }
 
+    // ===== Tumpukan lantai (maksimal MAX_LANTAI) =====
+    function lantaiY(f) { return (f - 1) * FLOOR_HEIGHT; }
+    function anakDari(b) { return state.buildings.find(o => o.parentId === b.id); }
+    function akarTumpukan(b) {
+      let cur = b;
+      while (cur && cur.floor >= 2 && cur.parentId) {
+        const par = state.buildings.find(o => o.id === cur.parentId);
+        if (!par) break;
+        cur = par;
+      }
+      return cur;
+    }
+    function puncakTumpukan(b, excludeIds = []) {
+      let cur = b;
+      let nxt;
+      while ((nxt = state.buildings.find(o => o.parentId === cur.id && !excludeIds.includes(o.id)))) cur = nxt;
+      return cur;
+    }
+    function keturunanTumpukan(b) {
+      const list = [];
+      let cur = b;
+      let nxt;
+      while ((nxt = anakDari(cur))) { list.push(nxt); cur = nxt; }
+      return list;
+    }
+    function segarkanAtapTangga() {
+      state.buildings.forEach(b => {
+        if (!BUILDING_CATALOG[b.type].stackable || !b.roofGroup) return;
+        b.roofGroup.visible = !anakDari(b);
+        applyBuildingStairs(b);
+      });
+    }
+
     function findMagneticSnap(type, rawX, rawZ, rotation, excludeIds = []) {
       const info = BUILDING_CATALOG[type];
       if (!info.stackable && type !== 'stairs') return null;
@@ -2098,7 +2247,7 @@
     function rebuildBuildingMesh(b) {
       scene.remove(b.mesh);
       const { mesh, roofGroup, stairsContainer } = createBuildingMesh(b.type, b.floor, b.stairStyle, b.extraOpts || {});
-      mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
+      mesh.position.set(b.x, lantaiY(b.floor), b.z);
       mesh.rotation.y = b.rotation;
       mesh.userData = { entityType: 'building', entityId: b.id };
       scene.add(mesh);
@@ -2111,7 +2260,7 @@
       b.halfW = dims.halfW;
       b.halfD = dims.halfD;
 
-      if (b.floor === 1) {
+      if (BUILDING_CATALOG[b.type].stackable) {
         const hasChild = state.buildings.some(other => other.parentId === b.id);
         b.roofGroup.visible = !hasChild;
         applyBuildingStairs(b);
@@ -2121,7 +2270,7 @@
     function addBuilding(type, x, z, rotation = 0, floor = 1, parentId = null, customId = null, animatePop = true, stairSide = 'right', stairStyle = null, extraOpts = {}) {
       const usedStyle = stairStyle || state.defaultStairStyle;
       const { mesh, roofGroup, stairsContainer } = createBuildingMesh(type, floor, usedStyle, extraOpts);
-      const yPos = floor === 2 ? FLOOR_HEIGHT : 0;
+      const yPos = lantaiY(floor);
       mesh.position.set(x, yPos, z);
       mesh.rotation.y = rotation;
 
@@ -2137,13 +2286,7 @@
       };
       state.buildings.push(buildingObj);
 
-      if (floor === 2 && parentId) {
-        const parent = state.buildings.find(b => b.id === parentId);
-        if (parent) {
-          parent.roofGroup.visible = false;
-          applyBuildingStairs(parent);
-        }
-      }
+      if (parentId) segarkanAtapTangga();
 
       if (animatePop) {
         mesh.scale.set(0.1, 0.1, 0.1);
@@ -2194,7 +2337,7 @@
     }
 
     // --- DETEKSI POLIGON & ANTI-TABRAK TEMBOK ---
-    const WALKABLE_TYPES = ['court'];
+    const WALKABLE_TYPES = ['court', 'grass_tuft', 'flower_bed'];
 
     function isInsidePolygon(px, pz, poly = SCHOOL_POLYGON) {
       let inside = false;
@@ -2436,20 +2579,11 @@
         scene.remove(b.mesh);
         state.buildings = state.buildings.filter(item => item.id !== entityId);
 
-        if (b.floor === 2 && b.parentId) {
-          const parent = state.buildings.find(item => item.id === b.parentId);
-          if (parent) {
-            parent.roofGroup.visible = true;
-            applyBuildingStairs(parent);
-          }
-        }
-        if (b.floor === 1) {
-          const child = state.buildings.find(item => item.parentId === b.id);
-          if (child) {
-            scene.remove(child.mesh);
-            state.buildings = state.buildings.filter(item => item.id !== child.id);
-          }
-        }
+        keturunanTumpukan(b).forEach(k => {
+          scene.remove(k.mesh);
+          state.buildings = state.buildings.filter(item => item.id !== k.id);
+        });
+        segarkanAtapTangga();
         if (state.inspectedBuildingId === entityId || (b.parentId && state.inspectedBuildingId === b.parentId)) {
           closeBuildingCard();
         }
@@ -2522,12 +2656,13 @@
         const mv = state.moving;
         const { mesh, roofGroup, stairsContainer } = createBuildingMesh(mv.building.type, 1, mv.building.stairStyle, mv.building.extraOpts || {});
         stairsContainer.visible = false;
-        if (mv.child) {
-          roofGroup.visible = false;
-          const childRes = createBuildingMesh(mv.child.type, 2, mv.child.stairStyle, mv.child.extraOpts || {});
-          childRes.mesh.position.y = FLOOR_HEIGHT;
-          mesh.add(childRes.mesh);
-        }
+        if (mv.kids.length) roofGroup.visible = false;
+        mv.kids.forEach((k, i) => {
+          const res = createBuildingMesh(k.type, i + 2, k.stairStyle, k.extraOpts || {});
+          res.mesh.position.y = lantaiY(i + 2);
+          if (i < mv.kids.length - 1) res.roofGroup.visible = false;
+          mesh.add(res.mesh);
+        });
         mesh.traverse(obj => {
           if (obj.isMesh) {
             obj.castShadow = false;
@@ -2556,10 +2691,10 @@
     }
 
     function pickBuildingToMove(b) {
-      const child = b.floor === 1 ? state.buildings.find(item => item.parentId === b.id) : null;
+      const kids = keturunanTumpukan(b);
       state.moving = {
         building: b,
-        child,
+        kids,
         origX: b.x,
         origZ: b.z,
         origRot: b.rotation,
@@ -2569,15 +2704,11 @@
       };
 
       b.mesh.visible = false;
-      if (child) child.mesh.visible = false;
+      kids.forEach(k => { k.mesh.visible = false; });
 
-      if (b.floor === 2 && b.parentId) {
-        const oldParent = state.buildings.find(item => item.id === b.parentId);
+      if (b.parentId) {
         b.parentId = null;
-        if (oldParent) {
-          oldParent.roofGroup.visible = true;
-          applyBuildingStairs(oldParent);
-        }
+        segarkanAtapTangga();
       }
 
       refreshGhostMesh();
@@ -2596,19 +2727,12 @@
       b.floor = mv.origFloor;
       b.parentId = mv.origParentId;
 
-      b.mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
+      b.mesh.position.set(b.x, lantaiY(b.floor), b.z);
       b.mesh.rotation.y = b.rotation;
       b.mesh.visible = true;
 
-      if (mv.child) mv.child.mesh.visible = true;
-
-      if (b.floor === 2 && b.parentId) {
-        const oldParent = state.buildings.find(item => item.id === b.parentId);
-        if (oldParent) {
-          oldParent.roofGroup.visible = false;
-          applyBuildingStairs(oldParent);
-        }
-      }
+      mv.kids.forEach(k => { k.mesh.visible = true; });
+      segarkanAtapTangga();
 
       state.moving = null;
       refreshGhostMesh();
@@ -2620,44 +2744,25 @@
       const mv = state.moving;
       const p = pendingBuildPlacement;
       const b = mv.building;
-      const floorChanged = b.floor !== p.floor;
-
       b.x = p.x;
       b.z = p.z;
       b.rotation = p.rotation;
       b.floor = p.floor;
       b.parentId = p.parentId;
+      rebuildBuildingMesh(b);
 
-      if (floorChanged) {
-        rebuildBuildingMesh(b);
-      } else {
-        b.mesh.position.set(b.x, b.floor === 2 ? FLOOR_HEIGHT : 0, b.z);
-        b.mesh.rotation.y = b.rotation;
-        const dims = getRotatedDims(b.type, b.rotation);
-        b.halfW = dims.halfW;
-        b.halfD = dims.halfD;
-        b.mesh.visible = true;
-      }
-
-      if (mv.child) {
-        mv.child.x = p.x;
-        mv.child.z = p.z;
-        mv.child.rotation = p.rotation;
-        mv.child.mesh.position.set(p.x, FLOOR_HEIGHT, p.z);
-        mv.child.mesh.rotation.y = p.rotation;
-        const cDims = getRotatedDims(mv.child.type, p.rotation);
-        mv.child.halfW = cDims.halfW;
-        mv.child.halfD = cDims.halfD;
-        mv.child.mesh.visible = true;
-      }
-
-      if (b.floor === 2 && b.parentId) {
-        const newParent = state.buildings.find(item => item.id === b.parentId);
-        if (newParent) {
-          newParent.roofGroup.visible = false;
-          applyBuildingStairs(newParent);
-        }
-      }
+      // Tumpukan di atasnya ikut pindah dan naik sesuai lantai baru
+      let bawah = b;
+      mv.kids.forEach(k => {
+        k.x = p.x;
+        k.z = p.z;
+        k.rotation = p.rotation;
+        k.floor = bawah.floor + 1;
+        k.parentId = bawah.id;
+        rebuildBuildingMesh(k);
+        bawah = k;
+      });
+      segarkanAtapTangga();
 
       state.moving = null;
       refreshGhostMesh();
@@ -2685,14 +2790,14 @@
       pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     }
 
-    function evaluatePlacementPreview(type, rot, excludeIds = [], allowStacking = true) {
+    function evaluatePlacementPreview(type, rot, excludeIds = [], allowStacking = true, lantaiIkut = 0) {
       if (!ghostMesh) return;
       raycaster.setFromCamera(pointer, camera);
 
       const isStackable = BUILDING_CATALOG[type].stackable && allowStacking;
       if (isStackable) {
         const stackCandidates = state.buildings.filter(b =>
-          b.floor === 1 && !excludeIds.includes(b.id) && BUILDING_CATALOG[b.type].stackable
+          !excludeIds.includes(b.id) && BUILDING_CATALOG[b.type].stackable
         );
         const hits = raycaster.intersectObjects(stackCandidates.map(b => b.mesh), true)
           .filter(h => isObjectVisible(h.object));
@@ -2700,22 +2805,21 @@
         if (hits.length > 0) {
           let curr = hits[0].object;
           while (curr && !curr.userData.entityId) curr = curr.parent;
-          const baseB = state.buildings.find(b => b.id === curr?.userData.entityId);
-          if (baseB) {
-            const hasFloor2 = state.buildings.some(b => b.parentId === baseB.id && !excludeIds.includes(b.id));
+          const hitB = state.buildings.find(b => b.id === curr?.userData.entityId);
+          if (hitB) {
+            const top = puncakTumpukan(hitB, excludeIds);
+            const lantaiBaru = top.floor + 1;
             ghostMesh.visible = true;
-            if (!hasFloor2) {
-              ghostMesh.position.set(baseB.x, FLOOR_HEIGHT + 0.04, baseB.z);
-              ghostMesh.rotation.y = baseB.rotation;
+            ghostMesh.position.set(top.x, lantaiY(lantaiBaru) + 0.04, top.z);
+            ghostMesh.rotation.y = top.rotation;
+            if (lantaiBaru + lantaiIkut <= MAX_LANTAI) {
               ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostStackMat; });
-              pendingBuildPlacement = { x: baseB.x, z: baseB.z, rotation: baseB.rotation, floor: 2, parentId: baseB.id, valid: true };
-              hintBanner.textContent = `[Lantai 2] Klik untuk taruh di atas ${BUILDING_CATALOG[baseB.type].label}!`;
+              pendingBuildPlacement = { x: top.x, z: top.z, rotation: top.rotation, floor: lantaiBaru, parentId: top.id, valid: true };
+              hintBanner.textContent = `[Lantai ${lantaiBaru}] Klik untuk taruh di atas ${BUILDING_CATALOG[top.type].label}!`;
             } else {
-              ghostMesh.position.set(baseB.x, FLOOR_HEIGHT * 2 + 0.04, baseB.z);
-              ghostMesh.rotation.y = baseB.rotation;
               ghostMesh.traverse(o => { if (o.isMesh) o.material = ghostInvalidMat; });
               pendingBuildPlacement = { valid: false };
-              hintBanner.textContent = 'Maksimal bangunan 2 lantai!';
+              hintBanner.textContent = `Maksimal ${MAX_LANTAI} lantai!`;
             }
             return;
           }
@@ -2747,7 +2851,7 @@
           hintBanner.textContent = `Geser ${BUILDING_CATALOG[type].label} ke lokasi baru • [R] Putar • [Esc] Batal`;
         } else {
           hintBanner.textContent = isStackable
-            ? 'Dekatkan ke sisi gedung agar menempel, atau arahkan ke atas gedung untuk Lantai 2 • [R] Putar'
+            ? 'Dekatkan ke sisi gedung agar menempel, atau arahkan ke atas gedung untuk lantai berikutnya • [R] Putar'
             : 'Klik area pulau untuk menempatkan pagar/objek • [R] Putar';
         }
       }
@@ -2777,8 +2881,8 @@
         hintBanner.textContent = 'Mode Geser Ruang • Klik gedung/ruang/pagar mana saja untuk memindahkannya';
       } else {
         const mv = state.moving;
-        const excludeIds = mv.child ? [mv.building.id, mv.child.id] : [mv.building.id];
-        evaluatePlacementPreview(mv.building.type, mv.curRot, excludeIds, !mv.child);
+        const excludeIds = [mv.building.id, ...mv.kids.map(k => k.id)];
+        evaluatePlacementPreview(mv.building.type, mv.curRot, excludeIds, true, mv.kids.length);
       }
     }
 
@@ -2887,9 +2991,7 @@
           while (curr && !curr.userData.entityId) curr = curr.parent;
           if (curr) {
             let b = state.buildings.find(item => item.id === curr.userData.entityId);
-            if (b && b.floor === 2 && b.parentId) {
-              b = state.buildings.find(item => item.id === b.parentId);
-            }
+            if (b) b = akarTumpukan(b);
             if (b && BUILDING_CATALOG[b.type].stackable) {
               const childF2 = state.buildings.find(item => item.parentId === b.id);
               if (childF2) {
@@ -3052,13 +3154,13 @@
         const fp = getFlagpoleTarget();
         // Barisan menghadap tiang bendera dari sisi selatan tiang
         const ordered = [...others, ...teachers];
-        const cols = 4;
+        const cols = 6;
         const startZ = fp.z + 4.0;
         let idx = 0;
 
         // Guru berdiri di samping kanan barisan menghadap tiang bendera
         teachers.forEach((t, ti) => {
-          const sx = fp.x + 4.8;
+          const sx = fp.x + 8.0;
           const sz = startZ + ti * 1.8;
           const yaw = Math.atan2(fp.x - sx, fp.z - sz);
           t.formationSlot = { x: sx, z: sz, yaw, arrived: false };
@@ -3067,7 +3169,7 @@
 
         others.forEach((c) => {
           let placed = false;
-          while (!placed && idx < 40) {
+          while (!placed && idx < 70) {
             const row = Math.floor(idx / cols);
             const col = idx % cols;
             const sx = fp.x - 2.7 + col * 1.8;
@@ -3420,7 +3522,7 @@
           if (info.cat !== state.buildCategory) continue;
           const btn = document.createElement('button');
           btn.className = `item-btn ${state.selectedBuilding === key ? 'selected' : ''}`;
-          btn.innerHTML = `<div class="item-icon">${SVG_ICONS[info.icon]}</div><span class="item-label">${info.label}${info.stackable ? ' (2Lt)' : ''}</span>`;
+          btn.innerHTML = `<div class="item-icon">${SVG_ICONS[info.icon]}</div><span class="item-label">${info.label}${info.stackable ? ' (' + MAX_LANTAI + 'Lt)' : ''}</span>`;
           btn.onclick = () => {
             state.selectedBuilding = key;
             renderSubPanel();
@@ -3473,7 +3575,7 @@
 
           const info = document.createElement('div');
           info.style.cssText = 'font-size:12.5px;font-weight:800;color:#0f172a;margin-right:4px;';
-          info.textContent = `Memindahkan: ${label}${mv.child ? ' (2 Lt)' : ''}`;
+          info.textContent = `Memindahkan: ${label}${mv.kids.length ? ' (' + (mv.kids.length + 1) + ' Lt)' : ''}`;
           row.appendChild(info);
 
           const rotBtn = document.createElement('button');
@@ -3775,9 +3877,9 @@
         applyLabelsVisibility();
       }
       const f1 = data.buildings.filter(b => (b.floor || 1) === 1);
-      const f2 = data.buildings.filter(b => b.floor === 2);
+      const atas = data.buildings.filter(b => (b.floor || 1) >= 2).sort((x, y) => x.floor - y.floor);
       f1.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 1, null, b.id, false, b.stairSide || 'right', b.stairStyle || 'blue_steel', b.extraOpts || {}));
-      f2.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, 2, b.parentId, b.id, false, 'none', 'blue_steel', b.extraOpts || {}));
+      atas.forEach(b => addBuilding(b.type, b.x, b.z, b.rotation, b.floor, b.parentId, b.id, false, b.stairSide || 'right', b.stairStyle || 'blue_steel', b.extraOpts || {}));
       (data.roads || []).forEach(r => addOrReplaceRoad(r.type, r.x, r.z, r.rotation));
 
       // Otomatis sesuaikan seragam karakter tersimpan dengan jadwal hari ini
@@ -3838,15 +3940,15 @@
         {"id": "b_north_3", "type": "classroom", "x": 3.8, "z": -24.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
         {"id": "b_toren", "type": "sd_toren_wc", "x": -21.5, "z": -13, "rotation": 4.71238898038469, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
         {"id": "b_flag", "type": "flagpole", "x": -3.8, "z": -15.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684399_ceut", "type": "tree_park", "x": -22, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684400_wihq", "type": "tree_park", "x": -14, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684401_uxfw", "type": "tree_park", "x": -4, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684402_50mu", "type": "tree_park", "x": 6, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684402_hjtq", "type": "tree_park", "x": 15, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684402_lzbj", "type": "tree_park", "x": -23, "z": -22, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684404_g1ko", "type": "tree_park", "x": 15, "z": -20, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684405_gd4g", "type": "tree_park", "x": 13, "z": -10, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
-        {"id": "b_1795352684405_6iy7", "type": "tree_park", "x": 11, "z": 0, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684399_ceut", "type": "tree_mango", "x": -22, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684400_wihq", "type": "tree_palm", "x": -14, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684401_uxfw", "type": "tree_cemara", "x": -4, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_50mu", "type": "tree_mango", "x": 6, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_hjtq", "type": "tree_palm", "x": 15, "z": -30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_lzbj", "type": "tree_cemara", "x": -23, "z": -22, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684404_g1ko", "type": "tree_mango", "x": 15, "z": -20, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_gd4g", "type": "tree_palm", "x": 13, "z": -10, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_6iy7", "type": "tree_cemara", "x": 11, "z": 0, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
         {"id": "b_1795440180955_mhnr", "type": "classroom", "x": -20, "z": 20.5, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
         {"id": "b_1795440207472_19n7", "type": "classroom", "x": -20, "z": 20.5, "rotation": 1.5707963267948966, "floor": 2, "parentId": "b_1795440180955_mhnr", "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
         {"id": "b_1795440461171_qcft", "type": "sd_front_fence", "x": -4, "z": 33.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
