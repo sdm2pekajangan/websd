@@ -5269,7 +5269,7 @@
           setActivityMode('free');
 
           // Pastikan suasana ramai jika data belum termuat
-          if (state.characters.filter(c => c.mesh.visible).length < 6) {
+          if (!DUNIA.API_URL && state.characters.filter(c => c.mesh.visible).length < 6) {
             duniaSimBuat();
             duniaSimLangkah();
           }
