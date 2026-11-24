@@ -639,6 +639,7 @@
       <input type="file" id="file-import" accept=".json,application/json" style="display:none" />
 
       <button class="btn-top" id="btn-time">Siang</button>
+      <button class="btn-top" id="btn-hujan">Cerah</button>
       <button class="btn-top" id="btn-labels">Label: ON</button>
       <button class="btn-top dark" id="btn-hide-hud" title="Sembunyikan semua menu (Hotkey: H)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -3794,6 +3795,7 @@
         windowMaterials.forEach(m => m.emissiveIntensity = 1.1);
         btnTime.textContent = 'Malam';
       }
+      aplikasiCuaca();
     }
     btnTime.addEventListener('click', () => {
       state.timeMode = (state.timeMode + 1) % 3;
@@ -4298,6 +4300,71 @@
       }, Math.min(1, dt * 10));
     }
 
+    // ==========================================
+    // 18. CUACA: HUJAN DERAS (garis hujan + langit kelabu + cahaya redup)
+    // ==========================================
+    const CUACA_BASE_BG = [0x9bd6f0, 0xfb923c, 0x0f172a];
+    const CUACA_BASE_DIR = [1.45, 1.3, 0.5];
+    const CUACA_BASE_HEMI = [0.9, 0.65, 0.35];
+    const RAIN_N = 2600;
+    const RAIN_ANGIN = 2.4;
+    const RAIN_TINGGI = 34;
+    const rainPos = new Float32Array(RAIN_N * 6);
+    const rainKecepatan = new Float32Array(RAIN_N);
+    const rainGeo = new THREE.BufferGeometry();
+    rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+    const rainLines = new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: 0xbfdbfe, transparent: true, opacity: 0.5, depthWrite: false }));
+    rainLines.frustumCulled = false;
+    rainLines.visible = false;
+    scene.add(rainLines);
+
+    function jatuhkanTetesBaru(o, tinggiAcak) {
+      const x = (Math.random() - 0.5) * 80;
+      const z = (Math.random() - 0.5) * 80;
+      const y = tinggiAcak ? Math.random() * RAIN_TINGGI : RAIN_TINGGI + Math.random() * 6;
+      rainPos[o] = x; rainPos[o + 1] = y; rainPos[o + 2] = z;
+      rainPos[o + 3] = x + RAIN_ANGIN * 0.06; rainPos[o + 4] = y - 0.9; rainPos[o + 5] = z;
+    }
+    for (let i = 0; i < RAIN_N; i++) {
+      jatuhkanTetesBaru(i * 6, true);
+      rainKecepatan[i] = 24 + Math.random() * 14;
+    }
+
+    function updateHujan(dt) {
+      if (!rainLines.visible) return;
+      for (let i = 0; i < RAIN_N; i++) {
+        const o = i * 6;
+        const turun = rainKecepatan[i] * dt;
+        rainPos[o + 1] -= turun; rainPos[o + 4] -= turun;
+        rainPos[o] += RAIN_ANGIN * dt; rainPos[o + 3] += RAIN_ANGIN * dt;
+        if (rainPos[o + 4] < 0) jatuhkanTetesBaru(o, false);
+      }
+      rainGeo.attributes.position.needsUpdate = true;
+    }
+
+    function aplikasiCuaca() {
+      const hujan = !!state.hujan;
+      const m = state.timeMode;
+      const warna = new THREE.Color(CUACA_BASE_BG[m]);
+      if (hujan) warna.lerp(new THREE.Color(0x3f4b5c), 0.85);
+      scene.background.copy(warna);
+      scene.fog.color.copy(warna);
+      scene.fog.density = hujan ? 0.011 : 0.0045;
+      dirLight.intensity = CUACA_BASE_DIR[m] * (hujan ? 0.45 : 1);
+      hemiLight.intensity = CUACA_BASE_HEMI[m] * (hujan ? 0.75 : 1);
+      for (const c of clouds) {
+        c.mesh.traverse(o => { if (o.isMesh && o.material && o.material.color) o.material.color.setHex(hujan ? 0x94a3b8 : 0xffffff); });
+      }
+    }
+
+    const btnHujan = document.getElementById('btn-hujan');
+    btnHujan.addEventListener('click', () => {
+      state.hujan = !state.hujan;
+      rainLines.visible = state.hujan;
+      btnHujan.textContent = state.hujan ? 'Hujan Deras' : 'Cerah';
+      aplikasiCuaca();
+    });
+
     const clock = new THREE.Clock();
     const tempVec = new THREE.Vector3();
 
@@ -4310,6 +4377,8 @@
         c.mesh.position.x += c.speed * dt;
         if (c.mesh.position.x > 85) c.mesh.position.x = -85;
       }
+
+      updateHujan(dt);
 
       if (flagClothMesh) {
         const pos = flagClothMesh.geometry.attributes.position;
