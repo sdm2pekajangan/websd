@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Petualangan Matematika GASING (SD Kelas 1 - 6)</title>
+  <style>
+    :root {
+      --bg: #f4f8ff;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 18px;
+      --shadow: 0 10px 25px rgba(37, 99, 235, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #eff6ff 0%, #fefce8 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(120deg, #1d4ed8, #2563eb, #0ea5e9);
+      color: white;
+      padding: 16px 20px;
+      box-shadow: 0 4px 16px rgba(29, 78, 216, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: #fbbf24;
+      color: #1e293b;
+      font-weight: 900;
+      font-size: 24px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 0 #d97706;
+    }
+
+    .brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.3px; }
+    .brand p { font-size: 0.82rem; opacity: 0.92; }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      border: 1px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+    .toggle-btn.active {
+      background: #fbbf24;
+      color: #1e293b;
+      border-color: #fbbf24;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 22px auto 48px;
+      padding: 0 16px;
+    }
+
+    /* Grade Selector */
+    .grade-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 780px) {
+      .grade-tabs { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .grade-tab {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+    }
+
+    .grade-tab:hover { transform: translateY(-2px); border-color: #93c5fd; }
+    .grade-tab.active {
+      background: linear-gradient(180deg, #2563eb, #1d4ed8);
+      color: white;
+      border-color: #1d4ed8;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+    }
+    .grade-tab .g-num { font-size: 1.05rem; font-weight: 800; display: block; }
+    .grade-tab .g-sub { font-size: 0.72rem; opacity: 0.82; }
+
+    /* Banner */
+    .gasing-banner {
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      border-left: 6px solid var(--secondary);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .gasing-banner h2 { font-size: 1.15rem; color: #0f172a; margin-bottom: 4px; }
+    .gasing-banner p { font-size: 0.9rem; color: var(--muted); }
+    .badge-gasing {
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    /* Levels Grid */
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+
+    .level-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .level-card:hover:not(.locked) {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .level-card.locked {
+      opacity: 0.65;
+      background: #f8fafc;
+    }
+
+    .level-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .level-chip {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .stars-display { font-size: 1.1rem; letter-spacing: 2px; }
+    .level-card h3 { font-size: 1.08rem; margin-bottom: 6px; color: #0f172a; }
+    .level-card p { font-size: 0.86rem; color: var(--muted); margin-bottom: 16px; }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:active { transform: translateY(2px); }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary {
+      background: #f59e0b;
+      color: #1e293b;
+      box-shadow: 0 4px 0 #d97706;
+    }
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 0 #059669;
+    }
+    .btn-outline {
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .btn-disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    /* Workspace View */
+    .workspace {
+      display: none;
+      background: white;
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border);
+    }
+    .workspace.active { display: block; }
+
+    .ws-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f1f5f9;
+      margin-bottom: 18px;
+    }
+
+    .phase-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 640px) {
+      .phase-tabs { grid-template-columns: 1fr; }
+    }
+
+    .phase-tab {
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: #f8fafc;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .phase-tab.active {
+      background: #eff6ff;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .stage-box {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 18px;
+      padding: 20px;
+      min-height: 290px;
+    }
+
+    /* Visual Manipulatives */
+    .mascot-tip {
+      background: #fef9c3;
+      border: 2px solid #fde047;
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.92rem;
+    }
+    .mascot-avatar {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .blocks-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    .block-group {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+      min-width: 120px;
+    }
+    .dots-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      max-width: 170px;
+      margin: 8px auto;
+    }
+    .dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3b82f6;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+    }
+    .dot.orange { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+    .dot.red { background: #ef4444; }
+    .ten-rod {
+      width: 24px;
+      height: 76px;
+      border-radius: 6px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #3b82f6,
+        #3b82f6 6px,
+        #1d4ed8 7px,
+        #1d4ed8 8px
+      );
+      display: inline-block;
+      margin: 2px;
+    }
+
+    /* Step-by-step board */
+    .chalkboard {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 18px;
+      padding: 22px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.4);
+    }
+    .math-big {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-align: center;
+      margin: 10px 0 18px;
+      color: #fde047;
+    }
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step-item {
+      background: rgba(255,255,255,0.08);
+      border-left: 4px solid #38bdf8;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      animation: fadeSlide 0.25s ease;
+    }
+    .step-item.highlight {
+      border-left-color: #4ade80;
+      background: rgba(74, 222, 128, 0.14);
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Quiz Mencongak */
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .question-box {
+      background: white;
+      border: 2px solid #dbeafe;
+      border-radius: 18px;
+      padding: 24px 18px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .question-text {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .question-sub { font-size: 0.9rem; color: var(--muted); }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    @media (max-width: 520px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s;
+      color: #1e293b;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+    .option-btn.correct {
+      background: #d1fae5;
+      border-color: #10b981;
+      color: #065f46;
+    }
+    .option-btn.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .feedback-box {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 0.94rem;
+      display: none;
+    }
+    .feedback-box.ok { background: #ecfdf5; border: 2px solid #6ee7b7; color: #065f46; display: block; }
+    .feedback-box.no { background: #fef2f2; border: 2px solid #fca5a5; color: #991b1b; display: block; }
+
+    /* Interactive widgets */
+    .song-card {
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      border: 2px solid #fcd34d;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .pair-btn {
+      padding: 8px 14px;
+      margin: 4px;
+      border-radius: 10px;
+      border: 2px solid #f59e0b;
+      background: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .pair-btn.active { background: #f59e0b; color: white; }
+
+    .card-pn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 1.2rem;
+      margin: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .card-pos { background: white; color: #0f172a; border: 2px solid #1e293b; }
+    .card-neg { background: #1e293b; color: white; border: 2px solid #0f172a; }
+
+    .frac-bar {
+      display: flex;
+      height: 36px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #1e293b;
+      max-width: 340px;
+      margin: 10px auto;
+    }
+    .frac-part { flex: 1; border-right: 1px solid #94a3b8; background: #e2e8f0; }
+    .frac-part.filled { background: #3b82f6; }
+    .frac-part:last-child { border-right: none; }
+
+    .result-card {
+      text-align: center;
+      padding: 26px 16px;
+      background: linear-gradient(180deg, #eff6ff, #ffffff);
+      border-radius: 18px;
+      border: 2px solid #bfdbfe;
+    }
+    .result-stars { font-size: 2.6rem; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo-badge">G</div>
+      <div>
+        <h1>Matematika GASING SD (Kelas 1–6)</h1>
+        <p>Belajar Gampang, Asyik &amp; Menyenangkan ala Prof. Yohanes Surya</p>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="pill">⭐ <span id="totalStars">0</span> Bintang</div>
+      <div class="pill">⚡ <span id="totalXP">0</span> XP</div>
+      <button class="toggle-btn" id="soundToggle" onclick="toggleSound()">🔊 Suara: ON</button>
+      <button class="toggle-btn" id="unlockToggle" onclick="toggleUnlockAll()">🔒 Mode: Berlevel</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Home Map View -->
+  <div id="mapView">
+    <div class="grade-tabs" id="gradeTabs"></div>
+
+    <div class="gasing-banner">
+      <div>
+        <span class="badge-gasing">PRINSIP GASING: KONKRET → ABSTRAK → MENCONGAK</span>
+        <h2 id="gradeHeading">Kelas 1 SD: Fondasi Angka &amp; Pasangan 10</h2>
+        <p id="gradeDesc">Mulai dari benda nyata, lagu pasangan 10, hingga penjumlahan cepat tanpa takut angka!</p>
+      </div>
+      <button class="btn btn-outline" onclick="resetProgress()">🔄 Reset Progres</button>
+    </div>
+
+    <div class="levels-grid" id="levelsGrid"></div>
+  </div>
+
+  <!-- Interactive Level Workspace -->
+  <div id="workspaceView" class="workspace">
+    <div class="ws-header">
+      <div>
+        <span class="level-chip" id="wsBadge">Kelas 1 • Level 1</span>
+        <h2 id="wsTitle" style="margin-top:6px;">Judul Materi</h2>
+      </div>
+      <button class="btn btn-outline" onclick="closeWorkspace()">⬅ Kembali ke Peta Level</button>
+    </div>
+
+    <div class="phase-tabs">
+      <button class="phase-tab active" id="tabConcret" onclick="switchPhase('concrete')">1. 🧱 Konkret &amp; Visual</button>
+      <button class="phase-tab" id="tabAbstract" onclick="switchPhase('abstract')">2. 💡 Trik Asyik GASING</button>
+      <button class="phase-tab" id="tabQuiz" onclick="switchPhase('quiz')">3. 🚀 Tantangan Mencongak</button>
+    </div>
+
+    <div class="stage-box" id="stageContainer"></div>
+  </div>
+</main>
+
+<script>
+// ==================== AUDIO SYNTHESIZER (NO EXTERNAL FILES) ====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function playSound(type) {
+  if (!state.soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'click') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.start(now); osc.stop(now + 0.08);
+    } else if (type === 'correct') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.09);
+      osc.frequency.setValueAtTime(783.99, now + 0.18);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.start(now); osc.stop(now + 0.35);
+    } else if (type === 'wrong') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.setValueAtTime(175, now + 0.12);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now); osc.stop(now + 0.25);
+    } else if (type === 'win') {
+      const notes = [523, 659, 784, 1046];
+      notes.forEach((f, idx) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'triangle';
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.setValueAtTime(f, now + idx * 0.1);
+        g.gain.setValueAtTime(0.12, now + idx * 0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.3);
+        o.start(now + idx * 0.1); o.stop(now + idx * 0.1 + 0.3);
+      });
+    }
+  } catch (e) {}
+}
+
+// ==================== HELPERS ====================
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a || 1;
+}
+function lcm(a, b) {
+  return (a * b) / gcd(a, b);
+}
+function makeChoices(correctVal, genWrongFn) {
+  const correctStr = String(correctVal);
+  const set = new Set([correctStr]);
+  let attempts = 0;
+  while (set.size < 4 && attempts < 60) {
+    attempts++;
+    const w = String(genWrongFn(attempts));
+    if (w !== 'NaN' && w !== 'undefined' && w.trim() !== '') set.add(w);
+  }
+  let fallback = 1;
+  while (set.size < 4) {
+    set.add(isNaN(Number(correctVal)) ? `${correctStr} (${fallback})` : String(Number(correctVal) + fallback));
+    fallback++;
+  }
+  return shuffle([...set]);
+}
+
+// ==================== CURRICULUM DATA (KELAS 1 - 6) ====================
+const GRADES = [
+  {
+    grade: 1,
+    short: 'Angka & +/−',
+    title: 'Kelas 1 SD: Mengenal Angka, Lagu Pasangan 10 & Titik Kritis',
+    desc: 'Mengenal bilangan secara konkret, menghafal Pasangan 10 lewat lagu, dan menaklukkan penjumlahan/pengurangan di bawah 20!'
+  },
+  {
+    grade: 2,
+    short: 'Lirik Kanan & ×÷',
+    title: 'Kelas 2 SD: Berhitung Dari Depan (Lirik Kanan, Coret, Kali & Bagi)',
+    desc: 'Di metode GASING, semua hitungan dimulai dari depan (kiri ke kanan)! Belajar teknik Lirik Kanan, Cara Coret, dan Pembagian Bersisa.'
+  },
+  {
+    grade: 3,
+    short: 'Ratusan & Pecahan',
+    title: 'Kelas 3 SD: Bilangan 3 Angka, Perkalian Lanjut & Pecahan',
+    desc: 'Menjumlahkan ratusan dengan cepat, mengalikan 2 angka × 1 angka dari depan, membagi bersisa, dan mengenal pecahan.'
+  },
+  {
+    grade: 4,
+    short: 'KPK-FPB & Geometri',
+    title: 'Kelas 4 SD: Perkalian Silang, KPK-FPB & Bangun Datar',
+    desc: 'Menguasai perkalian 2 angka × 2 angka, FPB-KPK dengan cara pagar asyik, penjumlahan pecahan, serta luas bangun datar.'
+  },
+  {
+    grade: 5,
+    short: 'Bulat, Desimal & JKW',
+    title: 'Kelas 5 SD: Bilangan Negatif, Desimal, Kecepatan & Volume',
+    desc: 'Memahami bilangan negatif memakai Kartu Hitam-Putih, operasi pecahan & desimal, segitiga JKW, serta volume balok.'
+  },
+  {
+    grade: 6,
+    short: 'Master SD',
+    title: 'Kelas 6 SD: Akar Pangkat, Persen, Lingkaran & Statistika',
+    desc: 'Trik kuadrat cepat, menghitung diskon persen dengan mudah, keliling/luas lingkaran, serta Mean, Median, dan Modus.'
+  }
+];
+
+const LEVELS = [
+  // ---------- KELAS 1 ----------
+  {
+    id: '1-1', grade: 1, num: 1,
+    title: 'Mengenal Bilangan 1–10',
+    desc: 'Menghubungkan jumlah benda nyata (konkret) ke simbol angka (abstrak).',
+    tip: 'Dalam metode GASING, anak selalu melihat benda nyatanya dulu sebelum menulis angkanya!',
+    concreteType: 'count10',
+    examples: [
+      {
+        label: 'Contoh: 7 Apel Nyata',
+        expr: '🍎🍎🍎🍎🍎🍎🍎  =  7',
+        steps: [
+          'Langkah 1 (Konkret): Sentuh dan hitung apel satu per satu: 1, 2, 3, 4, 5, 6, 7.',
+          'Langkah 2 (Kelompok 5): Bayangkan 5 apel (seperti jari 1 tangan) ditambah 2 apel lagi.',
+          'Langkah 3 (Abstrak): Tulis lambang bilangannya yaitu angka 7!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const n = rand(2, 10);
+      const emojis = ['🍎', '⭐', '🎈', '🍓', '⚽'];
+      const em = emojis[rand(0, emojis.length - 1)];
+      return {
+        q: `${em.repeat(n)}`,
+        sub: 'Ada berapa banyak benda di atas?',
+        answer: String(n),
+        choices: makeChoices(n, () => rand(1, 10)),
+        explain: `Hitung dengan pola tangan: kelompok 5 dulu + sisanya = ${n}.`
+      };
+    }
+  },
+  {
+    id: '1-2', grade: 1, num: 2,
+    title: 'Lagu & Pasangan 10',
+    desc: 'Kunci emas GASING: SS, DD, TT, EE, LL agar penjumlahan selalu cepat!',
+    tip: 'Nyanyikan lagu GASING: "SS (Satu-Sembilan), DD (Dua-Delapan), TT (Tiga-Tujuh), EE (Empat-Enam), LL (Lima-Lima) — semua jumlah sepuluh!"',
+    concreteType: 'pair10',
+    examples: [
+      {
+        label: 'Pasangan 10: 3 dan 7 (TT)',
+        expr: '3 + 7 = 10',
+        steps: [
+          'Ingat huruf depannya: T = Tiga, T = Tujuh (TT)!',
+          'Jika kamu punya 3 bola, butuh 7 bola lagi supaya penuh 1 kotak isi 10.',
+          'Pasangan lengkap: 1↔9 (SS), 2↔8 (DD), 3↔7 (TT), 4↔6 (EE), 5↔5 (LL).'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(1, 9);
+      const ans = 10 - a;
+      const codes = {1:'SS (Satu-Sembilan)',2:'DD (Dua-Delapan)',3:'TT (Tiga-Tujuh)',4:'EE (Empat-Enam)',5:'LL (Lima-Lima)',6:'EE (Enam-Empat)',7:'TT (Tujuh-Tiga)',8:'DD (Delapan-Dua)',9:'SS (Sembilan-Satu)'};
+      return {
+        q: `${a} + ___ = 10`,
+        sub: 'Berapa pasangan 10 dari angka ini?',
+        answer: String(ans),
+        choices: makeChoices(ans, () => rand(1, 9)),
+        explain: `Ingat lagu GASING "${codes[a]}": ${a} + ${ans} = 10!`
+      };
+    }
+  },
+  {
+    id: '1-3', grade: 1, num: 3,
+    title: 'Penjumlahan di Bawah 20',
+    desc: 'Menaklukkan titik kritis GASING menggunakan jembatan Pasangan 10.',
+    tip: 'Jangan menghitung maju pakai jari satu-satu! Lengkapi dulu jadi 10 memakai Pasangan 10.',
+    concreteType: 'add20',
+    examples: [
+      {
+        label: '8 + 5 = ?',
+        expr: '8 + 5  →  (8 + 2) + 3 = 13',
+        steps: [
+          'Lihat angka yang lebih besar: 8. Pasangan 10 dari 8 adalah 2.',
+          'Ambil 2 dari angka 5 (5 dipecah menjadi 2 dan 3).',
+          '8 + 2 menjadi 10! Tinggal tambahkan sisanya 3 → 10 + 3 = 13. AHA!'
+        ]
+      },
+      {
+        label: '7 + 6 = ?',
+        expr: '7 + 6  →  (7 + 3) + 3 = 13',
+        steps: [
+          'Pasangan 10 dari 7 adalah 3 (ingat TT: Tiga-Tujuh!).',
+          'Ambil 3 dari 6, maka 6 tersisa 3.',
+          '7 + 3 = 10, ditambah sisa 3 = 13!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(6, 9);
+      const b = rand(11 - a, 9);
+      const ans = a + b;
+      const need = 10 - a;
+      const rem = b - need;
+      return {
+        q: `${a} + ${b} = ?`,
+        sub: 'Gunakan Pasangan 10 untuk mengisi jadi 10 dulu!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-3, 3)),
+        explain: `Pasangan 10 dari ${a} adalah ${need}. Pecah ${b} menjadi ${need} + ${rem}. Jadi (${a}+${need}) + ${rem} = 10 + ${rem} = ${ans}.`
+      };
+    }
+  },
+  {
+    id: '1-4', grade: 1, num: 4,
+    title: 'Pengurangan Dasar (Tukar 10)',
+    desc: 'Menghitung pengurangan belasan seperti 14 − 8 dengan Pasangan 10.',
+    tip: 'Jika satuan tidak cukup dikurang, pecah 10-nya dulu: 10 dikurang pengurang (pakai Pasangan 10!), lalu tambah sisanya!',
+    concreteType: 'sub20',
+    examples: [
+      {
+        label: '14 − 8 = ?',
+        expr: '14 − 8  →  (10 − 8) + 4 = 6',
+        steps: [
+          '14 terdiri dari 10 (1 puluhan) dan 4 (satuan).',
+          '4 dikurang 8 tidak cukup. Kurangkan 10 dengan 8 dulu!',
+          'Ingat DD (Dua-Delapan): 10 − 8 = 2.',
+          'Gabungkan 2 dengan sisa 4 → 2 + 4 = 6!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const sub = rand(5, 9);
+      const ones = rand(1, sub - 1);
+      const total = 10 + ones;
+      const ans = total - sub;
+      const pair = 10 - sub;
+      return {
+        q: `${total} − ${sub} = ?`,
+        sub: 'Kurangkan 10 dulu, lalu tambahkan satuannya!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => rand(2, 9)),
+        explain: `10 − ${sub} = ${pair} (Pasangan 10). Lalu ${pair} + ${ones} = ${ans}!`
+      };
+    }
+  },
+
+  // ---------- KELAS 2 ----------
+  {
+    id: '2-1', grade: 2, num: 1,
+    title: 'Penjumlahan 2 Angka "Lirik Kanan"',
+    desc: 'Trik terkenal GASING: hitung puluhan dari depan, lalu lirik kanan!',
+    tip: 'Mulai dari DEPAN (puluhan). Jika jumlah satuan di kanan ≥ 10, tambah 1 ke puluhan, lalu tulis ekor satuannya!',
+    concreteType: 'tensUnits',
+    examples: [
+      {
+        label: '27 + 35 = ?',
+        expr: '27 + 35  =  62',
+        steps: [
+          'Mulai dari DEPAN (puluhan): 2 + 3 = 5.',
+          'LIRIK KANAN (satuan): 7 + 5 = 12 (lebih dari/sama dengan 10!).',
+          'Karena ≥ 10, puluhan 5 langsung ditambah 1 menjadi 6.',
+          'Ambil ekor satuan dari 12 yaitu 2. Hasilnya: 62!'
+        ]
+      },
+      {
+        label: '48 + 26 = ?',
+        expr: '48 + 26  =  74',
+        steps: [
+          'Puluhan: 4 + 2 = 6.',
+          'Lirik kanan: 8 + 6 = 14 (≥ 10), maka 6 naik menjadi 7.',
+          'Ambil ekor 4 → Hasilnya 74!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const t1 = rand(1, 5), u1 = rand(4, 9);
+      const t2 = rand(1, 4), u2 = rand(10 - u1, 9);
+      const a = t1 * 10 + u1;
+      const b = t2 * 10 + u2;
+      const ans = a + b;
+      return {
+        q: `${a} + ${b} = ?`,
+        sub: 'Hitung dari depan (puluhan), lalu lirik kanan!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + (rand(0,1) ? 10 : -10) + rand(-2, 2)),
+        explain: `Puluhan: ${t1}+${t2}=${t1+t2}. Lirik kanan: ${u1}+${u2}=${u1+u2} (≥10), jadi puluhan naik 1 menjadi ${t1+t2+1}, ekornya ${(u1+u2)%10} → ${ans}.`
+      };
+    }
+  },
+  {
+    id: '2-2', grade: 2, num: 2,
+    title: 'Pengurangan 2 Angka "Cara Coret"',
+    desc: 'Mengurang dari depan tanpa bingung meminjam mundur!',
+    tip: 'Kurangkan puluhan dulu, lirik kanan: kalau satuan tidak cukup, coret hasil puluhan (kurangi 1), lalu pakai Pasangan 10!',
+    concreteType: 'subCoret',
+    examples: [
+      {
+        label: '52 − 27 = ?',
+        expr: '52 − 27  =  25',
+        steps: [
+          'Mulai dari DEPAN (puluhan): 5 − 2 = 3.',
+          'LIRIK KANAN (satuan): 2 − 7 tidak cukup! Maka coret angka 3, turun 1 menjadi 2.',
+          'Hitung satuan pakai Pasangan 10: pasangan 7 adalah 3, tambah 2 = 5.',
+          'Gabungkan puluhan & satuan → 25!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const t1 = rand(4, 9), u1 = rand(1, 6);
+      const t2 = rand(1, t1 - 2), u2 = rand(u1 + 1, 9);
+      const a = t1 * 10 + u1;
+      const b = t2 * 10 + u2;
+      const ans = a - b;
+      const pair = 10 - u2;
+      return {
+        q: `${a} − ${b} = ?`,
+        sub: 'Kurangkan puluhan dulu, lirik kanan, lalu coret!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + (rand(0,1) ? 10 : -10) + rand(-2, 2)),
+        explain: `Puluhan: ${t1}−${t2}=${t1-t2}. Lirik kanan: ${u1}<${u2}, coret ${t1-t2} jadi ${t1-t2-1}. Satuan: pasangan ${u2} adalah ${pair}, ${pair}+${u1}=${pair+u1} → ${ans}.`
+      };
+    }
+  },
+  {
+    id: '2-3', grade: 2, num: 3,
+    title: 'Konsep Perkalian & Pola Asyik',
+    desc: 'Memahami 3 × 4 artinya 3 kotak berisi masing-masing 4 benda.',
+    tip: 'Ingat! 3 × 4 artinya "3 kelompok yang tiap kelompok isinya 4" (4 + 4 + 4). Yuk kuasai pola perkalian!',
+    concreteType: 'multGrid',
+    examples: [
+      {
+        label: '3 × 5 = ?',
+        expr: '3 × 5  =  5 + 5 + 5  =  15',
+        steps: [
+          'Arti konkret 3 × 5: Ada 3 piring, setiap piring berisi 5 kue.',
+          'Jumlahkan cepat: 5 + 5 = 10, ditambah 5 lagi = 15.',
+          'Trik Perkalian 9 pakai jari: untuk 9 × 4, tekuk jari ke-4! Kiri ada 3 jari (puluhan), kanan ada 6 jari (satuan) → 36!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(2, 9), b = rand(2, 9);
+      const ans = a * b;
+      return {
+        q: `${a} × ${b} = ?`,
+        sub: `Artinya ${a} kelompok masing-masing berisi ${b}`,
+        answer: String(ans),
+        choices: makeChoices(ans, () => Math.max(4, ans + rand(-6, 6))),
+        explain: `${a} kelompok isi ${b} = ${Array(a).fill(b).join(' + ')} = ${ans}.`
+      };
+    }
+  },
+  {
+    id: '2-4', grade: 2, num: 4,
+    title: 'Pembagian Dasar & Bersisa',
+    desc: 'Titik kritis GASING: membagi rata benda nyata dan tahu sisanya!',
+    tip: '9 ÷ 2 = berapa? Artinya 9 permen dibagi rata ke 2 anak: tiap anak dapat 4, dan ada sisa 1!',
+    concreteType: 'divRemain',
+    examples: [
+      {
+        label: '9 ÷ 2 = ?',
+        expr: '9 ÷ 2  =  4 sisa 1',
+        steps: [
+          'Konkret: Ada 9 bola mau ditaruh sama rata ke 2 keranjang.',
+          'Cari perkalian 2 yang mendekati 9 (tidak boleh lewat): 2 × 4 = 8.',
+          'Jadi tiap keranjang dapat 4 bola, dan masih ada sisa 9 − 8 = 1 bola.',
+          'Ditulis: 4 sisa 1!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const d = rand(2, 6);
+      const q = rand(2, 8);
+      const r = rand(1, d - 1);
+      const total = d * q + r;
+      const ans = `${q} sisa ${r}`;
+      return {
+        q: `${total} ÷ ${d} = ?`,
+        sub: `Bagi ${total} benda rata ke ${d} kotak. Dapat berapa & sisa berapa?`,
+        answer: ans,
+        choices: makeChoices(ans, () => `${Math.max(1, q + rand(-1, 2))} sisa ${rand(0, d - 1)}`),
+        explain: `${d} × ${q} = ${d * q}. Sisanya adalah ${total} − ${d * q} = ${r}. Jadi ${q} sisa ${r}.`
+      };
+    }
+  },
+
+  // ---------- KELAS 3 ----------
+  {
+    id: '3-1', grade: 3, num: 1,
+    title: 'Penjumlahan 3 Angka Dari Depan',
+    desc: 'Menjumlahkan ratusan, puluhan, satuan langsung dari kiri ke kanan!',
+    tip: 'Ratusan + Ratusan, lalu lirik kanan (Puluhan). Puluhan + Puluhan, lalu lirik kanan (Satuan)!',
+    concreteType: 'hundreds',
+    examples: [
+      {
+        label: '279 + 326 = ?',
+        expr: '279 + 326  =  605',
+        steps: [
+          'Ratusan: 2 + 3 = 5. Lirik kanan (7+2=9, tunggu, lirik lagi ke satuan 9+6=15 → bikin puluhan jadi 10!).',
+          'Cara gampang tulis bertingkat dari depan: 2+3=5 | 7+2=9 | 9+6=15.',
+          'Gabung dari kanan/lirik: 9 jadi 10 (ekor 0) yang mendorong 5 menjadi 6!',
+          'Hasil akhirnya: 605!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(125, 489);
+      const b = rand(125, 489);
+      const ans = a + b;
+      const h1 = Math.floor(a/100), t1 = Math.floor((a%100)/10), u1 = a%10;
+      const h2 = Math.floor(b/100), t2 = Math.floor((b%100)/10), u2 = b%10;
+      return {
+        q: `${a} + ${b} = ?`,
+        sub: 'Hitung nilai tempat dari depan (Ratusan → Puluhan → Satuan)',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-2, 2) * 10 + rand(-1, 1)),
+        explain: `Ratusan: ${h1}+${h2}=${h1+h2}, Puluhan: ${t1}+${t2}=${t1+t2}, Satuan: ${u1}+${u2}=${u1+u2}. Setelah digabung (lirik kanan) = ${ans}.`
+      };
+    }
+  },
+  {
+    id: '3-2', grade: 3, num: 2,
+    title: 'Perkalian 2 Angka × 1 Angka',
+    desc: 'Mengalikan dari depan: kalikan puluhannya dulu, baru satuannya!',
+    tip: 'Contoh 24 × 3: kalikan 20 × 3 = 60, lalu 4 × 3 = 12. Tinggal jumlahkan 60 + 12 = 72!',
+    concreteType: 'mult2x1',
+    examples: [
+      {
+        label: '36 × 4 = ?',
+        expr: '36 × 4  =  120 + 24  =  144',
+        steps: [
+          'Pecah 36 menjadi 3 puluhan (30) dan 6 satuan.',
+          'Kalikan dari depan: 30 × 4 = 120.',
+          'Kalikan satuannya: 6 × 4 = 24.',
+          'Jumlahkan dengan mudah: 120 + 24 = 144!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(13, 48);
+      const b = rand(3, 8);
+      const ans = a * b;
+      const tens = Math.floor(a / 10) * 10;
+      const ones = a % 10;
+      return {
+        q: `${a} × ${b} = ?`,
+        sub: 'Kalikan puluhannya dulu, lalu satuannya!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-3, 3) * 4),
+        explain: `(${tens} × ${b}) + (${ones} × ${b}) = ${tens*b} + ${ones*b} = ${ans}.`
+      };
+    }
+  },
+  {
+    id: '3-3', grade: 3, num: 3,
+    title: 'Pembagian Cepat 2 Angka ÷ 1 Angka',
+    desc: 'Trik GASING membagi puluhan dari depan: sisa ditempel ke angka kanan!',
+    tip: '78 ÷ 2: bagi 7 dengan 2 dapat 3 sisa 1. Tempelkan angka sisa 1 ke depan 8 menjadi 18. Lalu 18 ÷ 2 = 9. Hasil: 39!',
+    concreteType: 'div2digit',
+    examples: [
+      {
+        label: '78 ÷ 2 = ?',
+        expr: '78 ÷ 2  =  39',
+        steps: [
+          'Mulai dari angka depan: 7 ÷ 2 = 3 sisa 1.',
+          'Tulis angka 3 sebagai puluhan hasil.',
+          'Angka sisa 1 digabung di depan angka 8 menjadi 18.',
+          '18 ÷ 2 = 9! Hasilnya langsung ketemu: 39!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const d = rand(2, 6);
+      const q = rand(12, 29);
+      const dividend = d * q;
+      const firstDigit = Math.floor(dividend / 10);
+      const secondDigit = dividend % 10;
+      const q1 = Math.floor(firstDigit / d);
+      const r1 = firstDigit % d;
+      return {
+        q: `${dividend} ÷ ${d} = ?`,
+        sub: 'Bagi angka depan dulu, lalu tempel sisanya ke angka kanan!',
+        answer: String(q),
+        choices: makeChoices(q, () => Math.max(10, q + rand(-5, 5))),
+        explain: `${firstDigit} ÷ ${d} = ${q1} sisa ${r1}. Tempel sisa ${r1} ke ${secondDigit} jadi ${r1*10 + secondDigit}, dibagi ${d} = ${(r1*10 + secondDigit)/d}. Hasil: ${q}.`
+      };
+    }
+  },
+  {
+    id: '3-4', grade: 3, num: 4,
+    title: 'Mengenal Pecahan & Satuan Waktu',
+    desc: 'Memahami arti pembilang & penyebut lewat gambar serta jam ke menit.',
+    tip: 'Pecahan a/b artinya: dari "b" potongan sama besar, kita ambil "a" bagian. Dan ingat: 1 jam = 60 menit!',
+    concreteType: 'fracBasic',
+    examples: [
+      {
+        label: 'Pecahan 3/4 & Waktu',
+        expr: '3 bagian dari 4 potong  =  3/4',
+        steps: [
+          'Bayangkan 1 batang cokelat dipotong menjadi 4 bagian sama besar (penyebut = 4).',
+          'Kamu memakan 3 potong (pembilang = 3).',
+          'Bagian yang dimakan adalah 3/4 (tiga perempat).'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      if (rand(0, 1) === 0) {
+        const den = [3, 4, 5, 6, 8][rand(0, 4)];
+        const num = rand(1, den - 1);
+        const ans = `${num}/${den}`;
+        return {
+          q: `Sebuah pizza dipotong ${den} bagian sama besar, lalu dimakan ${num} potong. Berapa bagian yang dimakan?`,
+          sub: 'Nyatakan dalam bentuk pecahan!',
+          answer: ans,
+          choices: makeChoices(ans, () => `${rand(1, den-1)}/${den + rand(-1, 2)}`),
+          explain: `Yang dimakan = ${num} (pembilang), jumlah semua potongan = ${den} (penyebut), jadi ${num}/${den}.`
+        };
+      } else {
+        const hrs = rand(2, 5);
+        const mins = [15, 20, 30, 45][rand(0, 3)];
+        const ans = hrs * 60 + mins;
+        return {
+          q: `${hrs} jam + ${mins} menit = ___ menit`,
+          sub: 'Ingat: 1 jam = 60 menit',
+          answer: String(ans),
+          choices: makeChoices(ans, () => ans + rand(-2, 2) * 15),
+          explain: `${hrs} jam = ${hrs} × 60 = ${hrs * 60} menit. Ditambah ${mins} menit = ${ans} menit.`
+        };
+      }
+    }
+  },
+
+  // ---------- KELAS 4 ----------
+  {
+    id: '4-1', grade: 4, num: 1,
+    title: 'Perkalian 2 Angka × 2 Angka',
+    desc: 'Metode Silang GASING & Trik Super Cepat bilangan akhiran 5!',
+    tip: 'Trik Akhiran 5 (misal 25 × 25): kalikan puluhan dengan kakaknya (2 × 3 = 6), lalu tempel 25 → 625! Untuk umum, pakai metode nilai tempat (Depan, Silang, Belakang).',
+    concreteType: 'mult2x2',
+    examples: [
+      {
+        label: 'Trik Khusus: 35 × 35 = ?',
+        expr: '35 × 35  →  (3×4) | 25  =  1225',
+        steps: [
+          'Berlaku jika puluhan sama dan satuannya berjumlah 10 (seperti 35 × 35).',
+          'Depan: kalikan angka 3 dengan kakaknya (4) → 3 × 4 = 12.',
+          'Belakang: 5 × 5 = 25.',
+          'Gabungkan langsung: 1225!'
+        ]
+      },
+      {
+        label: 'Umum (Silang): 23 × 14 = ?',
+        expr: '23 × 14 = 322',
+        steps: [
+          'Depan (Puluhan × Puluhan): 2 × 1 = 2 (ratusan → 200).',
+          'Silang (Puluhan × Satuan): (2×4) + (3×1) = 8 + 3 = 11 (puluhan → 110).',
+          'Belakang (Satuan × Satuan): 3 × 4 = 12.',
+          'Jumlahkan: 200 + 110 + 12 = 322!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      if (rand(0, 1) === 0) {
+        const d = rand(2, 8);
+        const n = d * 10 + 5;
+        const ans = n * n;
+        return {
+          q: `${n} × ${n} = ?`,
+          sub: 'Gunakan Trik Akhiran 5 GASING!',
+          answer: String(ans),
+          choices: makeChoices(ans, () => (d + rand(-1, 2)) * (d + 1) * 100 + 25),
+          explain: `Depan: ${d} × ${d+1} = ${d*(d+1)}. Belakang: 5 × 5 = 25. Gabung → ${ans}!`
+        };
+      } else {
+        const a = rand(12, 34), b = rand(11, 24);
+        const ans = a * b;
+        const a1 = Math.floor(a/10), a2 = a%10, b1 = Math.floor(b/10), b2 = b%10;
+        return {
+          q: `${a} × ${b} = ?`,
+          sub: 'Gunakan Metode Silang (Depan, Silang, Belakang)!',
+          answer: String(ans),
+          choices: makeChoices(ans, () => ans + rand(-3, 3) * 10),
+          explain: `Depan: ${a1*b1*100}, Silang: ${(a1*b2 + a2*b1)*10}, Belakang: ${a2*b2}. Total = ${ans}.`
+        };
+      }
+    }
+  },
+  {
+    id: '4-2', grade: 4, num: 2,
+    title: 'FPB & KPK (Cara Pagar Asyik)',
+    desc: 'Mencari FPB dan KPK sekaligus dalam 1 tabel pagar sederhana!',
+    tip: 'Bagi kedua bilangan dengan bilangan prima (2, 3, 5...). Jika BISA membagi keduanya, lingkari (itu FPB!). Kalikan semua pembagi + sisa bawah = KPK!',
+    concreteType: 'fpbkpk',
+    examples: [
+      {
+        label: 'FPB & KPK dari 12 dan 18',
+        expr: '12 & 18  →  FPB = 6,  KPK = 36',
+        steps: [
+          'Bagi 12 dan 18 dengan 2 → jadi 6 dan 9 (2 bisa bagi keduanya → masuk FPB).',
+          'Bagi 6 dan 9 dengan 3 → jadi 2 dan 3 (3 bisa bagi keduanya → masuk FPB).',
+          '2 dan 3 sudah tidak bisa dibagi angka yang sama lagi! STOP untuk FPB.',
+          'FPB = 2 × 3 = 6. KPK = 2 × 3 × 2 × 3 = 36!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const pairs = [[12,18],[8,12],[10,15],[12,16],[15,20],[14,21],[18,24]];
+      const [a, b] = pairs[rand(0, pairs.length - 1)];
+      const askFPB = rand(0, 1) === 0;
+      const ans = askFPB ? gcd(a, b) : lcm(a, b);
+      return {
+        q: `Tentukan ${askFPB ? 'FPB' : 'KPK'} dari ${a} dan ${b}!`,
+        sub: askFPB ? 'FPB = perkalian faktor pembagi bersama terbesar' : 'KPK = kelipatan persekutuan terkecil',
+        answer: String(ans),
+        choices: makeChoices(ans, () => askFPB ? rand(2, Math.min(a,b)) : ans + rand(-2, 3) * gcd(a, b)),
+        explain: `Dengan cara pagar untuk ${a} dan ${b}: FPB = ${gcd(a, b)} dan KPK = ${lcm(a, b)}.`
+      };
+    }
+  },
+  {
+    id: '4-3', grade: 4, num: 3,
+    title: 'Penjumlahan Pecahan (Kupu-Kupu)',
+    desc: 'Menjumlahkan pecahan berbeda penyebut tanpa pusing mencari KPK!',
+    tip: 'Trik Kupu-Kupu (Kali Silang): (a×d + b×c) per (b×d), lalu sederhanakan jika bisa!',
+    concreteType: 'fracAdd',
+    examples: [
+      {
+        label: '1/2 + 1/3 = ?',
+        expr: '1/2 + 1/3  =  (3 + 2) / 6  =  5/6',
+        steps: [
+          'Sayap kiri: 1 × 3 = 3.',
+          'Sayap kanan: 2 × 1 = 2.',
+          'Jumlahkan sayap (pembilang): 3 + 2 = 5.',
+          'Bawah dikali (penyebut): 2 × 3 = 6 → Hasil: 5/6!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const combos = [[1,2,1,3],[1,3,1,4],[1,2,1,5],[2,3,1,4],[1,4,2,5],[2,5,1,3],[3,4,1,3]];
+      const [a, b, c, d] = combos[rand(0, combos.length - 1)];
+      const top = a * d + b * c;
+      const bot = b * d;
+      const g = gcd(top, bot);
+      const ans = `${top/g}/${bot/g}`;
+      return {
+        q: `${a}/${b} + ${c}/${d} = ?`,
+        sub: 'Pakai Trik Kupu-Kupu: kali silang pembilangnya, kalikan penyebutnya!',
+        answer: ans,
+        choices: makeChoices(ans, () => `${rand(2, top+2)}/${bot}`),
+        explain: `Sayap: (${a}×${d}) + (${b}×${c}) = ${a*d} + ${b*c} = ${top}. Penyebut: ${b}×${d} = ${bot} → ${ans}.`
+      };
+    }
+  },
+  {
+    id: '4-4', grade: 4, num: 4,
+    title: 'Keliling & Luas Bangun Datar',
+    desc: 'Memahami arti luas dengan petak satuan sebelum menghafal rumus!',
+    tip: 'Keliling = berjalan mengelilingi semua tepi luar. Luas = banyaknya ubin/petak satuan yang menutupi bagian dalam!',
+    concreteType: 'areaGrid',
+    examples: [
+      {
+        label: 'Persegi Panjang 5 cm × 3 cm',
+        expr: 'Luas = 15 cm²  |  Keliling = 16 cm',
+        steps: [
+          'Bayangkan ada 3 baris ubin, tiap baris berisi 5 ubin → total = 5 × 3 = 15 petak (cm²).',
+          'Untuk keliling: jalan memutar sisi-sisinya: 5 + 3 + 5 + 3 = 16 cm.'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const p = rand(4, 12), l = rand(3, p - 1);
+      const isArea = rand(0, 1) === 0;
+      const ans = isArea ? p * l : 2 * (p + l);
+      return {
+        q: `Persegi panjang berukuran panjang ${p} cm dan lebar ${l} cm. Berapa ${isArea ? 'Luasnya (cm²)' : 'Kelilingnya (cm)'}?`,
+        sub: isArea ? 'Hitung jumlah petak satuan (p × l)' : 'Hitung total panjang semua tepi luar!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-6, 8)),
+        explain: isArea ? `Luas = ${p} × ${l} = ${ans} cm².` : `Keliling = ${p} + ${l} + ${p} + ${l} = ${ans} cm.`
+      };
+    }
+  },
+
+  // ---------- KELAS 5 ----------
+  {
+    id: '5-1', grade: 5, num: 1,
+    title: 'Bilangan Bulat (Kartu Hitam-Putih)',
+    desc: 'Memahami bilangan positif (+) dan negatif (−) lewat kartu berpasangan!',
+    tip: '1 Kartu Putih (+) bertemu 1 Kartu Hitam (−) akan saling meniadakan (jadi 0). Yang tersisa adalah jawabannya!',
+    concreteType: 'cardsPN',
+    examples: [
+      {
+        label: '−6 + 4 = ?',
+        expr: '6 Kartu Hitam (−) + 4 Kartu Putih (+) = −2',
+        steps: [
+          'Siapkan 6 Kartu Hitam (−) dan 4 Kartu Putih (+).',
+          'Pasangkan 4 Hitam dengan 4 Putih → semuanya menjadi 0 (hilang!).',
+          'Kartu yang tersisa tinggal 2 Kartu Hitam (−).',
+          'Jadi −6 + 4 = −2!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const a = rand(-9, 9);
+      const b = rand(-9, 9);
+      const ans = a + b;
+      const fmt = n => n < 0 ? `(${n})` : `${n}`;
+      return {
+        q: `${a} + ${fmt(b)} = ?`,
+        sub: 'Bayangkan Kartu Putih (+) dan Kartu Hitam (−) saling berpasangan!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-4, 4)),
+        explain: `Gabungkan kartu ${a} dan ${b}: pasangan (+)(−) saling menghilangkan, tersisa ${ans}.`
+      };
+    }
+  },
+  {
+    id: '5-2', grade: 5, num: 2,
+    title: 'Perkalian Pecahan & Desimal',
+    desc: 'Mengalikan pecahan langsung (atas × atas, bawah × bawah) & geser koma desimal!',
+    tip: 'Untuk perkalian desimal: abaikan komanya dulu, kalikan seperti biasa, lalu hitung total angka di belakang koma!',
+    concreteType: 'decimal',
+    examples: [
+      {
+        label: '0,4 × 0,3 = ?',
+        expr: '0,4 × 0,3  =  0,12',
+        steps: [
+          'Abaikan komanya dulu: kalikan 4 × 3 = 12.',
+          'Hitung ada berapa angka di belakang koma: 0,4 (1 angka) + 0,3 (1 angka) = 2 angka.',
+          'Pasang koma dari belakang maju 2 langkah → 0,12!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      if (rand(0, 1) === 0) {
+        const a = rand(2, 9), b = rand(2, 9);
+        const val = (a * b) / 100;
+        const ans = val.toFixed(2).replace('.', ',');
+        return {
+          q: `0,${a} × 0,${b} = ?`,
+          sub: 'Kalikan angkanya dulu, lalu hitung total angka di belakang koma!',
+          answer: ans,
+          choices: makeChoices(ans, () => ((a * b + rand(-3, 5)) / 100).toFixed(2).replace('.', ',')),
+          explain: `${a} × ${b} = ${a*b}. Ada 2 angka di belakang koma totalnya → ${ans}.`
+        };
+      } else {
+        const n1 = rand(1, 3), d1 = rand(2, 5);
+        const n2 = rand(1, 3), d2 = rand(2, 5);
+        const top = n1 * n2, bot = d1 * d2;
+        const g = gcd(top, bot);
+        const ans = `${top/g}/${bot/g}`;
+        return {
+          q: `${n1}/${d1} × ${n2}/${d2} = ?`,
+          sub: 'Atas × Atas, Bawah × Bawah, lalu sederhanakan!',
+          answer: ans,
+          choices: makeChoices(ans, () => `${rand(1, 5)}/${rand(4, 20)}`),
+          explain: `(${n1}×${n2}) / (${d1}×${d2}) = ${top}/${bot} = ${ans}.`
+        };
+      }
+    }
+  },
+  {
+    id: '5-3', grade: 5, num: 3,
+    title: 'Kecepatan, Jarak, Waktu & Skala',
+    desc: 'Menguasai Segitiga Ajaib J-K-W ala GASING dengan logika nyata!',
+    tip: 'Pikirkan artinya: 60 km/jam artinya dalam 1 jam menempuh 60 km. Jadi kalau 3 jam ya 3 × 60 = 180 km!',
+    concreteType: 'jkw',
+    examples: [
+      {
+        label: 'Kecepatan 60 km/jam selama 2,5 jam',
+        expr: 'Jarak = 60 × 2,5 = 150 km',
+        steps: [
+          '1 jam menempuh 60 km.',
+          '2 jam menempuh 60 + 60 = 120 km.',
+          'Setengah jam lagi menempuh 30 km.',
+          'Total Jarak = 120 + 30 = 150 km!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const speed = [40, 50, 60, 70, 80][rand(0, 4)];
+      const time = rand(2, 5);
+      const dist = speed * time;
+      const askDist = rand(0, 1) === 0;
+      if (askDist) {
+        return {
+          q: `Sebuah mobil melaju dengan kecepatan ${speed} km/jam selama ${time} jam. Berapa jarak yang ditempuh (km)?`,
+          sub: 'Jarak = Kecepatan × Waktu',
+          answer: String(dist),
+          choices: makeChoices(dist, () => dist + rand(-2, 3) * 20),
+          explain: `Setiap 1 jam menempuh ${speed} km. Dalam ${time} jam = ${speed} × ${time} = ${dist} km.`
+        };
+      } else {
+        return {
+          q: `Jarak kota A ke B adalah ${dist} km. Jika ditempuh dalam waktu ${time} jam, berapa kecepatannya (km/jam)?`,
+          sub: 'Kecepatan = Jarak ÷ Waktu',
+          answer: String(speed),
+          choices: makeChoices(speed, () => speed + rand(-2, 3) * 10),
+          explain: `${dist} km dibagi ${time} jam = ${speed} km/jam.`
+        };
+      }
+    }
+  },
+  {
+    id: '5-4', grade: 5, num: 4,
+    title: 'Volume Kubus & Balok',
+    desc: 'Menghitung isi ruang dengan tumpukan kubus satuan!',
+    tip: 'Bayangkan mengisi kardus dengan kubus kecil: hitung alasnya (p × l), lalu kalikan tingginya (× t)!',
+    concreteType: 'volume3d',
+    examples: [
+      {
+        label: 'Balok 5 × 3 × 2',
+        expr: 'Volume = (5 × 3) × 2 = 30 kubus satuan',
+        steps: [
+          'Lapisan paling bawah (alas): 5 × 3 = 15 kubus satuan.',
+          'Karena tingginya 2 lapis, kalikan 2 → 15 × 2 = 30 kubus satuan!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const p = rand(3, 8), l = rand(2, 6), t = rand(2, 5);
+      const ans = p * l * t;
+      return {
+        q: `Sebuah balok memiliki panjang ${p} cm, lebar ${l} cm, dan tinggi ${t} cm. Berapa volumenya (cm³)?`,
+        sub: 'Volume = (Panjang × Lebar) × Tinggi',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-4, 5) * 4),
+        explain: `Luas alas = ${p} × ${l} = ${p*l} cm². Dikalikan tinggi ${t} cm = ${ans} cm³.`
+      };
+    }
+  },
+
+  // ---------- KELAS 6 ----------
+  {
+    id: '6-1', grade: 6, num: 1,
+    title: 'Kuadrat & Akar Pangkat Dua',
+    desc: 'Menebak akar kuadrat ribuan dalam hitungan detik pakai ekor angka!',
+    tip: 'Lihat angka depan & ekor satuan: kuadrat ekor 1→(1/9), 4→(2/8), 5→(5), 6→(4/6), 9→(3/7)!',
+    concreteType: 'squares',
+    examples: [
+      {
+        label: '√625 = ?',
+        expr: '√625 = 25',
+        steps: [
+          'Pisahkan 2 angka dari belakang: 6 | 25.',
+          'Cari kuadrat yang ≤ 6 yaitu 2² = 4 (jadi puluhannya adalah 2).',
+          'Ekornya 25 pasti satuannya 5. Hasilnya langsung ketemu: 25!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const base = rand(11, 25);
+      const sq = base * base;
+      const askRoot = rand(0, 1) === 0;
+      if (askRoot) {
+        return {
+          q: `Berapakah nilai dari √${sq} ?`,
+          sub: 'Gunakan pemisahan 2 angka dari belakang & cek ekor satuannya!',
+          answer: String(base),
+          choices: makeChoices(base, () => Math.max(10, base + rand(-5, 5))),
+          explain: `${base} × ${base} = ${sq}, jadi √${sq} = ${base}.`
+        };
+      } else {
+        return {
+          q: `Berapakah hasil dari ${base}² ?`,
+          sub: `${base}² artinya ${base} × ${base}`,
+          answer: String(sq),
+          choices: makeChoices(sq, () => sq + rand(-3, 3) * 10),
+          explain: `${base} × ${base} = ${sq}.`
+        };
+      }
+    }
+  },
+  {
+    id: '6-2', grade: 6, num: 2,
+    title: 'Persen, Diskon & Perbandingan',
+    desc: 'Trik GASING 10%: cari 10%-nya dulu, lalu kalikan dengan mudah!',
+    tip: 'Mau cari 20% atau 30%? Cari 10%-nya dulu (tinggal buang satu angka nol di belakang!), baru dikali 2 atau 3!',
+    concreteType: 'percent',
+    examples: [
+      {
+        label: 'Diskon 20% dari Rp 50.000',
+        expr: '10% = 5.000  →  20% = 10.000',
+        steps: [
+          'Cari 10% dari 50.000: buang 1 angka nol → Rp 5.000.',
+          'Karena 20% = 2 × 10%, maka potongannya = 2 × 5.000 = Rp 10.000.',
+          'Harga bayar = 50.000 − 10.000 = Rp 40.000!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const pct = [10, 20, 25, 30, 50][rand(0, 4)];
+      const base = [40, 60, 80, 100, 120, 200][rand(0, 5)];
+      const ans = (pct * base) / 100;
+      return {
+        q: `Berapakah ${pct}% dari ${base}?`,
+        sub: 'Ingat: 10% cukup dibagi 10, 25% adalah seperempat, 50% adalah setengah!',
+        answer: String(ans),
+        choices: makeChoices(ans, () => Math.max(2, ans + rand(-3, 4) * 5)),
+        explain: `10% dari ${base} adalah ${base/10}. Jadi ${pct}% dari ${base} = ${ans}.`
+      };
+    }
+  },
+  {
+    id: '6-3', grade: 6, num: 3,
+    title: 'Keliling & Luas Lingkaran',
+    desc: 'Mengenal bilangan ajaib π (22/7 atau 3,14) pada roda lingkaran!',
+    tip: 'Jika jari-jari (r) kelipatan 7, pakai π = 22/7 agar langsung bisa dicoret!',
+    concreteType: 'circle',
+    examples: [
+      {
+        label: 'Lingkaran r = 7 cm',
+        expr: 'Keliling = 44 cm  |  Luas = 154 cm²',
+        steps: [
+          'Keliling = 2 × (22/7) × 7 → coret 7 dengan 7 → 2 × 22 = 44 cm!',
+          'Luas = (22/7) × 7 × 7 → coret satu angka 7 → 22 × 7 = 154 cm²!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const r = [7, 14, 21][rand(0, 2)];
+      const isArea = rand(0, 1) === 0;
+      const ans = isArea ? (22 * r * r) / 7 : (2 * 22 * r) / 7;
+      return {
+        q: `Sebuah lingkaran memiliki jari-jari r = ${r} cm (π = 22/7). Berapa ${isArea ? 'Luasnya (cm²)' : 'Kelilingnya (cm)'}?`,
+        sub: isArea ? 'Luas = π × r × r' : 'Keliling = 2 × π × r',
+        answer: String(ans),
+        choices: makeChoices(ans, () => ans + rand(-2, 3) * 22),
+        explain: isArea ? `(22/7) × ${r} × ${r} = ${ans} cm².` : `2 × (22/7) × ${r} = ${ans} cm.`
+      };
+    }
+  },
+  {
+    id: '6-4', grade: 6, num: 4,
+    title: 'Rata-rata, Median & Modus',
+    desc: 'Mengolah data angka: berbagi rata (Mean), nilai tengah (Median) & terbanyak (Modus)!',
+    tip: 'Mean (Rata-rata) itu seperti berbagi permen sama rata: kumpulkan semua dulu, lalu bagi rata ke semua anak!',
+    concreteType: 'stats',
+    examples: [
+      {
+        label: 'Data: 6, 8, 7, 9, 10',
+        expr: 'Rata-rata = 8  |  Median = 8',
+        steps: [
+          'Rata-rata (Mean): jumlahkan semua = 6+8+7+9+10 = 40. Lalu bagi 5 data → 40 ÷ 5 = 8!',
+          'Median (Nilai Tengah): urutkan dulu 6, 7, [8], 9, 10 → yang di tengah adalah 8!'
+        ]
+      }
+    ],
+    genQuestion: () => {
+      const mean = rand(6, 10);
+      const data = [mean - 2, mean - 1, mean, mean + 1, mean + 2];
+      const shuffled = shuffle(data);
+      const askMean = rand(0, 1) === 0;
+      if (askMean) {
+        return {
+          q: `Hitung rata-rata (Mean) dari data: ${shuffled.join(', ')}`,
+          sub: 'Jumlahkan semua data lalu bagi banyaknya data (5)!',
+          answer: String(mean),
+          choices: makeChoices(mean, () => rand(4, 12)),
+          explain: `Jumlah = ${mean * 5}. Rata-rata = ${mean * 5} ÷ 5 = ${mean}.`
+        };
+      } else {
+        const modeVal = rand(5, 9);
+        const set = shuffle([modeVal, modeVal, modeVal, modeVal - 1, modeVal + 2]);
+        return {
+          q: `Berapakah Modus (nilai paling sering muncul) dari data: ${set.join(', ')}?`,
+          sub: 'Cari angka yang muncul paling banyak!',
+          answer: String(modeVal),
+          choices: makeChoices(modeVal, () => modeVal + rand(-2, 3)),
+          explain: `Angka ${modeVal} muncul paling banyak (3 kali), jadi modusnya adalah ${modeVal}.`
+        };
+      }
+    }
+  }
+];
+
+// ==================== APP STATE ====================
+const STORAGE_KEY = 'gasing_app_v1';
+let state = {
+  grade: 1,
+  xp: 0,
+  stars: {},     // levelId -> 1..3
+  completed: {}, // levelId -> true
+  soundOn: true,
+  unlockAll: false
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = { ...state, ...JSON.parse(raw) };
+  } catch (e) {}
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+// Current workspace session
+let currentLevel = null;
+let currentPhase = 'concrete';
+let currentExampleIdx = 0;
+let revealedSteps = 1;
+let quiz = null;
+
+// Interactive widget states
+let widgetState = {
+  countN: 6,
+  selectedPair: 3,
+  posCards: 4,
+  negCards: 6,
+  fracNum: 3,
+  fracDen: 4,
+  addA: 27,
+  addB: 35,
+  gridP: 5,
+  gridL: 3
+};
+
+// ==================== RENDER HEADER & MAP ====================
+function updateHeaderStats() {
+  const starSum = Object.values(state.stars).reduce((a, b) => a + b, 0);
+  document.getElementById('totalStars').textContent = starSum;
+  document.getElementById('totalXP').textContent = state.xp;
+  const sBtn = document.getElementById('soundToggle');
+  sBtn.textContent = state.soundOn ? '🔊 Suara: ON' : '🔇 Suara: OFF';
+  sBtn.classList.toggle('active', state.soundOn);
+
+  const uBtn = document.getElementById('unlockToggle');
+  uBtn.textContent = state.unlockAll ? '🔓 Mode Guru: Semua Terbuka' : '🔒 Mode: Berlevel';
+  uBtn.classList.toggle('active', state.unlockAll);
+}
+
+function toggleSound() {
+  state.soundOn = !state.soundOn;
+  saveState();
+  updateHeaderStats();
+  if (state.soundOn) playSound('click');
+}
+
+function toggleUnlockAll() {
+  playSound('click');
+  state.unlockAll = !state.unlockAll;
+  saveState();
+  updateHeaderStats();
+  renderLevels();
+}
+
+function resetProgress() {
+  if (!confirm('Reset semua bintang dan XP progres belajar?')) return;
+  state.xp = 0;
+  state.stars = {};
+  state.completed = {};
+  saveState();
+  updateHeaderStats();
+  renderLevels();
+}
+
+function renderGradeTabs() {
+  const container = document.getElementById('gradeTabs');
+  container.innerHTML = GRADES.map(g => `
+    <button class="grade-tab ${state.grade === g.grade ? 'active' : ''}" onclick="selectGrade(${g.grade})">
+      <span class="g-num">Kelas ${g.grade}</span>
+      <span class="g-sub">${g.short}</span>
+    </button>
+  `).join('');
+
+  const info = GRADES.find(g => g.grade === state.grade);
+  document.getElementById('gradeHeading').textContent = info.title;
+  document.getElementById('gradeDesc').textContent = info.desc;
+}
+
+function selectGrade(g) {
+  playSound('click');
+  state.grade = g;
+  saveState();
+  renderGradeTabs();
+  renderLevels();
+}
+
+function isLevelUnlocked(lvl) {
+  if (state.unlockAll) return true;
+  if (lvl.num === 1) return true; // Level 1 setiap kelas terbuka agar bisa mencoba kelas masing-masing
+  const prevId = `${lvl.grade}-${lvl.num - 1}`;
+  return Boolean(state.completed[prevId]);
+}
+
+function renderLevels() {
+  const grid = document.getElementById('levelsGrid');
+  const list = LEVELS.filter(l => l.grade === state.grade);
+
+  grid.innerHTML = list.map(lvl => {
+    const unlocked = isLevelUnlocked(lvl);
+    const stars = state.stars[lvl.id] || 0;
+    const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+    return `
+      <div class="level-card ${unlocked ? '' : 'locked'}">
+        <div>
+          <div class="level-top">
+            <span class="level-chip">Level ${lvl.grade}.${lvl.num}</span>
+            <span class="stars-display">${starStr}</span>
+          </div>
+          <h3>${lvl.title}</h3>
+          <p>${lvl.desc}</p>
+        </div>
+        ${unlocked
+          ? `<button class="btn btn-primary" onclick="openLevel('${lvl.id}')">${stars > 0 ? '🔁 Mainkan Lagi' : '▶ Mulai Belajar'}</button>`
+          : `<button class="btn btn-disabled" disabled>🔒 Selesaikan Level ${lvl.grade}.${lvl.num - 1} dulu</button>`
+        }
+      </div>
+    `;
+  }).join('');
+}
+
+// ==================== WORKSPACE LOGIC ====================
+function openLevel(id) {
+  playSound('click');
+  currentLevel = LEVELS.find(l => l.id === id);
+  currentPhase = 'concrete';
+  currentExampleIdx = 0;
+  revealedSteps = 1;
+
+  document.getElementById('mapView').style.display = 'none';
+  document.getElementById('workspaceView').classList.add('active');
+  document.getElementById('wsBadge').textContent = `Kelas ${currentLevel.grade} • Level ${currentLevel.num}`;
+  document.getElementById('wsTitle').textContent = currentLevel.title;
+
+  updatePhaseTabs();
+  renderStage();
+}
+
+function closeWorkspace() {
+  playSound('click');
+  document.getElementById('workspaceView').classList.remove('active');
+  document.getElementById('mapView').style.display = 'block';
+  renderLevels();
+}
+
+function switchPhase(phase) {
+  playSound('click');
+  currentPhase = phase;
+  if (phase === 'quiz') initQuiz();
+  updatePhaseTabs();
+  renderStage();
+}
+
+function updatePhaseTabs() {
+  document.getElementById('tabConcret').classList.toggle('active', currentPhase === 'concrete');
+  document.getElementById('tabAbstract').classList.toggle('active', currentPhase === 'abstract');
+  document.getElementById('tabQuiz').classList.toggle('active', currentPhase === 'quiz');
+}
+
+function renderStage() {
+  const box = document.getElementById('stageContainer');
+  if (currentPhase === 'concrete') {
+    box.innerHTML = renderConcreteView(currentLevel);
+  } else if (currentPhase === 'abstract') {
+    box.innerHTML = renderAbstractView(currentLevel);
+  } else {
+    box.innerHTML = renderQuizView();
+  }
+}
+
+// ==================== PHASE 1: CONCRETE INTERACTIVE VIEWS ====================
+function renderConcreteView(lvl) {
+  const tipHTML = `
+    <div class="mascot-tip">
+      <div class="mascot-avatar">🧑‍🏫</div>
+      <div><strong>Kata Kak GASING:</strong> ${lvl.tip}</div>
+    </div>
+  `;
+
+  let interactiveHTML = '';
+  const t = lvl.concreteType;
+
+  if (t === 'count10') {
+    const n = widgetState.countN;
+    const g5 = Math.min(5, n), rem = Math.max(0, n - 5);
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Ketuk tombol + / − untuk melihat benda nyata (Konkret) &amp; Angkanya (Abstrak):</h4>
+        <div class="blocks-area">
+          <div class="block-group">
+            <div>Kelompok Jari Kiri (Maks 5)</div>
+            <div class="dots-wrap">${'<span class="dot"></span>'.repeat(g5)}</div>
+            <strong>${g5}</strong>
+          </div>
+          ${rem > 0 ? `<div style="font-size:1.5rem;font-weight:900;">+</div>
+          <div class="block-group">
+            <div>Kelompok Jari Kanan</div>
+            <div class="dots-wrap">${'<span class="dot orange"></span>'.repeat(rem)}</div>
+            <strong>${rem}</strong>
+          </div>` : ''}
+          <div style="font-size:1.5rem;font-weight:900;">=</div>
+          <div class="block-group" style="background:#eff6ff;border-color:#2563eb;">
+            <div>Angka Abstrak</div>
+            <div style="font-size:2.6rem;font-weight:900;color:#1d4ed8;">${n}</div>
+          </div>
+        </div>
+        <button class="btn btn-outline" onclick="adjWidget('countN', -1, 1, 10)">➖ Kurangi</button>
+        <button class="btn btn-primary" onclick="adjWidget('countN', 1, 1, 10)">➕ Tambah</button>
+      </div>
+    `;
+  } else if (t === 'pair10' || t === 'add20' || t === 'sub20') {
+    const a = widgetState.selectedPair;
+    const b = 10 - a;
+    const codes = {1:'SS (Satu-Sembilan)',2:'DD (Dua-Delapan)',3:'TT (Tiga-Tujuh)',4:'EE (Empat-Enam)',5:'LL (Lima-Lima)',6:'EE (Enam-Empat)',7:'TT (Tujuh-Tiga)',8:'DD (Delapan-Dua)',9:'SS (Sembilan-Satu)'};
+    interactiveHTML = `
+      <div class="song-card">
+        <h3>🎵 Lagu Pasangan 10 GASING</h3>
+        <p style="margin:6px 0;"><em>"SS (Satu-Sembilan), DD (Dua-Delapan), TT (Tiga-Tujuh), EE (Empat-Enam), LL (Lima-Lima)... Itu semua jumlah SEPULUH!"</em></p>
+        <div style="margin:10px 0;">
+          ${[1,2,3,4,5,6,7,8,9].map(x => `<button class="pair-btn ${a===x?'active':''}" onclick="setWidget('selectedPair', ${x})">${x}</button>`).join('')}
+        </div>
+        <div class="blocks-area">
+          <div class="block-group">
+            <div class="dots-wrap">${'<span class="dot"></span>'.repeat(a)}</div>
+            <strong>${a}</strong>
+          </div>
+          <div style="font-size:1.5rem;font-weight:900;">+</div>
+          <div class="block-group">
+            <div class="dots-wrap">${'<span class="dot orange"></span>'.repeat(b)}</div>
+            <strong>${b}</strong>
+          </div>
+          <div style="font-size:1.5rem;font-weight:900;">=</div>
+          <div class="block-group" style="background:#dcfce7;border-color:#16a34a;">
+            <strong style="font-size:1.6rem;color:#15803d;">10</strong>
+            <div style="font-size:0.8rem;">${codes[a]}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (t === 'tensUnits' || t === 'subCoret' || t === 'hundreds') {
+    const a = widgetState.addA, b = widgetState.addB;
+    const tA = Math.floor(a/10), uA = a%10;
+    const tB = Math.floor(b/10), uB = b%10;
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Visual Blok Puluhan &amp; Satuan (Mengapa Lirik Kanan Bekerja!)</h4>
+        <div class="blocks-area">
+          <div class="block-group">
+            <strong>${a} (${tA} Puluhan + ${uA} Satuan)</strong>
+            <div style="margin:8px 0;">${'<span class="ten-rod"></span>'.repeat(tA)}</div>
+            <div class="dots-wrap">${'<span class="dot orange"></span>'.repeat(uA)}</div>
+          </div>
+          <div style="font-size:1.6rem;font-weight:900;">+</div>
+          <div class="block-group">
+            <strong>${b} (${tB} Puluhan + ${uB} Satuan)</strong>
+            <div style="margin:8px 0;">${'<span class="ten-rod"></span>'.repeat(tB)}</div>
+            <div class="dots-wrap">${'<span class="dot green"></span>'.repeat(uB)}</div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;margin-bottom:10px;">
+          Lihat satuannya: <strong>${uA} + ${uB} = ${uA+uB}</strong>!
+          ${uA+uB >= 10 ? `Karena ≥ 10, terbentuk <strong>1 Batang Puluhan BARU</strong> (jadi puluhan naik 1 dari ${tA+tB} menjadi ${tA+tB+1}) dan tersisa ${ (uA+uB)%10 } satuan → <strong>${a+b}</strong>!` : `Kurang dari 10, jadi puluhan tetap ${tA+tB} → <strong>${a+b}</strong>!`}
+        </p>
+        <button class="btn btn-outline" onclick="randomizeAddPair()">🎲 Acak Angka Baru</button>
+      </div>
+    `;
+  } else if (t === 'cardsPN') {
+    const p = widgetState.posCards, n = widgetState.negCards;
+    const pairs = Math.min(p, n);
+    const diff = p - n;
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Simulasi Kartu Putih (+) &amp; Kartu Hitam (−)</h4>
+        <p style="font-size:0.86rem;color:#64748b;">Setiap 1 Putih (+) bertemu 1 Hitam (−) akan saling menghilangkan (= 0)!</p>
+        <div style="margin:12px 0;">
+          <div><strong>Kartu Putih (+${p}):</strong> ${'<span class="card-pn card-pos">+</span>'.repeat(p)}</div>
+          <div><strong>Kartu Hitam (−${n}):</strong> ${'<span class="card-pn card-neg">−</span>'.repeat(n)}</div>
+        </div>
+        <div style="background:#eff6ff;padding:10px;border-radius:12px;margin-bottom:12px;">
+          <strong>${pairs} pasang (+)(−) menjadi 0!</strong><br>
+          Sisa kartu: <strong>${diff === 0 ? '0 (Habis!)' : diff > 0 ? `+${diff} (${diff} Putih)` : `${diff} (${Math.abs(diff)} Hitam)`}</strong>
+        </div>
+        <button class="btn btn-outline" onclick="adjWidget('posCards', 1, 0, 9)">+ Kartu Putih</button>
+        <button class="btn btn-outline" onclick="adjWidget('posCards', -1, 0, 9)">− Kartu Putih</button>
+        <button class="btn btn-secondary" onclick="adjWidget('negCards', 1, 0, 9)">+ Kartu Hitam</button>
+        <button class="btn btn-outline" onclick="adjWidget('negCards', -1, 0, 9)">− Kartu Hitam</button>
+      </div>
+    `;
+  } else if (t === 'fracBasic' || t === 'fracAdd' || t === 'decimal') {
+    const num = Math.min(widgetState.fracNum, widgetState.fracDen);
+    const den = widgetState.fracDen;
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Batang Pecahan Konkret</h4>
+        <div class="frac-bar">
+          ${Array.from({length: den}, (_, i) => `<div class="frac-part ${i < num ? 'filled' : ''}"></div>`).join('')}
+        </div>
+        <div style="font-size:1.5rem;font-weight:900;color:#1d4ed8;margin:6px 0;">${num} / ${den}</div>
+        <p style="font-size:0.86rem;margin-bottom:10px;">Ada ${den} potong sama besar, dan ${num} potong diarsir.</p>
+        <button class="btn btn-outline" onclick="adjWidget('fracNum', 1, 1, 8)">➕ Arsiran</button>
+        <button class="btn btn-outline" onclick="adjWidget('fracNum', -1, 1, 8)">➖ Arsiran</button>
+        <button class="btn btn-primary" onclick="adjWidget('fracDen', 1, 2, 8)">➕ Potongan</button>
+        <button class="btn btn-outline" onclick="adjWidget('fracDen', -1, 2, 8)">➖ Potongan</button>
+      </div>
+    `;
+  } else if (t === 'areaGrid' || t === 'multGrid' || t === 'mult2x1' || t === 'mult2x2' || t === 'volume3d') {
+    const p = widgetState.gridP, l = widgetState.gridL;
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Susunan Petak / Kelompok (${l} baris × ${p} kolom)</h4>
+        <div style="display:inline-grid;grid-template-columns:repeat(${p}, 26px);gap:4px;margin:12px 0;">
+          ${'<div style="width:26px;height:26px;background:#3b82f6;border-radius:6px;"></div>'.repeat(p * l)}
+        </div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:10px;">
+          ${l} × ${p} = <span style="color:#1d4ed8;">${p * l}</span> petak satuan
+        </div>
+        <button class="btn btn-outline" onclick="adjWidget('gridP', 1, 2, 9)">➕ Kolom</button>
+        <button class="btn btn-outline" onclick="adjWidget('gridP', -1, 2, 9)">➖ Kolom</button>
+        <button class="btn btn-primary" onclick="adjWidget('gridL', 1, 2, 7)">➕ Baris</button>
+        <button class="btn btn-outline" onclick="adjWidget('gridL', -1, 2, 7)">➖ Baris</button>
+      </div>
+    `;
+  } else {
+    interactiveHTML = `
+      <div class="block-group">
+        <h4>Visualisasi Konsep ${lvl.title}</h4>
+        <p style="margin:10px 0;">Perhatikan contoh soal di tahap <strong>Trik Asyik GASING</strong> pada tab sebelah agar memahami pola cepatnya!</p>
+      </div>
+    `;
+  }
+
+  return `
+    ${tipHTML}
+    ${interactiveHTML}
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-secondary" onclick="switchPhase('abstract')">Lanjut ke Trik Asyik GASING ➡</button>
+    </div>
+  `;
+}
+
+function adjWidget(key, delta, min, max) {
+  playSound('click');
+  widgetState[key] = Math.max(min, Math.min(max, widgetState[key] + delta));
+  renderStage();
+}
+function setWidget(key, val) {
+  playSound('click');
+  widgetState[key] = val;
+  renderStage();
+}
+function randomizeAddPair() {
+  playSound('click');
+  widgetState.addA = rand(14, 49);
+  widgetState.addB = rand(14, 49);
+  renderStage();
+}
+
+// ==================== PHASE 2: STEP-BY-STEP GASING ABSTRACT ====================
+function renderAbstractView(lvl) {
+  const ex = lvl.examples[currentExampleIdx] || lvl.examples[0];
+  const shown = ex.steps.slice(0, revealedSteps);
+  const allShown = revealedSteps >= ex.steps.length;
+
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <div>
+        ${lvl.examples.map((e, i) => `
+          <button class="btn ${i === currentExampleIdx ? 'btn-primary' : 'btn-outline'}" style="padding:7px 12px;font-size:0.82rem;" onclick="selectExample(${i})">
+            Contoh ${i + 1}: ${e.label}
+          </button>
+        `).join('')}
+      </div>
+      <span style="font-size:0.85rem;color:#64748b;font-weight:700;">Langkah ${revealedSteps} dari ${ex.steps.length}</span>
+    </div>
+
+    <div class="chalkboard">
+      <div style="text-align:center;font-size:0.85rem;color:#94a3b8;">CARA PENGERJAAN METODE GASING</div>
+      <div class="math-big">${ex.expr}</div>
+      <div class="step-list">
+        ${shown.map((s, idx) => `
+          <div class="step-item ${idx === shown.length - 1 ? 'highlight' : ''}">
+            <strong>Langkah ${idx + 1}:</strong> ${s}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;">
+      <div>
+        ${!allShown
+          ? `<button class="btn btn-primary" onclick="nextStep()">💡 Tampilkan Langkah Berikutnya</button>`
+          : `<button class="btn btn-outline" onclick="resetSteps()">🔁 Ulangi Langkah</button>`
+        }
+      </div>
+      <button class="btn btn-success" onclick="switchPhase('quiz')">🚀 Uji Kemampuan Mencongak!</button>
+    </div>
+  `;
+}
+
+function selectExample(idx) {
+  playSound('click');
+  currentExampleIdx = idx;
+  revealedSteps = 1;
+  renderStage();
+}
+function nextStep() {
+  playSound('click');
+  revealedSteps++;
+  renderStage();
+}
+function resetSteps() {
+  playSound('click');
+  revealedSteps = 1;
+  renderStage();
+}
+
+// ==================== PHASE 3: MENCONGAK QUIZ ====================
+function initQuiz() {
+  const totalQ = 5;
+  const questions = Array.from({length: totalQ}, () => currentLevel.genQuestion());
+  quiz = {
+    questions,
+    index: 0,
+    score: 0,
+    streak: 0,
+    answered: false,
+    selected: null
+  };
+}
+
+function renderQuizView() {
+  if (!quiz) initQuiz();
+
+  if (quiz.index >= quiz.questions.length) {
+    const pct = Math.round((quiz.score / quiz.questions.length) * 100);
+    const earnedStars = quiz.score >= 5 ? 3 : quiz.score >= 4 ? 2 : quiz.score >= 3 ? 1 : 0;
+    const prevStars = state.stars[currentLevel.id] || 0;
+    if (earnedStars > prevStars) state.stars[currentLevel.id] = earnedStars;
+    if (earnedStars >= 1) state.completed[currentLevel.id] = true;
+    saveState();
+    updateHeaderStats();
+
+    return `
+      <div class="result-card">
+        <h2>${earnedStars >= 1 ? '🎉 Hebat! Level Selesai!' : '💪 Yuk Coba Sekali Lagi!'}</h2>
+        <div class="result-stars">${'⭐'.repeat(earnedStars)}${'☆'.repeat(3 - earnedStars)}</div>
+        <p style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">
+          Skor Benar: ${quiz.score} / ${quiz.questions.length} (${pct}%)
+        </p>
+        <p style="color:#64748b;margin-bottom:18px;">
+          ${earnedStars >= 1 ? 'Kamu sudah membuka level berikutnya! Terus berlatih mencongak agar makin cepat.' : 'Dapatkan minimal 3 jawaban benar untuk membuka bintang dan level berikutnya.'}
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="restartQuiz()">🔁 Mainkan Ulang Soal Baru</button>
+          <button class="btn btn-outline" onclick="closeWorkspace()">🗺 Kembali ke Peta Level</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const q = quiz.questions[quiz.index];
+  const pctBar = (quiz.index / quiz.questions.length) * 100;
+
+  return `
+    <div class="quiz-top">
+      <strong>Soal ${quiz.index + 1} dari ${quiz.questions.length}</strong>
+      <span class="pill" style="background:#fef3c7;color:#b45309;">🔥 Kombo: ${quiz.streak} | Skor: ${quiz.score}</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pctBar}%"></div></div>
+
+    <div class="question-box">
+      <div class="question-text">${q.q}</div>
+      <div class="question-sub">${q.sub}</div>
+    </div>
+
+    <div class="options-grid">
+      ${q.choices.map(c => {
+        let cls = 'option-btn';
+        if (quiz.answered) {
+          if (c === q.answer) cls += ' correct';
+          else if (c === quiz.selected) cls += ' wrong';
+        }
+        const safeVal = c.replace(/'/g, "\\'");
+        return `<button class="${cls}" ${quiz.answered ? 'disabled' : ''} onclick="answerQuiz('${safeVal}')">${c}</button>`;
+      }).join('')}
+    </div>
+
+    ${quiz.answered ? `
+      <div class="feedback-box ${quiz.selected === q.answer ? 'ok' : 'no'}">
+        <strong>${quiz.selected === q.answer ? '✅ AHA! Benar Sekali!' : `❌ Belum tepat. Jawaban benar: ${q.answer}`}</strong><br>
+        💡 <em>Trik GASING:</em> ${q.explain}
+      </div>
+      <div style="text-align:center;margin-top:14px;">
+        <button class="btn btn-primary" onclick="nextQuizQuestion()">
+          ${quiz.index + 1 >= quiz.questions.length ? '🏆 Lihat Hasil Akhir' : 'Soal Berikutnya ➡'}
+        </button>
+      </div>
+    ` : ''}
+  `;
+}
+
+function answerQuiz(choice) {
+  if (quiz.answered) return;
+  const q = quiz.questions[quiz.index];
+  quiz.answered = true;
+  quiz.selected = choice;
+
+  if (choice === q.answer) {
+    quiz.score++;
+    quiz.streak++;
+    state.xp += 20 + (quiz.streak * 5);
+    playSound('correct');
+  } else {
+    quiz.streak = 0;
+    playSound('wrong');
+  }
+  saveState();
+  updateHeaderStats();
+  renderStage();
+}
+
+function nextQuizQuestion() {
+  playSound('click');
+  quiz.index++;
+  quiz.answered = false;
+  quiz.selected = null;
+  if (quiz.index >= quiz.questions.length && quiz.score >= 3) {
+    playSound('win');
+  }
+  renderStage();
+}
+
+function restartQuiz() {
+  playSound('click');
+  initQuiz();
+  renderStage();
+}
+
+// ==================== INIT ====================
+loadState();
+updateHeaderStats();
+renderGradeTabs();
+renderLevels();
+</script>
+</body>
+</html>

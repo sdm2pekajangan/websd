@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Belajar Membaca Metode AHE (Anak Hebat) — Tanpa Mengeja</title>
+  <style>
+    :root {
+      --bg: #fff9f0;
+      --card: #ffffff;
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --yellow: #facc15;
+      --pink: #ec4899;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #fed7aa;
+      --radius: 20px;
+      --shadow: 0 10px 24px rgba(234, 88, 12, 0.09);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(155deg, #fff7ed 0%, #eff6ff 55%, #fefce8 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(120deg, #ea580c, #f97316, #f59e0b);
+      color: white;
+      padding: 15px 20px;
+      box-shadow: 0 4px 16px rgba(234, 88, 12, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-ahe {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: white;
+      color: #ea580c;
+      font-weight: 900;
+      font-size: 1.1rem;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 0 #c2410c;
+      letter-spacing: -0.5px;
+    }
+    .brand h1 { font-size: 1.25rem; font-weight: 900; }
+    .brand p { font-size: 0.82rem; opacity: 0.94; }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.22);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .toggle-btn {
+      border: 1.5px solid rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.16);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #fef08a;
+      color: #7c2d12;
+      border-color: #fef08a;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 22px auto 48px;
+      padding: 0 16px;
+    }
+
+    .hero-banner {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .tag-ahe {
+      display: inline-block;
+      background: #ffedd5;
+      color: #c2410c;
+      font-weight: 800;
+      font-size: 0.76rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .hero-banner h2 { font-size: 1.2rem; margin-bottom: 4px; }
+    .hero-banner p { font-size: 0.9rem; color: var(--muted); max-width: 680px; }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .level-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 2px solid #e2e8f0;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: 0.2s;
+    }
+    .level-card:hover:not(.locked) {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .level-card.locked { opacity: 0.65; background: #f8fafc; }
+
+    .lvl-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .lvl-badge {
+      background: #ffedd5;
+      color: #9a3412;
+      font-weight: 900;
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .lvl-vowel {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+    }
+    .level-card h3 { font-size: 1.06rem; margin-bottom: 6px; }
+    .level-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+    .stars-row { font-size: 1.05rem; margin-bottom: 10px; }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+    .btn:active { transform: translateY(2px); }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+    .btn-blue {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 4px 0 #1d4ed8;
+    }
+    .btn-green {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 0 #15803d;
+    }
+    .btn-outline {
+      background: white;
+      color: var(--text);
+      border: 2px solid #cbd5e1;
+    }
+    .btn-disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    /* Workspace */
+    .workspace {
+      display: none;
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .workspace.active { display: block; }
+
+    .ws-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid #fff7ed;
+      margin-bottom: 16px;
+    }
+
+    /* 6 Langkah AHE Stepper */
+    .steps-nav {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 820px) {
+      .steps-nav { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .steps-nav { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .step-btn {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 9px 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+      color: #475569;
+    }
+    .step-btn.active {
+      background: #fff7ed;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.14);
+    }
+    .step-btn.done {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #15803d;
+    }
+
+    .stage-box {
+      background: #fffaf5;
+      border: 2px dashed #fdba74;
+      border-radius: 18px;
+      padding: 20px;
+      min-height: 340px;
+    }
+
+    .coach-box {
+      background: #fef9c3;
+      border: 2px solid #fde047;
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+    .coach-box .ico { font-size: 1.9rem; }
+
+    /* Cards & Syllables */
+    .flash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .syl-card {
+      background: white;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 4px 0 #e2e8f0;
+      user-select: none;
+    }
+    .syl-card:hover { transform: translateY(-2px); border-color: var(--primary); }
+    .syl-card.heard {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      box-shadow: 0 4px 0 #86efac;
+    }
+    .syl-big {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 1px;
+    }
+    .syl-part-a { color: #ea580c; }
+    .syl-part-b { color: #2563eb; }
+
+    .titian-hint {
+      font-size: 0.78rem;
+      color: #475569;
+      margin-top: 4px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 3px 6px;
+    }
+
+    /* Drill 9 Words */
+    .drill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 680px;
+      margin: 14px auto;
+    }
+    @media (max-width: 560px) {
+      .drill-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .drill-word {
+      background: white;
+      border: 2.5px solid #bfdbfe;
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .drill-word.checked {
+      background: #dcfce7;
+      border-color: #16a34a;
+      color: #14532d;
+    }
+
+    /* Brain Gym & Writing Canvas */
+    .canvas-wrap {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      margin: 12px auto;
+      max-width: 520px;
+    }
+    canvas {
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      touch-action: none;
+      max-width: 100%;
+    }
+
+    /* Writing / Dictation Layout */
+    .write-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 760px) {
+      .write-split { grid-template-columns: 1fr; }
+    }
+
+    .tile-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .tile {
+      background: white;
+      border: 2px solid #93c5fd;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .tile:hover { background: #eff6ff; }
+
+    .answer-slot {
+      min-height: 54px;
+      background: white;
+      border: 2px dashed #ea580c;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #c2410c;
+      padding: 8px;
+      margin: 10px 0;
+    }
+
+    /* Games */
+    .game-card-stage {
+      background: white;
+      border: 2px solid #fed7aa;
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      max-width: 600px;
+      margin: 10px auto;
+    }
+    .flash-word-screen {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #ea580c;
+      min-height: 76px;
+      display: grid;
+      place-items: center;
+      background: #fff7ed;
+      border-radius: 16px;
+      margin: 12px 0;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .opt-btn {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff7ed; }
+    .opt-btn.ok { background: #dcfce7; border-color: #16a34a; color: #14532d; }
+    .opt-btn.no { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+    .feedback.ok { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
+    .feedback.try { background: #fef3c7; color: #92400e; border: 2px solid #fde047; }
+
+    /* Story card (Level 8) */
+    .story-box {
+      background: white;
+      border: 2px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 1.15rem;
+      line-height: 1.9;
+      margin: 12px 0;
+    }
+
+    /* Placement Test Modal */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: 22px;
+      max-width: 540px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo-ahe">AHE</div>
+      <div>
+        <h1>Bimbel Baca AHE (Anak Hebat)</h1>
+        <p>Belajar Membaca Tanpa Mengeja • Titian Ingatan • 6 Langkah AHE</p>
+      </div>
+    </div>
+    <div class="top-controls">
+      <div class="pill">⭐ <span id="starTotal">0</span> Bintang</div>
+      <div class="pill">🏆 <span id="xpTotal">0</span> Poin Hebat</div>
+      <button class="toggle-btn active" id="ttsBtn" onclick="toggleVoice()">🔊 Suara Baca: ON</button>
+      <button class="toggle-btn" id="guruBtn" onclick="toggleUnlockAll()">🔒 Mode: Berlevel</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Home Map -->
+  <div id="mapView">
+    <div class="hero-banner">
+      <div>
+        <span class="tag-ahe">PRINSIP AHE: NIKMAT • MELEKAT • TANPA MENGEJA</span>
+        <h2>Peta Level Belajar Membaca (Level 1 – Level 8)</h2>
+        <p>Anak tidak mengeja per huruf (bukan "be-a ba"), melainkan langsung membaca suku kata dengan <strong>Titian Ingatan</strong> dan mengikuti <strong>6 Langkah AHE</strong> secara gembira!</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-blue" onclick="openPlacementTest()">🎯 Tes Penempatan Murid Baru</button>
+        <button class="btn btn-outline" onclick="resetProgress()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <div class="levels-grid" id="levelsGrid"></div>
+  </div>
+
+  <!-- 6-Step AHE Workspace -->
+  <div id="workspaceView" class="workspace">
+    <div class="ws-top">
+      <div>
+        <span class="lvl-badge" id="wsBadge">Level 1</span>
+        <h2 id="wsTitle" style="margin-top:4px;">Judul Level</h2>
+      </div>
+      <button class="btn btn-outline" onclick="closeWorkspace()">⬅ Kembali ke Daftar Level</button>
+    </div>
+
+    <div class="steps-nav" id="stepsNav">
+      <button class="step-btn" onclick="goStep(1)" id="sBtn1">1. 🧠 Senam Otak</button>
+      <button class="step-btn" onclick="goStep(2)" id="sBtn2">2. 🔁 Remidi</button>
+      <button class="step-btn" onclick="goStep(3)" id="sBtn3">3. 📖 Baca Modul</button>
+      <button class="step-btn" onclick="goStep(4)" id="sBtn4">4. ✨ Pengayaan</button>
+      <button class="step-btn" onclick="goStep(5)" id="sBtn5">5. ✏️ Menulis &amp; Dikte</button>
+      <button class="step-btn" onclick="goStep(6)" id="sBtn6">6. 🎮 Permainan Kartu</button>
+    </div>
+
+    <div class="stage-box" id="stageBox"></div>
+  </div>
+</main>
+
+<!-- Placement Test Modal -->
+<div class="modal-bg" id="placementModal">
+  <div class="modal-card" id="placementContent"></div>
+</div>
+
+<script>
+// ==================== SPEECH & SOUND ENGINE ====================
+let audioCtx = null;
+function playTone(type) {
+  if (!state.voiceOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    if (type === 'ok') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523, now);
+      osc.frequency.setValueAtTime(659, now + 0.08);
+      osc.frequency.setValueAtTime(784, now + 0.16);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.start(now); osc.stop(now + 0.35);
+    } else if (type === 'pop') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(580, now);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+      osc.start(now); osc.stop(now + 0.07);
+    } else if (type === 'try') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(330, now);
+      osc.frequency.setValueAtTime(290, now + 0.12);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now); osc.stop(now + 0.25);
+    }
+  } catch (e) {}
+}
+
+function speak(text, rate = 0.85) {
+  if (!state.voiceOn) return;
+  if (!('speechSynthesis' in window)) {
+    playTone('pop');
+    return;
+  }
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'id-ID';
+    u.rate = rate;
+    u.pitch = 1.08;
+    const voices = window.speechSynthesis.getVoices();
+    const idVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('id'));
+    if (idVoice) u.voice = idVoice;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+// ==================== AHE CURRICULUM DATA (LEVEL 1 - 8) ====================
+const AHE_LEVELS = [
+  {
+    level: 1,
+    vowelBadge: 'A',
+    title: 'Level 1: Suku Kata Vokal "a"',
+    desc: 'Mengenal suku kata terbuka berbunyi "a" (ba, ca, da, ga, ma, sa) tanpa mengeja lewat Titian Ingatan!',
+    remidiTitle: 'Pemanasan Vokal Dasar & Bunyi Terbuka',
+    remidiItems: [
+      { txt: 'a', hint: '🍇 anggur' }, { txt: 'i', hint: '🐟 ikan' },
+      { txt: 'u', hint: '🐍 ular' }, { txt: 'e', hint: '🍦 es krim' }, { txt: 'o', hint: '💊 obat' }
+    ],
+    syllables: [
+      { s: 'ba', word: 'badut', emoji: '🤡' },
+      { s: 'ca', word: 'cacing', emoji: '🪱' },
+      { s: 'da', word: 'dadu', emoji: '🎲' },
+      { s: 'ga', word: 'gajah', emoji: '🐘' },
+      { s: 'ha', word: 'harimau', emoji: '🐯' },
+      { s: 'ja', word: 'jagung', emoji: '🌽' },
+      { s: 'ka', word: 'katak', emoji: '🐸' },
+      { s: 'la', word: 'lampu', emoji: '💡' },
+      { s: 'ma', word: 'mama', emoji: '👩' },
+      { s: 'na', word: 'nanas', emoji: '🍍' },
+      { s: 'pa', word: 'papa', emoji: '👨' },
+      { s: 'ra', word: 'raja', emoji: '👑' },
+      { s: 'sa', word: 'sapi', emoji: '🐄' },
+      { s: 'ta', word: 'tali', emoji: '🪢' }
+    ],
+    words: [
+      { w: 'ba ca', full: 'baca', parts: ['ba','ca'], emoji: '📖' },
+      { w: 'ma ma', full: 'mama', parts: ['ma','ma'], emoji: '👩' },
+      { w: 'pa pa', full: 'papa', parts: ['pa','pa'], emoji: '👨' },
+      { w: 'sa ya', full: 'saya', parts: ['sa','ya'], emoji: '🙋' },
+      { w: 'ka ca', full: 'kaca', parts: ['ka','ca'], emoji: '🪞' },
+      { w: 'na ga', full: 'naga', parts: ['na','ga'], emoji: '🐉' },
+      { w: 'ra ja', full: 'raja', parts: ['ra','ja'], emoji: '👑' },
+      { w: 'ma ta', full: 'mata', parts: ['ma','ta'], emoji: '👀' },
+      { w: 'ja la', full: 'jala', parts: ['ja','la'], emoji: '🕸️' }
+    ],
+    dictation: [
+      { word: 'baca', parts: ['ba','ca'], pool: ['ba','ca','da','ma','sa'] },
+      { word: 'mama', parts: ['ma','ma'], pool: ['ma','ma','pa','ka','la'] },
+      { word: 'naga', parts: ['na','ga'], pool: ['na','ga','ra','ja','ba'] },
+      { word: 'kaca', parts: ['ka','ca'], pool: ['ka','ca','ta','sa','da'] }
+    ],
+    confusablePairs: [['ba','da'],['ca','ja'],['ma','na'],['ka','ga'],['pa','ra'],['sa','ta']]
+  },
+  {
+    level: 2,
+    vowelBadge: 'I',
+    title: 'Level 2: Suku Kata Vokal "i"',
+    desc: 'Mengenal bunyi vokal "i" (bi, ci, di, gi, ki, li, si) serta merangkainya dengan materi Level 1!',
+    remidiTitle: 'Ulasan Materi Level 1 (Vokal "a")',
+    remidiItems: [
+      { txt: 'ba', hint: '🤡 badut' }, { txt: 'ca', hint: '🪱 cacing' },
+      { txt: 'da', hint: '🎲 dadu' }, { txt: 'ma', hint: '👩 mama' },
+      { txt: 'sa', hint: '🐄 sapi' }, { txt: 'ra', hint: '👑 raja' }
+    ],
+    syllables: [
+      { s: 'bi', word: 'biru', emoji: '🔵' },
+      { s: 'ci', word: 'cicak', emoji: '🦎' },
+      { s: 'di', word: 'dinding', emoji: '🧱' },
+      { s: 'gi', word: 'gigi', emoji: '🦷' },
+      { s: 'hi', word: 'hiu', emoji: '🦈' },
+      { s: 'ji', word: 'jinjit', emoji: '🦶' },
+      { s: 'ki', word: 'kipas', emoji: '🪭' },
+      { s: 'li', word: 'lilin', emoji: '🕯️' },
+      { s: 'mi', word: 'minum', emoji: '🥤' },
+      { s: 'ni', word: 'nilai', emoji: '💯' },
+      { s: 'pi', word: 'pipi', emoji: '😊' },
+      { s: 'ri', word: 'ribu', emoji: '💵' },
+      { s: 'si', word: 'sikat', emoji: '🪥' },
+      { s: 'ti', word: 'tikus', emoji: '🐭' }
+    ],
+    words: [
+      { w: 'bi bi', full: 'bibi', parts: ['bi','bi'], emoji: '👩' },
+      { w: 'gi gi', full: 'gigi', parts: ['gi','gi'], emoji: '🦷' },
+      { w: 'ka ki', full: 'kaki', parts: ['ka','ki'], emoji: '🦵' },
+      { w: 'sa pi', full: 'sapi', parts: ['sa','pi'], emoji: '🐄' },
+      { w: 'ta li', full: 'tali', parts: ['ta','li'], emoji: '🪢' },
+      { w: 'ja ri', full: 'jari', parts: ['ja','ri'], emoji: '🖐️' },
+      { w: 'pa gi', full: 'pagi', parts: ['pa','gi'], emoji: '🌅' },
+      { w: 'pi pi', full: 'pipi', parts: ['pi','pi'], emoji: '😊' },
+      { w: 'na si', full: 'nasi', parts: ['na','si'], emoji: '🍚' }
+    ],
+    dictation: [
+      { word: 'sapi', parts: ['sa','pi'], pool: ['sa','pi','bi','ki','ta'] },
+      { word: 'kaki', parts: ['ka','ki'], pool: ['ka','ki','gi','li','ma'] },
+      { word: 'nasi', parts: ['na','si'], pool: ['na','si','ti','ri','ca'] },
+      { word: 'jari', parts: ['ja','ri'], pool: ['ja','ri','di','pa','bi'] }
+    ],
+    confusablePairs: [['bi','di'],['gi','ji'],['pi','ti'],['si','ci'],['ki','li'],['mi','ni']]
+  },
+  {
+    level: 3,
+    vowelBadge: 'U',
+    title: 'Level 3: Suku Kata Vokal "u"',
+    desc: 'Menguasai suku kata berbunyi "u" (bu, cu, du, gu, ku, su) dan menggabungkannya dengan a & i!',
+    remidiTitle: 'Ulasan Materi Level 2 (Vokal "a" & "i")',
+    remidiItems: [
+      { txt: 'bi', hint: '🔵 biru' }, { txt: 'gi', hint: '🦷 gigi' },
+      { txt: 'ka ki', hint: '🦵 kaki' }, { txt: 'sa pi', hint: '🐄 sapi' },
+      { txt: 'ja ri', hint: '🖐️ jari' }, { txt: 'na si', hint: '🍚 nasi' }
+    ],
+    syllables: [
+      { s: 'bu', word: 'buku', emoji: '📖' },
+      { s: 'cu', word: 'cuka', emoji: '🍶' },
+      { s: 'du', word: 'duri', emoji: '🌵' },
+      { s: 'gu', word: 'guru', emoji: '👩‍🏫' },
+      { s: 'hu', word: 'hujan', emoji: '🌧️' },
+      { s: 'ju', word: 'jus', emoji: '🧃' },
+      { s: 'ku', word: 'kuda', emoji: '🐴' },
+      { s: 'lu', word: 'lupa', emoji: '🤔' },
+      { s: 'mu', word: 'mulut', emoji: '👄' },
+      { s: 'nu', word: 'nusa', emoji: '🏝️' },
+      { s: 'pu', word: 'pulau', emoji: '🌴' },
+      { s: 'ru', word: 'rusa', emoji: '🦌' },
+      { s: 'su', word: 'susu', emoji: '🥛' },
+      { s: 'tu', word: 'tutup', emoji: '🚪' }
+    ],
+    words: [
+      { w: 'bu ku', full: 'buku', parts: ['bu','ku'], emoji: '📖' },
+      { w: 'su su', full: 'susu', parts: ['su','su'], emoji: '🥛' },
+      { w: 'ba ju', full: 'baju', parts: ['ba','ju'], emoji: '👕' },
+      { w: 'gu ru', full: 'guru', parts: ['gu','ru'], emoji: '👩‍🏫' },
+      { w: 'ku da', full: 'kuda', parts: ['ku','da'], emoji: '🐴' },
+      { w: 'sa pu', full: 'sapu', parts: ['sa','pu'], emoji: '🧹' },
+      { w: 'du ri', full: 'duri', parts: ['du','ri'], emoji: '🌵' },
+      { w: 'ma ju', full: 'maju', parts: ['ma','ju'], emoji: '🏃' },
+      { w: 'pa ku', full: 'paku', parts: ['pa','ku'], emoji: '🔩' }
+    ],
+    dictation: [
+      { word: 'buku', parts: ['bu','ku'], pool: ['bu','ku','su','da','ma'] },
+      { word: 'susu', parts: ['su','su'], pool: ['su','su','tu','bu','ru'] },
+      { word: 'kuda', parts: ['ku','da'], pool: ['ku','da','ba','gu','ju'] },
+      { word: 'baju', parts: ['ba','ju'], pool: ['ba','ju','sa','pu','ri'] }
+    ],
+    confusablePairs: [['bu','du'],['ku','gu'],['su','tu'],['pu','ru'],['mu','nu'],['cu','ju']]
+  },
+  {
+    level: 4,
+    vowelBadge: 'O',
+    title: 'Level 4: Suku Kata Vokal "o"',
+    desc: 'Membaca suku kata "o" (bo, co, do, ko, ro, so, to) plus kombinasi vokal a-i-u-o!',
+    remidiTitle: 'Ulasan Materi Level 3 (Vokal "a, i, u")',
+    remidiItems: [
+      { txt: 'bu ku', hint: '📖 buku' }, { txt: 'su su', hint: '🥛 susu' },
+      { txt: 'ba ju', hint: '👕 baju' }, { txt: 'gu ru', hint: '👩‍🏫 guru' },
+      { txt: 'ku da', hint: '🐴 kuda' }, { txt: 'sa pu', hint: '🧹 sapu' }
+    ],
+    syllables: [
+      { s: 'bo', word: 'bola', emoji: '⚽' },
+      { s: 'co', word: 'cokelat', emoji: '🍫' },
+      { s: 'do', word: 'domba', emoji: '🐑' },
+      { s: 'fo', word: 'foto', emoji: '📷' },
+      { s: 'go', word: 'gorila', emoji: '🦍' },
+      { s: 'ho', word: 'hotel', emoji: '🏨' },
+      { s: 'jo', word: 'joran', emoji: '🎣' },
+      { s: 'ko', word: 'kopi', emoji: '☕' },
+      { s: 'lo', word: 'lomba', emoji: '🏆' },
+      { s: 'mo', word: 'mobil', emoji: '🚗' },
+      { s: 'no', word: 'nota', emoji: '🧾' },
+      { s: 'po', word: 'pohon', emoji: '🌳' },
+      { s: 'ro', word: 'roti', emoji: '🍞' },
+      { s: 'to', word: 'topi', emoji: '🧢' }
+    ],
+    words: [
+      { w: 'bo la', full: 'bola', parts: ['bo','la'], emoji: '⚽' },
+      { w: 'ro ti', full: 'roti', parts: ['ro','ti'], emoji: '🍞' },
+      { w: 'to pi', full: 'topi', parts: ['to','pi'], emoji: '🧢' },
+      { w: 'ko pi', full: 'kopi', parts: ['ko','pi'], emoji: '☕' },
+      { w: 'so to', full: 'soto', parts: ['so','to'], emoji: '🍲' },
+      { w: 'fo to', full: 'foto', parts: ['fo','to'], emoji: '📷' },
+      { w: 'to ko', full: 'toko', parts: ['to','ko'], emoji: '🏪' },
+      { w: 'ro da', full: 'roda', parts: ['ro','da'], emoji: '🛞' },
+      { w: 'bi o la', full: 'biola', parts: ['bi','o','la'], emoji: '🎻' }
+    ],
+    dictation: [
+      { word: 'bola', parts: ['bo','la'], pool: ['bo','la','ro','ti','ko'] },
+      { word: 'roti', parts: ['ro','ti'], pool: ['ro','ti','to','pi','so'] },
+      { word: 'topi', parts: ['to','pi'], pool: ['to','pi','bo','fo','da'] },
+      { word: 'toko', parts: ['to','ko'], pool: ['to','ko','so','mo','la'] }
+    ],
+    confusablePairs: [['bo','do'],['ro','to'],['ko','go'],['mo','no'],['fo','po'],['so','co']]
+  },
+  {
+    level: 5,
+    vowelBadge: 'E',
+    title: 'Level 5: Suku Kata Vokal "e"',
+    desc: 'Menguasai seluruh vokal terbuka (a-i-u-e-o) lewat suku kata vokal "e" (be, ce, de, me, pe, se)!',
+    remidiTitle: 'Ulasan Materi Level 4 (Vokal "a, i, u, o")',
+    remidiItems: [
+      { txt: 'bo la', hint: '⚽ bola' }, { txt: 'ro ti', hint: '🍞 roti' },
+      { txt: 'to pi', hint: '🧢 topi' }, { txt: 'ro da', hint: '🛞 roda' },
+      { txt: 'bi o la', hint: '🎻 biola' }, { txt: 'to ko', hint: '🏪 toko' }
+    ],
+    syllables: [
+      { s: 'be', word: 'bebek', emoji: '🦆' },
+      { s: 'ce', word: 'ceri', emoji: '🍒' },
+      { s: 'de', word: 'desa', emoji: '🏡' },
+      { s: 'fe', word: 'feri', emoji: '⛴️' },
+      { s: 'ge', word: 'gelas', emoji: '🥛' },
+      { s: 'he', word: 'hebat', emoji: '🌟' },
+      { s: 'je', word: 'jeruk', emoji: '🍊' },
+      { s: 'ke', word: 'keju', emoji: '🧀' },
+      { s: 'le', word: 'lele', emoji: '🐟' },
+      { s: 'me', word: 'meja', emoji: '🪑' },
+      { s: 'pe', word: 'peta', emoji: '🗺️' },
+      { s: 're', word: 'kereta', emoji: '🚂' },
+      { s: 'se', word: 'sepatu', emoji: '👟' },
+      { s: 'te', word: 'teko', emoji: '🫖' }
+    ],
+    words: [
+      { w: 'me ja', full: 'meja', parts: ['me','ja'], emoji: '🪑' },
+      { w: 'ke ju', full: 'keju', parts: ['ke','ju'], emoji: '🧀' },
+      { w: 'le le', full: 'lele', parts: ['le','le'], emoji: '🐟' },
+      { w: 'pe ta', full: 'peta', parts: ['pe','ta'], emoji: '🗺️' },
+      { w: 'be li', full: 'beli', parts: ['be','li'], emoji: '🛍️' },
+      { w: 'de sa', full: 'desa', parts: ['de','sa'], emoji: '🏡' },
+      { w: 'te ko', full: 'teko', parts: ['te','ko'], emoji: '🫖' },
+      { w: 'se pa tu', full: 'sepatu', parts: ['se','pa','tu'], emoji: '👟' },
+      { w: 'ke re ta', full: 'kereta', parts: ['ke','re','ta'], emoji: '🚂' }
+    ],
+    dictation: [
+      { word: 'meja', parts: ['me','ja'], pool: ['me','ja','ke','ju','le'] },
+      { word: 'keju', parts: ['ke','ju'], pool: ['ke','ju','pe','ta','be'] },
+      { word: 'sepatu', parts: ['se','pa','tu'], pool: ['se','pa','tu','re','ka'] },
+      { word: 'kereta', parts: ['ke','re','ta'], pool: ['ke','re','ta','me','sa'] }
+    ],
+    confusablePairs: [['be','de'],['me','ne'],['se','ce'],['ke','ge'],['pe','te'],['le','re']]
+  },
+  {
+    level: 6,
+    vowelBadge: 'KVK',
+    title: 'Level 6: Huruf Paten (Suku Kata Mati)',
+    desc: 'Membaca suku kata tertutup berakhiran huruf mati seperti "ban", "man", "tas", "bis", "tol"!',
+    remidiTitle: 'Ulasan Materi Level 5 (Semua Vokal Terbuka)',
+    remidiItems: [
+      { txt: 'me ja', hint: '🪑 meja' }, { txt: 'ke ju', hint: '🧀 keju' },
+      { txt: 'se pa tu', hint: '👟 sepatu' }, { txt: 'ke re ta', hint: '🚂 kereta' },
+      { txt: 'be li', hint: '🛍️ beli' }, { txt: 'te ko', hint: '🫖 teko' }
+    ],
+    syllables: [
+      { s: 'ban', word: 'ban mobil', emoji: '🛞' },
+      { s: 'man', word: 'mandi', emoji: '🛁' },
+      { s: 'tas', word: 'tas sekolah', emoji: '🎒' },
+      { s: 'bis', word: 'bis kota', emoji: '🚌' },
+      { s: 'jam', word: 'jam dinding', emoji: '⏰' },
+      { s: 'cat', word: 'cat warna', emoji: '🎨' },
+      { s: 'pot', word: 'pot bunga', emoji: '🪴' },
+      { s: 'kol', word: 'sayur kol', emoji: '🥬' },
+      { s: 'rum', word: 'rumput', emoji: '🌿' },
+      { s: 'pin', word: 'pintu', emoji: '🚪' },
+      { s: 'kan', word: 'kantin', emoji: '🍱' },
+      { s: 'sem', word: 'semut', emoji: '🐜' }
+    ],
+    words: [
+      { w: 'ban tu', full: 'bantu', parts: ['ban','tu'], emoji: '🤝' },
+      { w: 'man di', full: 'mandi', parts: ['man','di'], emoji: '🛁' },
+      { w: 'pin tu', full: 'pintu', parts: ['pin','tu'], emoji: '🚪' },
+      { w: 'rum put', full: 'rumput', parts: ['rum','put'], emoji: '🌿' },
+      { w: 'se mut', full: 'semut', parts: ['se','mut'], emoji: '🐜' },
+      { w: 'kan tin', full: 'kantin', parts: ['kan','tin'], emoji: '🍱' },
+      { w: 'mo bil', full: 'mobil', parts: ['mo','bil'], emoji: '🚗' },
+      { w: 'ka pal', full: 'kapal', parts: ['ka','pal'], emoji: '🚢' },
+      { w: 'be bel', full: 'kebun', parts: ['ke','bun'], emoji: '🌳' }
+    ],
+    dictation: [
+      { word: 'bantu', parts: ['ban','tu'], pool: ['ban','tu','man','di','pin'] },
+      { word: 'mandi', parts: ['man','di'], pool: ['man','di','ban','tas','ku'] },
+      { word: 'pintu', parts: ['pin','tu'], pool: ['pin','tu','kan','tin','sa'] },
+      { word: 'semut', parts: ['se','mut'], pool: ['se','mut','rum','put','mo'] }
+    ],
+    confusablePairs: [['ban','dan'],['tas','pas'],['bis','mis'],['jam','kam'],['pin','tin'],['pot','kot']]
+  },
+  {
+    level: 7,
+    vowelBadge: 'NG',
+    title: 'Level 7: Konsonan Rangkap (ng, ny, pr, tr)',
+    desc: 'Membaca bunyi sengau "ng", "ny", serta gugus konsonan seperti "bunga", "nyanyi", "bangkit"!',
+    remidiTitle: 'Ulasan Materi Level 6 (Huruf Paten)',
+    remidiItems: [
+      { txt: 'ban tu', hint: '🤝 bantu' }, { txt: 'man di', hint: '🛁 mandi' },
+      { txt: 'pin tu', hint: '🚪 pintu' }, { txt: 'se mut', hint: '🐜 semut' },
+      { txt: 'mo bil', hint: '🚗 mobil' }, { txt: 'ke bun', hint: '🌳 kebun' }
+    ],
+    syllables: [
+      { s: 'bang', word: 'bangkit', emoji: '💪' },
+      { s: 'sing', word: 'singa', emoji: '🦁' },
+      { s: 'yung', word: 'payung', emoji: '☂️' },
+      { s: 'cing', word: 'kucing', emoji: '🐱' },
+      { s: 'nga', word: 'bunga', emoji: '🌸' },
+      { s: 'nya', word: 'nyanyi', emoji: '🎤' },
+      { s: 'nyi', word: 'bunyi', emoji: '🔔' },
+      { s: 'nyu', word: 'penyu', emoji: '🐢' },
+      { s: 'pram', word: 'pramuka', emoji: '⛺' },
+      { s: 'tri', word: 'putri', emoji: '👸' }
+    ],
+    words: [
+      { w: 'bu nga', full: 'bunga', parts: ['bu','nga'], emoji: '🌸' },
+      { w: 'si nga', full: 'singa', parts: ['si','nga'], emoji: '🦁' },
+      { w: 'ku cing', full: 'kucing', parts: ['ku','cing'], emoji: '🐱' },
+      { w: 'pa yung', full: 'payung', parts: ['pa','yung'], emoji: '☂️' },
+      { w: 'nya nyi', full: 'nyanyi', parts: ['nya','nyi'], emoji: '🎤' },
+      { w: 'pe nyu', full: 'penyu', parts: ['pe','nyu'], emoji: '🐢' },
+      { w: 'bang kit', full: 'bangkit', parts: ['bang','kit'], emoji: '💪' },
+      { w: 'te rang', full: 'terang', parts: ['te','rang'], emoji: '☀️' },
+      { w: 'pu tri', full: 'putri', parts: ['pu','tri'], emoji: '👸' }
+    ],
+    dictation: [
+      { word: 'bunga', parts: ['bu','nga'], pool: ['bu','nga','si','ku','cing'] },
+      { word: 'kucing', parts: ['ku','cing'], pool: ['ku','cing','pa','yung','nya'] },
+      { word: 'nyanyi', parts: ['nya','nyi'], pool: ['nya','nyi','pe','nyu','bu'] },
+      { word: 'payung', parts: ['pa','yung'], pool: ['pa','yung','te','rang','tri'] }
+    ],
+    confusablePairs: [['nga','nya'],['bang','kang'],['cing','ting'],['yung','gung'],['nyi','ngi'],['tri','pri']]
+  },
+  {
+    level: 8,
+    vowelBadge: '📖',
+    title: 'Level 8: Lancar Kalimat & Cerita Pendek',
+    desc: 'Tahap akhir AHE: membaca kalimat utuh dan cerita anak hebat lalu memahami isi ceritanya!',
+    remidiTitle: 'Ulasan Materi Level 7 (ng & ny)',
+    remidiItems: [
+      { txt: 'bu nga', hint: '🌸 bunga' }, { txt: 'ku cing', hint: '🐱 kucing' },
+      { txt: 'pa yung', hint: '☂️ payung' }, { txt: 'nya nyi', hint: '🎤 nyanyi' },
+      { txt: 'pe nyu', hint: '🐢 penyu' }, { txt: 'te rang', hint: '☀️ terang' }
+    ],
+    syllables: [
+      { s: 'pagi cerah', word: 'matahari bersinar', emoji: '☀️' },
+      { s: 'budi membaca', word: 'buku cerita', emoji: '📖' },
+      { s: 'kucing putih', word: 'minum susu', emoji: '🐱' },
+      { s: 'ibu menyiram', word: 'bunga mawar', emoji: '🌹' },
+      { s: 'ayah pergi', word: 'naik kereta', emoji: '🚂' },
+      { s: 'anak hebat', word: 'rajin belajar', emoji: '🌟' }
+    ],
+    words: [
+      { w: 'Pagi ini matahari bersinar terang.', full: 'Pagi ini matahari bersinar terang.', parts: ['Pagi ini', 'matahari bersinar terang.'], emoji: '☀️' },
+      { w: 'Budi membawa tas baru ke sekolah.', full: 'Budi membawa tas baru ke sekolah.', parts: ['Budi membawa', 'tas baru ke sekolah.'], emoji: '🎒' },
+      { w: 'Kucing manis suka minum susu hangat.', full: 'Kucing manis suka minum susu hangat.', parts: ['Kucing manis', 'suka minum susu hangat.'], emoji: '🐱' },
+      { w: 'Ibu menanam bunga mawar di taman.', full: 'Ibu menanam bunga mawar di taman.', parts: ['Ibu menanam', 'bunga mawar di taman.'], emoji: '🌸' },
+      { w: 'Siti dan Rani bernyanyi dengan gembira.', full: 'Siti dan Rani bernyanyi dengan gembira.', parts: ['Siti dan Rani', 'bernyanyi dengan gembira.'], emoji: '🎤' },
+      { w: 'Payung biru dipakai saat hujan turun.', full: 'Payung biru dipakai saat hujan turun.', parts: ['Payung biru', 'dipakai saat hujan turun.'], emoji: '☂️' },
+      { w: 'Ayah membeli roti keju di toko.', full: 'Ayah membeli roti keju di toko.', parts: ['Ayah membeli', 'roti keju di toko.'], emoji: '🍞' },
+      { w: 'Penyu berenang tenang di laut biru.', full: 'Penyu berenang tenang di laut biru.', parts: ['Penyu berenang', 'tenang di laut biru.'], emoji: '🐢' },
+      { w: 'Aku anak hebat yang suka membaca.', full: 'Aku anak hebat yang suka membaca.', parts: ['Aku anak hebat', 'yang suka membaca.'], emoji: '🏆' }
+    ],
+    dictation: [
+      { word: 'baca buku', parts: ['baca','buku'], pool: ['baca','buku','roti','susu','tas'] },
+      { word: 'bunga mawar', parts: ['bunga','mawar'], pool: ['bunga','mawar','kucing','putih','pagi'] },
+      { word: 'anak hebat', parts: ['anak','hebat'], pool: ['anak','hebat','suka','baca','baru'] },
+      { word: 'minum susu', parts: ['minum','susu'], pool: ['minum','susu','makan','roti','keju'] }
+    ],
+    confusablePairs: [['baca buku','bawa batu'],['bunga mawar','bunga melati'],['anak hebat','anak sehat'],['minum susu','makan keju']],
+    story: {
+      title: 'Taman Bunga Siti',
+      text: 'Pagi hari udara terasa sejuk. Siti menyiram bunga mawar di halaman rumah. Seekor kucing putih datang bermain dekat pot bunga. Siti tersenyum gembira melihat tamannya bersih dan indah.',
+      questions: [
+        { q: 'Apa yang disiram Siti di halaman rumah?', choices: ['Bunga mawar', 'Pohon kelapa', 'Rumput liar', 'Sayur kol'], ans: 0 },
+        { q: 'Hewan apa yang datang bermain dekat pot?', choices: ['Singa', 'Kucing putih', 'Bebek', 'Sapi'], ans: 1 }
+      ]
+    }
+  }
+];
+
+// ==================== STATE MANAGEMENT ====================
+const STORAGE_KEY = 'ahe_app_v1';
+let state = {
+  xp: 0,
+  stars: {},      // level -> 1..3
+  completed: {},  // level -> true
+  voiceOn: true,
+  unlockAll: false
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = { ...state, ...JSON.parse(raw) };
+  } catch (e) {}
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+let curLevel = null;
+let curStep = 1;
+let stepDone = {};
+let heardMap = {};
+let drillChecked = {};
+let brainDone = false;
+let brainRaf = null;
+
+// Step 5 (Dictation) state
+let dictIdx = 0;
+let dictPicked = [];
+let dictFeedback = null;
+
+// Step 6 (Card Game) state
+let gameMode = 'rebutan'; // 'rebutan' or 'sekilas'
+let gameState = null;
+
+// ==================== HEADER & MAP ====================
+function updateHeader() {
+  const sumStars = Object.values(state.stars).reduce((a, b) => a + b, 0);
+  document.getElementById('starTotal').textContent = sumStars;
+  document.getElementById('xpTotal').textContent = state.xp;
+
+  const tBtn = document.getElementById('ttsBtn');
+  tBtn.textContent = state.voiceOn ? '🔊 Suara Baca: ON' : '🔇 Suara Baca: OFF';
+  tBtn.classList.toggle('active', state.voiceOn);
+
+  const gBtn = document.getElementById('guruBtn');
+  gBtn.textContent = state.unlockAll ? '🔓 Mode Guru: Terbuka Semua' : '🔒 Mode: Berlevel';
+  gBtn.classList.toggle('active', state.unlockAll);
+}
+
+function toggleVoice() {
+  state.voiceOn = !state.voiceOn;
+  saveState();
+  updateHeader();
+  if (state.voiceOn) speak('Suara aktif, ayo belajar membaca bersama AHE!');
+}
+
+function toggleUnlockAll() {
+  playTone('pop');
+  state.unlockAll = !state.unlockAll;
+  saveState();
+  updateHeader();
+  renderLevelsMap();
+}
+
+function resetProgress() {
+  if (!confirm('Hapus semua bintang dan progres belajar AHE?')) return;
+  state.xp = 0;
+  state.stars = {};
+  state.completed = {};
+  saveState();
+  updateHeader();
+  renderLevelsMap();
+}
+
+function isUnlocked(lvlNum) {
+  if (state.unlockAll || lvlNum === 1) return true;
+  return Boolean(state.completed[lvlNum - 1]);
+}
+
+function renderLevelsMap() {
+  const grid = document.getElementById('levelsGrid');
+  grid.innerHTML = AHE_LEVELS.map(l => {
+    const unlocked = isUnlocked(l.level);
+    const stars = state.stars[l.level] || 0;
+    const starText = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+    return `
+      <div class="level-card ${unlocked ? '' : 'locked'}">
+        <div>
+          <div class="lvl-head">
+            <span class="lvl-badge">BUKU LEVEL ${l.level}</span>
+            <span class="lvl-vowel">${l.vowelBadge}</span>
+          </div>
+          <div class="stars-row">${starText}</div>
+          <h3>${l.title}</h3>
+          <p>${l.desc}</p>
+        </div>
+        ${unlocked
+          ? `<button class="btn btn-primary" onclick="openLevel(${l.level})">${stars > 0 ? '🔁 Ulangi Level' : '▶ Mulai 6 Langkah AHE'}</button>`
+          : `<button class="btn btn-disabled" disabled>🔒 Lulus Level ${l.level - 1} dulu</button>`
+        }
+      </div>
+    `;
+  }).join('');
+}
+
+// ==================== WORKSPACE NAVIGATION ====================
+function openLevel(lvlNum) {
+  curLevel = AHE_LEVELS.find(l => l.level === lvlNum);
+  curStep = 1;
+  stepDone = {};
+  heardMap = {};
+  drillChecked = {};
+  brainDone = false;
+  dictIdx = 0;
+  dictPicked = [];
+  dictFeedback = null;
+  gameState = null;
+
+  document.getElementById('mapView').style.display = 'none';
+  document.getElementById('workspaceView').classList.add('active');
+  document.getElementById('wsBadge').textContent = `AHE LEVEL ${curLevel.level}`;
+  document.getElementById('wsTitle').textContent = curLevel.title;
+
+  updateStepButtons();
+  renderCurrentStep();
+}
+
+function closeWorkspace() {
+  if (brainRaf) cancelAnimationFrame(brainRaf);
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.getElementById('workspaceView').classList.remove('active');
+  document.getElementById('mapView').style.display = 'block';
+  renderLevelsMap();
+}
+
+function goStep(stepNum) {
+  if (brainRaf) cancelAnimationFrame(brainRaf);
+  playTone('pop');
+  curStep = stepNum;
+  if (stepNum === 6 && !gameState) initGame(gameMode);
+  updateStepButtons();
+  renderCurrentStep();
+}
+
+function updateStepButtons() {
+  for (let i = 1; i <= 6; i++) {
+    const btn = document.getElementById(`sBtn${i}`);
+    btn.classList.toggle('active', curStep === i);
+    btn.classList.toggle('done', Boolean(stepDone[i]));
+  }
+}
+
+function markStepDone(stepNum) {
+  stepDone[stepNum] = true;
+  updateStepButtons();
+}
+
+function renderCurrentStep() {
+  const box = document.getElementById('stageBox');
+  if (curStep === 1) renderStep1BrainGym(box);
+  else if (curStep === 2) renderStep2Remidi(box);
+  else if (curStep === 3) renderStep3Modul(box);
+  else if (curStep === 4) renderStep4Pengayaan(box);
+  else if (curStep === 5) renderStep5Menulis(box);
+  else if (curStep === 6) renderStep6Permainan(box);
+}
+
+// ==================== LANGKAH 1: SENAM OTAK (ANGKA 8 TIDUR) ====================
+function renderStep1BrainGym(box) {
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">🧠</div>
+      <div>
+        <strong>Langkah 1 AHE — Senam Otak (Angka 8 Tidur):</strong>
+        Ayo ikuti titik bintang yang bergerak membentuk <strong>angka 8 tidur (∞)</strong> dengan matamu (dan ikuti dengan jari/mouse) sebanyak 3 putaran agar otak kanan-kiri siap fokus!
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="brainCanvas" width="460" height="210"></canvas>
+      <div style="margin-top:10px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startBrainGym()">▶ Mulai Senam Otak (3 Putaran)</button>
+        <button class="btn btn-green" onclick="finishStep1()">Lanjut ke Langkah 2: Remidi ➡</button>
+      </div>
+      <div id="brainStatus" style="margin-top:8px;font-weight:800;color:#ea580c;"></div>
+    </div>
+  `;
+  drawBrainTrack(0);
+}
+
+function drawBrainTrack(t, showBall = false) {
+  const c = document.getElementById('brainCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const w = c.width, h = c.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // Draw infinity figure-8 path
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 10;
+  ctx.beginPath();
+  for (let a = 0; a <= Math.PI * 2 + 0.05; a += 0.05) {
+    const x = w/2 + (w * 0.36) * Math.sin(a);
+    const y = h/2 + (h * 0.28) * Math.sin(2 * a);
+    if (a === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Center dot
+  ctx.fillStyle = '#94a3b8';
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (showBall) {
+    const x = w/2 + (w * 0.36) * Math.sin(t);
+    const y = h/2 + (h * 0.28) * Math.sin(2 * t);
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(x, y, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⭐', x, y + 1);
+  }
+}
+
+function startBrainGym() {
+  if (brainRaf) cancelAnimationFrame(brainRaf);
+  speak('Ikuti gerakan bintang membentuk angka delapan tidur dengan matamu ya!');
+  let start = null;
+  const duration = 7500; // 3 loops
+  const statusEl = document.getElementById('brainStatus');
+
+  function anim(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    const progress = Math.min(1, elapsed / duration);
+    const angle = progress * Math.PI * 2 * 3;
+    drawBrainTrack(angle, true);
+    const lap = Math.min(3, Math.floor(progress * 3) + 1);
+    if (statusEl) statusEl.textContent = `Putaran ke-${lap} dari 3... Fokus terus ya! 👀`;
+
+    if (progress < 1) {
+      brainRaf = requestAnimationFrame(anim);
+    } else {
+      brainDone = true;
+      markStepDone(1);
+      playTone('ok');
+      if (statusEl) statusEl.textContent = '🎉 Mantap! Otakmu sudah segar dan siap membaca!';
+    }
+  }
+  brainRaf = requestAnimationFrame(anim);
+}
+
+function finishStep1() {
+  markStepDone(1);
+  goStep(2);
+}
+
+// ==================== LANGKAH 2: REMIDI (ULASAN) ====================
+function renderStep2Remidi(box) {
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">🔁</div>
+      <div>
+        <strong>Langkah 2 AHE — Remidi (Mengulang Pelajaran Lalu):</strong>
+        ${curLevel.remidiTitle}. Ketuk setiap kartu di bawah, bacalah dengan lantang <strong>tanpa mengeja</strong>!
+      </div>
+    </div>
+    <div class="flash-grid">
+      ${curLevel.remidiItems.map((it, idx) => `
+        <div class="syl-card ${heardMap['r'+idx] ? 'heard' : ''}" onclick="hearRemidi(${idx})">
+          <div class="syl-big">${it.txt}</div>
+          <div class="titian-hint">${it.hint}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-primary" onclick="markStepDone(2);goStep(3);">Lanjut ke Langkah 3: Baca Modul ➡</button>
+    </div>
+  `;
+}
+
+function hearRemidi(idx) {
+  const it = curLevel.remidiItems[idx];
+  heardMap['r'+idx] = true;
+  speak(it.txt.replace(/\s+/g, ''));
+  renderCurrentStep();
+}
+
+// ==================== LANGKAH 3: BACA MODUL (TANPA MENGEJA + TITIAN INGATAN) ====================
+function renderStep3Modul(box) {
+  const countHeard = curLevel.syllables.filter((_, i) => heardMap['m'+i]).length;
+  const total = curLevel.syllables.length;
+
+  let storyHTML = '';
+  if (curLevel.story) {
+    storyHTML = `
+      <div class="story-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong>📘 Cerita Pendek: ${curLevel.story.title}</strong>
+          <button class="btn btn-blue" style="padding:6px 12px;font-size:0.8rem;" onclick="speak(curLevel.story.text, 0.85)">🔊 Bacakan Cerita</button>
+        </div>
+        <p>${curLevel.story.text}</p>
+      </div>
+    `;
+  }
+
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">📖</div>
+      <div>
+        <strong>Langkah 3 AHE — Baca Modul (Tanpa Mengeja!):</strong>
+        Jangan dieja per huruf! Langsung ucapkan suku katanya dan ingat gambar <strong>Titian Ingatan</strong>-nya.
+        <span style="margin-left:8px;color:#15803d;font-weight:800;">(${countHeard}/${total} kartu dibaca)</span>
+      </div>
+    </div>
+    ${storyHTML}
+    <div class="flash-grid">
+      ${curLevel.syllables.map((item, idx) => `
+        <div class="syl-card ${heardMap['m'+idx] ? 'heard' : ''}" onclick="hearModul(${idx})">
+          <div style="font-size:1.6rem;">${item.emoji}</div>
+          <div class="syl-big">${item.s}</div>
+          <div class="titian-hint">seperti <strong>${item.word}</strong></div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;">
+      <button class="btn btn-outline" onclick="speakAllModul()">🔊 Dengarkan Semua Berurutan</button>
+      <button class="btn btn-primary" onclick="markStepDone(3);goStep(4);">Lanjut ke Langkah 4: Pengayaan ➡</button>
+    </div>
+  `;
+}
+
+function hearModul(idx) {
+  const item = curLevel.syllables[idx];
+  heardMap['m'+idx] = true;
+  speak(`${item.s}. ${item.word}`);
+  if (curLevel.syllables.every((_, i) => heardMap['m'+i])) {
+    markStepDone(3);
+  }
+  renderCurrentStep();
+}
+
+function speakAllModul() {
+  const text = curLevel.syllables.map(x => x.s).join(', ');
+  speak(text, 0.78);
+}
+
+// ==================== LANGKAH 4: PENGAYAAN (DRILL 9 KATA) ====================
+function renderStep4Pengayaan(box) {
+  const doneCount = curLevel.words.filter((_, i) => drillChecked[i]).length;
+
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">✨</div>
+      <div>
+        <strong>Langkah 4 AHE — Pengayaan (Membaca Rangkaian Kata):</strong>
+        Di buku tulis AHE, anak membaca 9 variasi kata (3 baris × 3 kolom) agar melekat di ingatan! Ketuk setiap kata saat kamu membacanya. <strong>(${doneCount}/${curLevel.words.length})</strong>
+      </div>
+    </div>
+    <div class="drill-grid">
+      ${curLevel.words.map((item, idx) => {
+        const colored = item.parts.map((p, pi) => `<span class="${pi % 2 === 0 ? 'syl-part-a' : 'syl-part-b'}">${p}</span>`).join(' ');
+        return `
+          <div class="drill-word ${drillChecked[idx] ? 'checked' : ''}" onclick="checkDrill(${idx})">
+            <div style="font-size:1.3rem;">${item.emoji}</div>
+            <div>${colored}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;">
+      <button class="btn btn-outline" onclick="shuffleDrillWords()">🔀 Acak Susunan Kata</button>
+      <button class="btn btn-primary" onclick="markStepDone(4);goStep(5);">Lanjut ke Langkah 5: Menulis &amp; Dikte ➡</button>
+    </div>
+  `;
+}
+
+function checkDrill(idx) {
+  const item = curLevel.words[idx];
+  drillChecked[idx] = true;
+  speak(item.full);
+  if (curLevel.words.every((_, i) => drillChecked[i])) {
+    markStepDone(4);
+    state.xp += 15;
+    saveState(); updateHeader();
+  }
+  renderCurrentStep();
+}
+
+function shuffleDrillWords() {
+  playTone('pop');
+  curLevel.words = [...curLevel.words].sort(() => Math.random() - 0.5);
+  drillChecked = {};
+  renderCurrentStep();
+}
+
+// ==================== LANGKAH 5: MENULIS & DIKTE ====================
+function renderStep5Menulis(box) {
+  const d = curLevel.dictation[dictIdx];
+  const answerText = dictPicked.join('');
+
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">✏️</div>
+      <div>
+        <strong>Langkah 5 AHE — Menulis &amp; Dikte:</strong>
+        Dengarkan kata yang didiktekan, lalu susun suku katanya di sebelah kiri DAN coba tulis langsung dengan jari/mouse di papan tulis sebelah kanan!
+      </div>
+    </div>
+
+    <div class="write-split">
+      <div style="background:white;border:2px solid #e2e8f0;border-radius:16px;padding:16px;text-align:center;">
+        <div style="font-size:0.85rem;color:#64748b;font-weight:800;">SOAL DIKTE ${dictIdx + 1} DARI ${curLevel.dictation.length}</div>
+        <button class="btn btn-blue" style="margin:10px 0;" onclick="speak('${d.word}', 0.75)">🔊 Dengarkan Kata Dikte</button>
+
+        <div class="answer-slot">${answerText || '<span style="font-size:0.95rem;color:#94a3b8;">Ketuk suku kata di bawah...</span>'}</div>
+
+        <div class="tile-bank">
+          ${d.pool.map((p, i) => `<button class="tile" onclick="pickDictTile('${p}')">${p}</button>`).join('')}
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn btn-outline" onclick="clearDict()">⌫ Hapus</button>
+          <button class="btn btn-green" onclick="checkDict()">✔ Cek Jawaban</button>
+        </div>
+
+        ${dictFeedback ? `
+          <div class="feedback ${dictFeedback.ok ? 'ok' : 'try'}">
+            ${dictFeedback.msg}
+            ${dictFeedback.ok ? `<br><button class="btn btn-primary" style="margin-top:8px;padding:6px 12px;font-size:0.82rem;" onclick="nextDict()">Soal Dikte Berikutnya ➡</button>` : ''}
+          </div>
+        ` : ''}
+      </div>
+
+      <div class="canvas-wrap" style="margin:0;">
+        <div style="font-weight:800;font-size:0.9rem;margin-bottom:6px;">📝 Papan Tulis Latihan Menulis (${d.word})</div>
+        <canvas id="writeCanvas" width="380" height="220"></canvas>
+        <div style="margin-top:8px;">
+          <button class="btn btn-outline" style="padding:6px 12px;font-size:0.82rem;" onclick="clearWriteCanvas()">🧹 Bersihkan Papan</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-primary" onclick="markStepDone(5);goStep(6);">Lanjut ke Langkah 6: Permainan Kartu 🎮 ➡</button>
+    </div>
+  `;
+
+  setupWriteCanvas(d.word);
+}
+
+function pickDictTile(syl) {
+  playTone('pop');
+  speak(syl);
+  dictPicked.push(syl);
+  dictFeedback = null;
+  renderCurrentStep();
+}
+function clearDict() {
+  playTone('pop');
+  dictPicked = [];
+  dictFeedback = null;
+  renderCurrentStep();
+}
+function checkDict() {
+  const d = curLevel.dictation[dictIdx];
+  const ans = dictPicked.join('');
+  if (ans === d.word.replace(/\s+/g, '')) {
+    playTone('ok');
+    speak(`Hebat! Benar, ${d.word}!`);
+    state.xp += 15;
+    saveState(); updateHeader();
+    dictFeedback = { ok: true, msg: `🌟 Anak Hebat! Tulisan "${d.word}" benar sekali!` };
+    if (dictIdx === curLevel.dictation.length - 1) markStepDone(5);
+  } else {
+    playTone('try');
+    speak(`Yuk dengarkan lagi, ${d.word}`);
+    dictFeedback = { ok: false, msg: `💡 Hampir tepat! Ayo klik tombol dengar sekali lagi ya, ingat bunyi suku kata pertamanya!` };
+  }
+  renderCurrentStep();
+}
+function nextDict() {
+  dictIdx = (dictIdx + 1) % curLevel.dictation.length;
+  dictPicked = [];
+  dictFeedback = null;
+  renderCurrentStep();
+}
+
+function setupWriteCanvas(guideWord) {
+  const c = document.getElementById('writeCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+
+  // Faint tracing guide
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = 'bold 54px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(guideWord, c.width / 2, c.height / 2);
+
+  let drawing = false;
+  const getPos = e => {
+    const r = c.getBoundingClientRect();
+    const scaleX = c.width / r.width;
+    const scaleY = c.height / r.height;
+    return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+  };
+
+  c.onpointerdown = e => {
+    drawing = true;
+    c.setPointerCapture(e.pointerId);
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  };
+  c.onpointermove = e => {
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+  };
+  c.onpointerup = () => { drawing = false; };
+}
+
+function clearWriteCanvas() {
+  const d = curLevel.dictation[dictIdx];
+  const c = document.getElementById('writeCanvas');
+  if (!c) return;
+  c.getContext('2d').clearRect(0, 0, c.width, c.height);
+  setupWriteCanvas(d.word);
+}
+
+// ==================== LANGKAH 6: PERMAINAN KARTU AHE (REBUTAN & SEKILAS PANDANG) ====================
+function initGame(mode) {
+  gameMode = mode;
+  const rounds = [];
+
+  if (curLevel.level === 8 && curLevel.story) {
+    // Include comprehension + reading speed
+    curLevel.story.questions.forEach(q => {
+      rounds.push({ prompt: q.q, say: q.q, target: q.choices[q.ans], choices: q.choices, isStory: true });
+    });
+  }
+
+  // Generate 5 rounds from confusable pairs + words
+  while (rounds.length < 5) {
+    if (Math.random() < 0.5 && curLevel.confusablePairs.length > 0) {
+      const pair = curLevel.confusablePairs[Math.floor(Math.random() * curLevel.confusablePairs.length)];
+      const target = pair[Math.floor(Math.random() * pair.length)];
+      const others = curLevel.syllables.map(x => x.s).filter(s => !pair.includes(s)).sort(() => Math.random() - 0.5).slice(0, 2);
+      const choices = [...pair, ...others].slice(0, 4).sort(() => Math.random() - 0.5);
+      rounds.push({ prompt: `Tangkap kartu "${target}"!`, say: target, target, choices });
+    } else {
+      const wObj = curLevel.words[Math.floor(Math.random() * curLevel.words.length)];
+      const target = wObj.full;
+      const others = curLevel.words.map(x => x.full).filter(x => x !== target).sort(() => Math.random() - 0.5).slice(0, 3);
+      const choices = [target, ...others].sort(() => Math.random() - 0.5);
+      rounds.push({ prompt: `Pilih kata yang benar: "${target}"`, say: target, target, choices });
+    }
+  }
+
+  gameState = {
+    mode,
+    rounds,
+    idx: 0,
+    score: 0,
+    answered: false,
+    pickedIdx: null,
+    flashVisible: true
+  };
+
+  if (mode === 'sekilas') triggerFlash();
+}
+
+function triggerFlash() {
+  if (!gameState) return;
+  gameState.flashVisible = true;
+  setTimeout(() => {
+    if (gameState && curStep === 6 && gameState.mode === 'sekilas') {
+      gameState.flashVisible = false;
+      const el = document.getElementById('flashWordDisplay');
+      if (el) el.innerHTML = '<span style="font-size:1.1rem;color:#64748b;">❓ Kata sudah sembunyi! Ayo pilih di bawah!</span>';
+    }
+  }, 1500);
+}
+
+function renderStep6Permainan(box) {
+  if (!gameState) initGame(gameMode);
+
+  if (gameState.idx >= gameState.rounds.length) {
+    const score = gameState.score;
+    const total = gameState.rounds.length;
+    const stars = score >= 5 ? 3 : score >= 4 ? 2 : score >= 3 ? 1 : 0;
+    if (stars > (state.stars[curLevel.level] || 0)) state.stars[curLevel.level] = stars;
+    if (stars >= 1) {
+      state.completed[curLevel.level] = true;
+      markStepDone(6);
+    }
+    saveState();
+    updateHeader();
+
+    box.innerHTML = `
+      <div class="game-card-stage">
+        <h2>${stars >= 1 ? '🎉 Hore! Kamu Lulus Level ' + curLevel.level + '!' : '💪 Ayo Main Sekali Lagi!'}</h2>
+        <div style="font-size:2.6rem;margin:10px 0;">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
+        <p style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">Skor Permainan Kartu: ${score} / ${total}</p>
+        <p style="color:#64748b;margin-bottom:18px;">
+          ${stars >= 1 ? 'Selamat Anak Hebat! Level berikutnya sudah terbuka untukmu!' : 'Dapatkan minimal 3 jawaban benar untuk meraih bintang kelulusan level.'}
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="initGame('${gameMode}');renderCurrentStep();">🔁 Main Lagi</button>
+          <button class="btn btn-outline" onclick="closeWorkspace()">🗺 Kembali ke Peta Level</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const r = gameState.rounds[gameState.idx];
+
+  box.innerHTML = `
+    <div class="coach-box">
+      <div class="ico">🎮</div>
+      <div>
+        <strong>Langkah 6 AHE — Permainan Kartu AHE:</strong>
+        Pilih mode permainan khas AHE! <strong>Rebutan Kartu</strong> untuk membedakan huruf mirip, atau <strong>Sekilas Pandang</strong> untuk melatih kecepatan mata membaca!
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn ${gameState.mode === 'rebutan' ? 'btn-primary' : 'btn-outline'}" onclick="initGame('rebutan');renderCurrentStep();">🎯 Rebutan Kartu</button>
+      <button class="btn ${gameState.mode === 'sekilas' ? 'btn-primary' : 'btn-outline'}" onclick="initGame('sekilas');renderCurrentStep();">⚡ Sekilas Pandang</button>
+    </div>
+
+    <div class="game-card-stage">
+      <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:800;color:#64748b;">
+        <span>Kartu ${gameState.idx + 1} / ${gameState.rounds.length}</span>
+        <span>Skor: ${gameState.score} 🏆</span>
+      </div>
+
+      ${gameState.mode === 'sekilas' && !r.isStory ? `
+        <div class="flash-word-screen" id="flashWordDisplay">
+          ${gameState.flashVisible ? r.target : '<span style="font-size:1.1rem;color:#64748b;">❓ Kata sudah sembunyi! Ayo pilih di bawah!</span>'}
+        </div>
+        <button class="btn btn-outline" style="padding:6px 12px;font-size:0.8rem;" onclick="replayFlash()">👀 Intip Sekilas Lagi</button>
+      ` : `
+        <div style="margin:14px 0;">
+          <div style="font-size:1.25rem;font-weight:900;margin-bottom:10px;">${r.isStory ? r.prompt : 'Dengarkan suara kartu lalu tangkap kartunya!'}</div>
+          <button class="btn btn-blue" onclick="speak('${r.say}', 0.8)">🔊 Dengarkan Kartu</button>
+        </div>
+      `}
+
+      <div class="options-grid">
+        ${r.choices.map((c, idx) => {
+          let cls = 'opt-btn';
+          if (gameState.answered) {
+            if (c === r.target) cls += ' ok';
+            else if (idx === gameState.pickedIdx) cls += ' no';
+          }
+          return `<button class="${cls}" ${gameState.answered ? 'disabled' : ''} onclick="answerGame(${idx})">${c}</button>`;
+        }).join('')}
+      </div>
+
+      ${gameState.answered ? `
+        <div class="feedback ${r.choices[gameState.pickedIdx] === r.target ? 'ok' : 'try'}">
+          ${r.choices[gameState.pickedIdx] === r.target
+            ? '🌟 Hebat sekali! Cepat dan tepat!'
+            : `💛 Hampir tepat! Kartu yang benar adalah "${r.target}". Semangat terus ya!`}
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="nextGameRound()">
+          ${gameState.idx + 1 >= gameState.rounds.length ? '🏆 Lihat Bintang Kelulusan' : 'Kartu Berikutnya ➡'}
+        </button>
+      ` : ''}
+    </div>
+  `;
+}
+
+function replayFlash() {
+  if (!gameState) return;
+  const r = gameState.rounds[gameState.idx];
+  const el = document.getElementById('flashWordDisplay');
+  if (el) el.textContent = r.target;
+  triggerFlash();
+}
+
+function answerGame(idx) {
+  if (gameState.answered) return;
+  const r = gameState.rounds[gameState.idx];
+  gameState.answered = true;
+  gameState.pickedIdx = idx;
+
+  if (r.choices[idx] === r.target) {
+    gameState.score++;
+    state.xp += 20;
+    playTone('ok');
+    speak('Hebat!');
+  } else {
+    playTone('try');
+    speak(`Yang benar ${r.target}. Ayo coba lagi kartu berikutnya!`);
+  }
+  saveState(); updateHeader();
+  renderCurrentStep();
+}
+
+function nextGameRound() {
+  playTone('pop');
+  gameState.idx++;
+  gameState.answered = false;
+  gameState.pickedIdx = null;
+  if (gameState.idx < gameState.rounds.length && gameState.mode === 'sekilas') {
+    triggerFlash();
+  }
+  renderCurrentStep();
+}
+
+// ==================== PLACEMENT TEST (TES PENEMPATAN MURID BARU AHE) ====================
+let placement = null;
+
+function openPlacementTest() {
+  playTone('pop');
+  placement = {
+    step: 0,
+    items: [
+      { lvl: 1, ask: 'baca', choices: ['baca', 'dadu', 'mama', 'kaca'] },
+      { lvl: 2, ask: 'sapi', choices: ['sapi', 'kaki', 'gigi', 'nasi'] },
+      { lvl: 3, ask: 'buku', choices: ['buku', 'susu', 'baju', 'kuda'] },
+      { lvl: 4, ask: 'roti', choices: ['roti', 'bola', 'topi', 'toko'] },
+      { lvl: 5, ask: 'sepatu', choices: ['sepatu', 'kereta', 'meja', 'keju'] },
+      { lvl: 6, ask: 'bantu', choices: ['bantu', 'mandi', 'pintu', 'semut'] },
+      { lvl: 7, ask: 'nyanyi', choices: ['nyanyi', 'bunga', 'kucing', 'payung'] }
+    ],
+    highestPassed: 0,
+    done: false
+  };
+  document.getElementById('placementModal').classList.add('open');
+  renderPlacement();
+}
+
+function closePlacement() {
+  document.getElementById('placementModal').classList.remove('open');
+}
+
+function renderPlacement() {
+  const c = document.getElementById('placementContent');
+  if (placement.done) {
+    const rec = Math.min(8, placement.highestPassed + 1);
+    c.innerHTML = `
+      <h2 style="margin-bottom:8px;">📋 Hasil Tes Penempatan AHE</h2>
+      <p style="margin-bottom:14px;">Berdasarkan tes membaca tanpa mengeja tadi, murid direkomendasikan mulai belajar pada:</p>
+      <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:16px;padding:16px;text-align:center;margin-bottom:16px;">
+        <div style="font-size:1.5rem;font-weight:900;color:#c2410c;">BUKU LEVEL ${rec}</div>
+        <div style="font-size:0.9rem;color:#475569;">${AHE_LEVELS[rec - 1].title}</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="closePlacement()">Tutup</button>
+        <button class="btn btn-primary" onclick="applyPlacement(${rec})">🚀 Buka &amp; Mulai Level ${rec}</button>
+      </div>
+    `;
+    return;
+  }
+
+  const item = placement.items[placement.step];
+  const opts = [...item.choices].sort(() => Math.random() - 0.5);
+
+  c.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <h3>🎯 Tes Penempatan Murid Baru (${placement.step + 1}/${placement.items.length})</h3>
+      <button class="btn btn-outline" style="padding:4px 10px;" onclick="closePlacement()">✕</button>
+    </div>
+    <p style="font-size:0.9rem;color:#64748b;margin-bottom:12px;">
+      Minta anak mendengarkan suara, lalu memilih kata yang tepat (tanpa mengeja):
+    </p>
+    <div style="text-align:center;margin-bottom:14px;">
+      <button class="btn btn-blue" onclick="speak('${item.ask}', 0.8)">🔊 Dengarkan Kata Uji Level ${item.lvl}</button>
+    </div>
+    <div class="options-grid">
+      ${opts.map(o => `<button class="opt-btn" onclick="answerPlacement('${o}')">${o}</button>`).join('')}
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn btn-outline" style="font-size:0.82rem;" onclick="placement.done=true;renderPlacement();">Anak belum bisa membaca kata ini (Selesai)</button>
+    </div>
+  `;
+  speak(item.ask, 0.8);
+}
+
+function answerPlacement(choice) {
+  const item = placement.items[placement.step];
+  if (choice === item.ask) {
+    playTone('ok');
+    placement.highestPassed = item.lvl;
+    placement.step++;
+    if (placement.step >= placement.items.length) placement.done = true;
+  } else {
+    playTone('try');
+    placement.done = true;
+  }
+  renderPlacement();
+}
+
+function applyPlacement(recLevel) {
+  for (let i = 1; i < recLevel; i++) {
+    state.completed[i] = true;
+  }
+  saveState();
+  closePlacement();
+  renderLevelsMap();
+  openLevel(recLevel);
+}
+
+// ==================== INIT ====================
+loadState();
+updateHeader();
+renderLevelsMap();
+</script>
+</body>
+</html>
