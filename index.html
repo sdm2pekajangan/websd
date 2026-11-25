@@ -886,11 +886,19 @@
     };
 
     const TEACHER_STYLE_CATALOG = {
-      batik_hijau: { label: 'Batik Hijau', color: 0x15803d, isBatik: true, hijabColor: 0x166534, pants: 0x0f172a },
-      khaki:       { label: 'Seragam Khaki', color: 0xc79c5e, isBatik: false, hijabColor: 0x78350f, pants: 0x78350f },
+      khaki:          { label: 'Seragam Khaki', color: 0xc79c5e, isBatik: false, hijabColor: 0x78350f, pants: 0x78350f },
+      gamis_coklat:   { label: 'Gamis Coklat', color: 0x7c4a2d, isBatik: false, hijabColor: 0x5b3420, pants: 0x111827 },
+      putih_hitam:    { label: 'Putih Hitam', color: 0xf8fafc, isBatik: false, hijabColor: 0x1f2937, pants: 0x111827 },
+      batik_hitam:    { label: 'Batik Hitam', color: 0x1f2937, isBatik: true, hijabColor: 0x111827, pants: 0x111827 },
+      batik_hijau:    { label: 'Batik Hijau Pupus', color: 0xb7e4c7, isBatik: true, hijabColor: 0x86c5a0, pants: 0xf5e6c8 },
+      biru_fgm:       { label: 'Biru FGM', color: 0x1d4ed8, isBatik: false, hijabColor: 0x1e3a8a, pants: 0x111827 },
+      teal:           { label: 'Toska Guru', color: 0x0f766e, isBatik: false, hijabColor: 0x115e59, pants: 0x1e293b },
+      purple:         { label: 'Ungu Muslimah/Guru', color: 0x9333ea, isBatik: false, hijabColor: 0x6b21a8, pants: 0x1e293b },
       teal:        { label: 'Toska Guru', color: 0x0f766e, isBatik: false, hijabColor: 0x115e59, pants: 0x1e293b },
       purple:      { label: 'Ungu Muslimah/Guru', color: 0x9333ea, isBatik: false, hijabColor: 0x6b21a8, pants: 0x1e293b }
     };
+
+    const TEACHER_DAFTAR = ['khaki', 'gamis_coklat', 'putih_hitam', 'batik_hijau', 'batik_hitam', 'biru_fgm'];
 
     function resolveUniformInfo(key) {
       if (UNIFORM_CATALOG[key]) return UNIFORM_CATALOG[key];
@@ -2492,7 +2500,7 @@
     function getTodayUniformConfig() {
       const day = new Date().getDay(); // 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu
       const allStudentUniforms = ['merah_putih', 'batik_hijau', 'hw'];
-      const allTeacherStyles = Object.keys(TEACHER_STYLE_CATALOG);
+      const allTeacherStyles = TEACHER_DAFTAR;
 
       if (day === 1 || day === 2) {
         // Senin & Selasa -> Merah Putih (Guru: Seragam Khaki)
@@ -2500,7 +2508,7 @@
           dayLabel: day === 1 ? 'Senin' : 'Selasa',
           scheduleLabel: 'Merah Putih',
           student: 'merah_putih',
-          teacher: 'khaki'
+          teacher: day === 1 ? 'khaki' : 'gamis_coklat'
         };
       }
       if (day === 3 || day === 4) {
@@ -2509,7 +2517,7 @@
           dayLabel: day === 3 ? 'Rabu' : 'Kamis',
           scheduleLabel: 'Batik Hijau',
           student: 'batik_hijau',
-          teacher: 'batik_hijau'
+          teacher: day === 3 ? 'putih_hitam' : 'batik_hijau'
         };
       }
       if (day === 5 || day === 6) {
@@ -2518,7 +2526,7 @@
           dayLabel: day === 5 ? 'Jumat' : 'Sabtu',
           scheduleLabel: 'Baju HW',
           student: 'hw',
-          teacher: 'khaki'
+          teacher: day === 5 ? 'batik_hitam' : 'biru_fgm'
         };
       }
 
@@ -2559,7 +2567,7 @@
     }
 
     function resolveTeacherDetails(customDetails = null) {
-      const styles = Object.keys(TEACHER_STYLE_CATALOG);
+      const styles = TEACHER_DAFTAR;
       const accs = ['hijab', 'hijab_glasses', 'glasses', 'none'];
 
       if (customDetails) {
@@ -3895,10 +3903,12 @@
           selTeacherStyle.innerHTML = `
             <option value="auto">Seragam: Otomatis (${todayInfo.dayLabel})</option>
             <option value="random">Seragam: Bebas / Acak</option>
-            <option value="batik_hijau">Batik Hijau</option>
             <option value="khaki">Seragam Khaki</option>
-            <option value="teal">Toska Guru</option>
-            <option value="purple">Ungu Guru</option>`;
+            <option value="gamis_coklat">Gamis Coklat</option>
+            <option value="putih_hitam">Putih Hitam</option>
+            <option value="batik_hijau">Batik Hijau Pupus</option>
+            <option value="batik_hitam">Batik Hitam</option>
+            <option value="biru_fgm">Biru FGM</option>`;
           selTeacherStyle.value = state.teacherStyle;
           selTeacherStyle.onchange = () => state.teacherStyle = selTeacherStyle.value;
           row.appendChild(selTeacherStyle);
@@ -5912,7 +5922,7 @@
 
     function seragamGuru() {
       const u = state.teacherStyle;
-      if (u === 'random') { const k = Object.keys(TEACHER_STYLE_CATALOG); return k[Math.floor(Math.random() * k.length)]; }
+      if (u === 'random') { const k = TEACHER_DAFTAR; return k[Math.floor(Math.random() * k.length)]; }
       if (!u || u === 'auto') return getTodayUniformConfig().teacher;
       return u;
     }
@@ -6150,6 +6160,11 @@
       @keyframes dokNaik{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
       @keyframes dokIkon{from{opacity:0;transform:translateY(6px) scale(.92)}to{opacity:1;transform:none}}
       @keyframes hudKeluar{from{opacity:1;transform:none}to{opacity:0;transform:translateY(8px)}}
+      @media (max-width: 640px){
+        #hud-naik{left:8px;right:8px;bottom:60px;transform:none;max-width:none;max-height:46vh;overflow-y:auto;align-items:stretch;gap:8px;pointer-events:auto;padding:10px 12px 2px 2px}
+        #hud-naik > .hud-panel{width:auto !important;max-width:none !important}
+        #hud-dok{right:8px;bottom:12px}
+      }
       @media (prefers-reduced-motion: reduce){
         #hud-naik > .hud-panel,#hud-dok,#hud-dok .dok-btn,.hud-panel.hud-keluar{animation:none !important}
       }
@@ -6191,7 +6206,7 @@
     }
 
     document.querySelectorAll('.hud-panel').forEach(el => {
-      if (el.id === 'dunia-board') return;             // papan dunia punya tombolnya sendiri
+      if (el.id === 'dunia-board' || el.classList.contains('brand-card')) return;   // judul SD Mutu 3D selalu tampil             // papan dunia punya tombolnya sendiri
       const kunci = el.id && HUD_LABEL[el.id] ? el.id : [...el.classList].find(c => HUD_LABEL[c]) || el.id || '';
       if (!kunci) return;
       const label = HUD_LABEL[kunci];
@@ -6221,6 +6236,12 @@
 
       hudTerapkan(el, !!hudTersimpan[kunci]);
     });
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      document.querySelectorAll('.hud-panel').forEach(el => {
+        if (el.id === 'dunia-board' || el.classList.contains('brand-card') || el.classList.contains('hud-min')) return;
+        hudNaik.appendChild(el);
+      });
+    }
     // ==========================================
     // 16. TUR SINEMATIK (4 jari / tombol T) & IKUTI PAK FATUR (F)
     // ==========================================
