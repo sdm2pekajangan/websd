@@ -551,6 +551,12 @@
       #activity-bar { top: auto; bottom: 124px; right: 10px; }
       .mode-btn span.txt { display: none; }
     }
+    /* ===== MODE WALLPAPER: hanya dunia 3D, tanpa UI, tanpa klik ===== */
+    body.mode-wallpaper > *:not(#canvas-container) { display: none !important; }
+    body.mode-wallpaper #canvas-container { pointer-events: none; }
+    body.mode-wallpaper { background: #9bd6f0; }
+    /* Kegiatan Terima Kasih: nama disembunyikan, hanya gelembung ucapan */
+    body.mode-terimakasih .char-name { display: none !important; }
   </style>
 
   <script type="importmap">
@@ -662,6 +668,7 @@
     <button class="btn-top" data-cam="corridor">Lorong Mural</button>
     <button class="btn-top" data-cam="yard">Lapangan</button>
     <button class="btn-top" data-cam="overview">Atas</button>
+    <button class="btn-top" id="btn-thanks" title="Murid berkumpul mengelilingi guru sambil berterima kasih">Terima Kasih</button>
   </div>
 
    <!-- Hint Banner -->
@@ -917,9 +924,13 @@
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 400);
     camera.position.set(16, 26, 46);
 
+    // Mode wallpaper: dipicu oleh flag window.MODE_WALLPAPER, nama file/URL berisi 'wallpaper', atau Wallpaper Engine
+    const MODE_WALLPAPER = window.MODE_WALLPAPER === true || /wallpaper/i.test(location.pathname + location.search) || typeof window.wallpaperRegisterMediaPropertiesListener === 'function';
+    if (MODE_WALLPAPER) document.body.classList.add('mode-wallpaper');
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(MODE_WALLPAPER ? 1 : Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -933,6 +944,11 @@
     controls.minDistance = 8;
     controls.maxDistance = 120;
     controls.target.set(-3, 1, 2);
+    if (MODE_WALLPAPER) {
+      controls.enabled = false;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.35;
+    }
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x6b7280, 0.9);
     hemiLight.position.set(0, 50, 0);
@@ -3131,9 +3147,75 @@
       return fp ? { x: fp.x, z: fp.z } : { x: -3.8, z: -15.5 };
     }
 
+    const THANKS_MURID = ['Terima kasih, {g}!', 'Terima kasih sudah mengajar kami!', 'Makasih banyak, {g}!', 'Kami sayang {g}!', 'Terima kasih sudah sabar, {g}!'];
+    const THANKS_GURU = ['Sama-sama, anak-anak!', 'Kalian hebat sekali!', 'Terima kasih kembali!'];
+
+    // Jabat tangan bergiliran: guru berbaris di depan tiang bendera, murid menghampiri satu per satu
+    function updateJabatTangan(ch, dt, elapsed) {
+      const plan = ch.thanksPlan;
+      ch.jabatSampai = ch.jabatSampai ?? 0;
+      if (plan.guru === true) {
+        // Guru: berdiri di barisan menghadap murid, mengangkat tangan saat ada yang berjabat
+        const pos = plan.pos;
+        if (Math.hypot(pos.x - ch.x, pos.z - ch.z) > 0.3) {
+          moveCharacterToward(ch, pos.x, pos.z, ch.baseSpeed * 1.3, dt, elapsed);
+        } else {
+          ch.mesh.position.set(ch.x, 0, ch.z);
+        }
+        rotateYawTowards(ch, 0, 0.2);
+        if (elapsed < ch.jabatSampai) {
+          lerpPose(ch, { lArmX: -1.4, lArmZ: 0.15, rArmX: 0, rArmZ: 0 }, Math.min(1, dt * 8));
+        } else {
+          lerpPose(ch, { lArmX: 0, lArmZ: 0, rArmX: 0, rArmZ: 0 }, Math.min(1, dt * 6));
+        }
+        return;
+      }
+
+      const guru = plan.guru;
+      const gp = guru.thanksPlan;
+      const tunggu = plan.tunggu;
+      const tangan = { x: gp.pos.x, z: gp.pos.z + 1.15 };
+      const sekarang = elapsed - state.activityStartTime;
+
+      if (sekarang < plan.mulai || (!plan.sampai && !plan.kembali)) {
+        // Menunggu giliran (atau berjalan ke guru saat giliran tiba)
+        if (sekarang < plan.mulai) {
+          if (Math.hypot(tunggu.x - ch.x, tunggu.z - ch.z) > 0.3) moveCharacterToward(ch, tunggu.x, tunggu.z, ch.baseSpeed * 1.2, dt, elapsed);
+          else ch.mesh.position.set(ch.x, 0, ch.z);
+          return;
+        }
+        if (Math.hypot(tangan.x - ch.x, tangan.z - ch.z) > 0.3) {
+          moveCharacterToward(ch, tangan.x, tangan.z, ch.baseSpeed * 1.3, dt, elapsed);
+          return;
+        }
+        // Sampai: mulai berjabat tangan
+        plan.sampai = true;
+        plan.jabatMulai = elapsed;
+        guru.jabatSampai = elapsed + 3.4;
+        triggerChatBubble(ch, THANKS_MURID[Math.floor(Math.random() * THANKS_MURID.length)].replace('{g}', guru.name));
+        triggerChatBubble(guru, THANKS_GURU[Math.floor(Math.random() * THANKS_GURU.length)]);
+      }
+
+      if (plan.sampai && !plan.kembali) {
+        rotateYawTowards(ch, Math.PI, 0.2);
+        ch.mesh.position.set(ch.x, 0, ch.z);
+        lerpPose(ch, { lArmX: -1.4, lArmZ: 0.15, rArmX: 0, rArmZ: 0 }, Math.min(1, dt * 8));
+        if (elapsed - plan.jabatMulai >= 3.2) plan.kembali = true;
+        return;
+      }
+
+      if (plan.kembali && !plan.selesai) {
+        // Kembali ke barisan tunggu
+        lerpPose(ch, { lArmX: 0, lArmZ: 0, rArmX: 0, rArmZ: 0 }, Math.min(1, dt * 6));
+        if (Math.hypot(tunggu.x - ch.x, tunggu.z - ch.z) > 0.3) moveCharacterToward(ch, tunggu.x, tunggu.z, ch.baseSpeed * 1.2, dt, elapsed);
+        else plan.selesai = true;
+      }
+    }
+
     function assignAllFormationTargets(actMode) {
       const chars = state.characters;
       if (chars.length === 0) return;
+      chars.forEach(c => { c.thanksPlan = null; });
 
       const teachers = chars.filter(c => c.role === 'teacher');
       const others = chars.filter(c => c.role !== 'teacher');
@@ -3148,6 +3230,34 @@
           c.state = Math.random() < 0.35 ? 'run' : 'walk';
           c.stateTimer = 3 + Math.random() * 5;
         });
+        return;
+      }
+
+      if (actMode === 'thanks') {
+        const fp = getFlagpoleTarget();
+        const T = teachers.filter(t => t.mesh.visible);
+        const N = others.filter(c => c.mesh.visible && c.role === 'student');
+        const nGuru = Math.max(1, T.length);
+        // Guru berbaris di depan tiang bendera, menghadap murid
+        teachers.forEach(t => { t.formationSlot = null; t.soloAction = null; t.thanksPlan = null; });
+        T.forEach((t, j) => {
+          const pos = { x: fp.x + (j - (T.length - 1) / 2) * 2.2, z: fp.z + 3.2 };
+          t.thanksPlan = { guru: true, pos, yaw: 0 };
+        });
+        // Murid menunggu di depan barisan guru, lalu bergiliran menghampiri tiap guru
+        const kolom = Math.min(10, Math.max(1, N.length));
+        N.forEach((c, i) => {
+          c.formationSlot = null;
+          c.soloAction = null;
+          let tunggu = { x: fp.x + ((i % kolom) - (kolom - 1) / 2) * 1.5, z: fp.z + 8.5 + Math.floor(i / kolom) * 1.5 };
+          if (isPointBlocked(tunggu.x, tunggu.z, 0.5)) { const pt = pickRandomWalkPoint(); tunggu = { x: pt.x, z: pt.z }; }
+          const guru = T[i % nGuru];
+          if (!guru) return;
+          const r = Math.floor(i / nGuru);
+          c.thanksPlan = { guru, tunggu, mulai: r * 12 + 2.0, sampai: false, kembali: false, selesai: false, jabatMulai: -1 };
+        });
+        const putaran = Math.ceil(N.length / nGuru);
+        state.thanksUntil = state.activityStartTime + putaran * 12 + 12;
         return;
       }
 
@@ -3286,8 +3396,23 @@
     }
 
     function setActivityMode(actMode) {
+      const modeSebelum = state.activityMode;
       state.activityMode = actMode;
+      document.body.classList.toggle('mode-terimakasih', actMode === 'thanks');
+      // Gelembung ucapan butuh layer label: nyalakan otomatis saat Terima Kasih, lalu kembalikan
+      if (actMode === 'thanks' && !state.showLabels) {
+        state.labelsSebelumTerimaKasih = false;
+        state.showLabels = true;
+        applyLabelsVisibility();
+      } else if (modeSebelum === 'thanks' && actMode !== 'thanks' && state.labelsSebelumTerimaKasih === false) {
+        state.showLabels = false;
+        state.labelsSebelumTerimaKasih = undefined;
+        applyLabelsVisibility();
+      }
       state.activityStartTime = clock.elapsedTime;
+      state.thanksUntil = clock.elapsedTime + 45;
+      const btnTerimaKasih = document.getElementById('btn-thanks');
+      if (btnTerimaKasih) btnTerimaKasih.textContent = actMode === 'thanks' ? 'Selesai Berterima Kasih' : 'Terima Kasih';
       document.querySelectorAll('#activity-bar button').forEach(b => {
         b.classList.toggle('active-act', b.dataset.act === actMode);
       });
@@ -3298,10 +3423,15 @@
         ceremony: 'Kegiatan: Baris & Hormat Bendera • Semua berbaris menghadap Tiang Bendera',
         prayer: 'Kegiatan: Shalat Berjamaah • Shaf rapi menghadap arah barat / gerbang sekolah',
         exercise: 'Kegiatan: Senam Pagi • Guru memimpin senam di lapangan sekolah',
-        play: 'Kegiatan: Main Bersama • Siswa & guru berkumpul bermain riang di lapangan'
+        play: 'Kegiatan: Main Bersama • Siswa & guru berkumpul bermain riang di lapangan',
+        thanks: 'Kegiatan: Terima Kasih • Guru berbaris di depan bendera, murid berjabat tangan bergiliran sambil berterima kasih'
       };
       hintBanner.textContent = desc[actMode] || hintBanner.textContent;
     }
+
+    document.getElementById('btn-thanks').addEventListener('click', () => {
+      setActivityMode(state.activityMode === 'thanks' ? 'free' : 'thanks');
+    });
 
     document.querySelectorAll('#activity-bar button').forEach(btn => {
       btn.addEventListener('click', () => setActivityMode(btn.dataset.act));
@@ -4368,8 +4498,14 @@
     const clock = new THREE.Clock();
     const tempVec = new THREE.Vector3();
 
+    let wallpaperTerakhir = 0;
     function animate() {
       requestAnimationFrame(animate);
+      if (MODE_WALLPAPER) {
+        const sekarang = performance.now();
+        if (sekarang - wallpaperTerakhir < 1000 / 30) return;
+        wallpaperTerakhir = sekarang;
+      }
       const dt = Math.min(clock.getDelta(), 0.05);
       const elapsed = clock.elapsedTime;
 
@@ -4411,6 +4547,7 @@
         }
       }
 
+      if (state.activityMode === 'thanks' && clock.elapsedTime > state.thanksUntil) setActivityMode('free');
       turUpdate(dt);
       for (const ch of state.characters) {
         if (ch.linked && !ch.mesh.visible) continue; // karakter tersembunyi (mis. murid tidak hadir) tidak perlu dianimasikan
@@ -4423,7 +4560,10 @@
         }
 
         // 1) PRIORITAS KEGIATAN SEKOLAH BERSAMA (#activity-bar)
-        if (state.activityMode !== 'free' && ch.formationSlot) {
+        if (state.activityMode === 'thanks' && ch.thanksPlan) {
+          updateJabatTangan(ch, dt, elapsed);
+        }
+        else if (state.activityMode !== 'free' && ch.formationSlot) {
           const slot = ch.formationSlot;
           const distToSlot = Math.hypot(slot.x - ch.x, slot.z - ch.z);
 
@@ -4451,6 +4591,19 @@
                 applyPrayerPose(ch, elapsed - state.activityStartTime, dt, slot.isImam);
               } else if (state.activityMode === 'exercise') {
                 applyExercisePose(ch, elapsed, dt);
+              } else if (state.activityMode === 'thanks') {
+                ch.thanksTimer = (ch.thanksTimer ?? 1) - dt;
+                if (ch.thanksTimer <= 0) {
+                  if (slot.thanksGuru) {
+                    triggerChatBubble(ch, THANKS_GURU[Math.floor(Math.random() * THANKS_GURU.length)]);
+                    ch.thanksTimer = 9 + Math.random() * 4;
+                  } else {
+                    const guru = state.characters.find(c => c.formationSlot && c.formationSlot.thanksGuru);
+                    const nama = guru ? guru.name : 'Guru';
+                    triggerChatBubble(ch, THANKS_MURID[Math.floor(Math.random() * THANKS_MURID.length)].replace('{g}', nama));
+                    ch.thanksTimer = 5 + Math.random() * 3;
+                  }
+                }
               }
             }
           }
