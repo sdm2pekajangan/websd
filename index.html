@@ -6108,29 +6108,86 @@
     let hudTersimpan = {};
     try { hudTersimpan = JSON.parse(localStorage.getItem(HUD_KEY) || '{}') || {}; } catch (e) { hudTersimpan = {}; }
 
+    const HUD_ICON = {
+      'brand-card': '<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.6 6.6 19.6l1.2-6.1-4.5-4.2 6.1-.7z"/>',
+      'quick-links': '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+      'stats-bar': '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+      'cam-bar': '<path d="M3 8h11v8H3zM14 11l7-4v10l-7-4"/>',
+      'hint-banner': '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+      'inspect-card': '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+      'building-card': '<path d="M4 21V5l8-2v18M12 9h8v12M4 21h16"/>',
+      'sub-panel': '<path d="M14.7 6.3a4 4 0 0 0 5 5L12 19l-3-3 .3-.3a4 4 0 0 0 5.4-9.4z"/>',
+      'mode-dock': '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+    };
     const hudCss = document.createElement('style');
     hudCss.textContent = `
-      .hud-min-btn{position:absolute;top:-9px;right:-9px;z-index:2;display:flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid rgba(15,23,42,.12);border-radius:999px;background:#fff;color:#334155;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+      [data-tip]{position:relative}
+      [data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);white-space:nowrap;padding:6px 10px;border-radius:8px;background:#0f172a;color:#f8fafc;font:600 12px/1.2 system-ui,sans-serif;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:40}
+      [data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0)}
+      .hud-min-btn{position:absolute;top:-9px;right:-9px;z-index:2;display:flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;border:1px solid rgba(15,23,42,.12);border-radius:999px;background:#fff;color:#334155;cursor:pointer;box-shadow:0 1px 3px rgba(15,23,42,.08)}
+      .hud-min-btn::before{content:'';position:absolute;inset:-11px}
       .hud-min-btn:hover{background:#f1f5f9}
       .hud-min-btn:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
-      .hud-min-btn svg{width:12px;height:12px;flex:none;transition:transform .2s}
-      .hud-min-btn .lbl{display:none}
-      .hud-panel.hud-min{padding:0 !important;width:auto !important;min-width:0 !important;height:auto !important;max-width:none !important;max-height:none !important;border-radius:999px !important;overflow:visible !important}
-      .hud-panel.hud-min > :not(.hud-min-btn){display:none !important}
-      .hud-panel.hud-min > .hud-min-btn{position:static;width:auto;height:auto;border:0;box-shadow:none;background:none;padding:7px 14px;font-size:12px;font-weight:600;color:#0f172a;gap:6px;display:flex;align-items:center}
-      .hud-panel.hud-min > .hud-min-btn:hover{background:rgba(15,23,42,.06)}
-      .hud-panel.hud-min > .hud-min-btn .lbl{display:inline}
-      .hud-panel.hud-min > .hud-min-btn svg{transform:rotate(180deg)}
+      .hud-min-btn svg{width:12px;height:12px;flex:none}
+      .hud-panel.hud-min{display:none !important}
+      #hud-dok{position:fixed;right:16px;bottom:16px;z-index:25;display:none;align-items:center;gap:6px;padding:6px;background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.12)}
+      #hud-dok.ada{display:flex}
+      #hud-dok .dok-btn{position:relative;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:12px;background:transparent;color:#334155;cursor:pointer}
+      #hud-dok .dok-btn[hidden]{display:none}
+      #hud-dok .dok-btn:hover{background:#f1f5f9;color:#0f172a}
+      #hud-dok .dok-btn:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+      #hud-dok .dok-btn svg{width:22px;height:22px}
+      #hud-naik{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:26;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:calc(100vw - 24px);pointer-events:none}
+      #hud-naik > .hud-panel{pointer-events:auto;position:relative !important;top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;inset:auto !important;transform:none !important;width:max-content !important;max-width:min(calc(100vw - 24px),600px) !important;animation:hudNaik .2s ease-out both}
+      @keyframes hudNaik{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+      #hud-dok.ada{animation:dokNaik .2s ease-out both}
+      #hud-dok .dok-btn:not([hidden]){animation:dokIkon .2s ease-out both}
+      #hud-dok .dok-btn:nth-child(2){animation-delay:.04s}
+      #hud-dok .dok-btn:nth-child(3){animation-delay:.08s}
+      #hud-dok .dok-btn:nth-child(4){animation-delay:.12s}
+      #hud-dok .dok-btn:nth-child(5){animation-delay:.16s}
+      .hud-panel.hud-keluar{animation:hudKeluar .15s ease-in both !important}
+      @keyframes dokNaik{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+      @keyframes dokIkon{from{opacity:0;transform:translateY(6px) scale(.92)}to{opacity:1;transform:none}}
+      @keyframes hudKeluar{from{opacity:1;transform:none}to{opacity:0;transform:translateY(8px)}}
+      @media (prefers-reduced-motion: reduce){
+        #hud-naik > .hud-panel,#hud-dok,#hud-dok .dok-btn,.hud-panel.hud-keluar{animation:none !important}
+      }
     `;
     document.head.appendChild(hudCss);
+
+    const hudDok = document.createElement('div');
+    hudDok.id = 'hud-dok';
+    hudDok.setAttribute('role', 'toolbar');
+    hudDok.setAttribute('aria-label', 'Menu yang diciutkan');
+    document.body.appendChild(hudDok);
+
+    const hudNaik = document.createElement('div');
+    hudNaik.id = 'hud-naik';
+    document.body.appendChild(hudNaik);
+
+    function hudDokCek() {
+      hudDok.classList.toggle('ada', [...hudDok.children].some(x => !x.hidden));
+    }
 
     function hudTerapkan(el, min) {
       el.classList.toggle('hud-min', min);
       const b = el.querySelector(':scope > .hud-min-btn');
-      if (b) {
-        b.setAttribute('aria-expanded', String(!min));
-        b.title = min ? 'Tampilkan panel' : 'Ciutkan panel';
+      if (b) b.setAttribute('aria-expanded', String(!min));
+      if (el._dok) el._dok.hidden = !min;
+      hudDokCek();
+    }
+
+    function hudSet(kunci, el, min) {
+      if (!min) {
+        hudNaik.appendChild(el);            // dibuka dari dok: naik ke kolom di atas dok
+        hudTerapkan(el, false);
+      } else {
+        el.classList.add('hud-keluar');     // diciutkan: turun sebentar, lalu masuk dok
+        setTimeout(() => { el.classList.remove('hud-keluar'); hudTerapkan(el, true); }, 150);
       }
+      hudTersimpan[kunci] = min;
+      try { localStorage.setItem(HUD_KEY, JSON.stringify(hudTersimpan)); } catch (err) {}
     }
 
     document.querySelectorAll('.hud-panel').forEach(el => {
@@ -6139,19 +6196,30 @@
       if (!kunci) return;
       const label = HUD_LABEL[kunci];
       if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+
+      // tombol kecil di sudut panel untuk menciutkan
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'hud-min-btn';
-      b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg><span class="lbl">${label}</span>`;
+      b.setAttribute('aria-label', 'Ciutkan ' + label);
+      b.dataset.tip = 'Ciutkan ' + label;
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
       el.appendChild(b);
+      b.onclick = (e) => { e.stopPropagation(); hudSet(kunci, el, true); };
+
+      // tombol di dok bawah untuk membuka kembali
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'dok-btn';
+      d.hidden = true;
+      d.setAttribute('aria-label', 'Buka ' + label);
+      d.dataset.tip = 'Buka ' + label;
+      d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (HUD_ICON[kunci] || '<rect x="4" y="4" width="16" height="16" rx="3"/>') + '</svg>';
+      d.onclick = () => hudSet(kunci, el, false);
+      hudDok.appendChild(d);
+      el._dok = d;
+
       hudTerapkan(el, !!hudTersimpan[kunci]);
-      b.onclick = (e) => {
-        e.stopPropagation();
-        const m = !el.classList.contains('hud-min');
-        hudTerapkan(el, m);
-        hudTersimpan[kunci] = m;
-        try { localStorage.setItem(HUD_KEY, JSON.stringify(hudTersimpan)); } catch (err) {}
-      };
     });
     // ==========================================
     // 16. TUR SINEMATIK (4 jari / tombol T) & IKUTI PAK FATUR (F)
@@ -6753,4 +6821,3 @@
   </script>
 </body>
 </html>
-															
