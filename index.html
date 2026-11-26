@@ -843,7 +843,7 @@
 
       sd_fence_unit:   { cat: 'props', label: 'Pagar Besi', icon: 'fence', w: 4.0, d: 0.7, stackable: false },
       sd_gate_unit:    { cat: 'props', label: 'Gerbang Besi', icon: 'gate', w: 4.2, d: 0.8, stackable: false },
-      sd_front_fence:  { cat: 'props', label: 'Pagar & Plang', icon: 'plang', w: 40, d: 1.2, stackable: false },
+      sd_front_fence:  { cat: 'props', label: 'Pagar & Plang', icon: 'plang', w: 20, d: 0.6, stackable: false },
       sd_papan_nama:   { cat: 'props', label: 'Papan Nama Sekolah', icon: 'plang', w: 5.0, d: 0.6, stackable: false },
       sd_plakat_mutu:  { cat: 'props', label: 'Plakat SD Mutu', icon: 'plang', w: 4.6, d: 0.6, stackable: false },
       sd_mural_wall:   { cat: 'props', label: 'Tembok Mural', icon: 'mural', w: 1.0, d: 34, stackable: false },
@@ -1657,7 +1657,7 @@
         g.add(roofGroup);
         g.add(stairsContainer);
         enableShadows(g);
-        g.scale.setScalar(SKALA_KELAS);
+        g.scale.setScalar(SKALA_KELAS * (type === 'sd_front_fence' ? 0.5 : 1));
       return { mesh: g, roofGroup, stairsContainer };
       }
 
@@ -1665,7 +1665,7 @@
         const stairMesh = buildStairSubMesh(stairStyle, 'standalone');
         g.add(stairMesh);
         enableShadows(g);
-        g.scale.setScalar(SKALA_KELAS);
+        g.scale.setScalar(SKALA_KELAS * (type === 'sd_front_fence' ? 0.5 : 1));
       return { mesh: g, roofGroup, stairsContainer };
       }
 
@@ -2107,7 +2107,7 @@
       }
 
       enableShadows(g);
-      g.scale.setScalar(SKALA_KELAS);
+      g.scale.setScalar(SKALA_KELAS * (type === 'sd_front_fence' ? 0.5 : 1));
       return { mesh: g, roofGroup, stairsContainer };
     }
 
