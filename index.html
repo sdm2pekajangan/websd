@@ -799,10 +799,10 @@
     // 1. KONFIGURASI & CATALOG
     // ==========================================
     const STORAGE_KEY = 'sd_mutu_tangkil_3d_v8';
-    const ISLAND_LIMIT = 36;
+    const SKALA_KELAS = 1.4;   // seluruh peta (gedung, pohon, jalan, alas) 1,5x; orang tetap ukuran semula
+    const ISLAND_LIMIT = 36 * SKALA_KELAS;
     const ROAD_STEP = 3;
     const FLOOR_HEIGHT = 3.5;
-    const SKALA_KELAS = 1.5;   // seluruh peta (gedung, pohon, jalan, alas) 1,5x; orang tetap ukuran semula
     const MAX_LANTAI = 4;
 
     const state = {
@@ -1149,7 +1149,7 @@
       [-11.5,   2.0],
       [-21.0, -11.0],
       [-21.0, -15.0]
-    ];
+    ].map(([x, z]) => [x * SKALA_KELAS, z * SKALA_KELAS]);
 
     function createPolygonExtrude(points, depth, yTop, color) {
       const shape = new THREE.Shape();
@@ -2489,7 +2489,7 @@
     }
 
     function canPlaceRoad(x, z) {
-      if (Math.abs(x) > 33 || Math.abs(z) > 33) return false;
+      if (Math.abs(x) > 33 * SKALA_KELAS || Math.abs(z) > 33 * SKALA_KELAS) return false;
       const halfRoad = ROAD_STEP / 2;
       for (const b of state.buildings) {
         if (b.floor !== 1) continue;
@@ -2843,7 +2843,8 @@
         if (mv.kids.length) roofGroup.visible = false;
         mv.kids.forEach((k, i) => {
           const res = createBuildingMesh(k.type, i + 2, k.stairStyle, k.extraOpts || {});
-          res.mesh.position.y = lantaiY(i + 2) / SKALA_KELAS;
+          res.mesh.scale.setScalar(1);                 // skala sudah diwarisi dari induk
+          res.mesh.position.y = (i + 1) * FLOOR_HEIGHT;
           if (i < mv.kids.length - 1) res.roofGroup.visible = false;
           mesh.add(res.mesh);
         });
@@ -4172,12 +4173,14 @@
     }
 
     function applyWorldData(data) {
-      if (!data.skalaPeta && Array.isArray(data.buildings)) {
-        // denah lama: posisi dikali skala peta sekali (hasil skala gedung kelas sebelumnya dikembalikan dulu)
+      if (data.skalaPeta !== SKALA_KELAS && Array.isArray(data.buildings)) {
+        // denah lama: ubah posisi dari skala sebelumnya ke skala sekarang (sekali saja)
+        const dariSkala = data.skalaPeta || 1;
+        const rasio = SKALA_KELAS / dariSkala;
         data.buildings.forEach(b => {
-          if (data.skalaKelas && b.type === 'classroom') { b.x /= data.skalaKelas; b.z /= data.skalaKelas; }
-          b.x = Math.round(b.x * SKALA_KELAS * 100) / 100;
-          b.z = Math.round(b.z * SKALA_KELAS * 100) / 100;
+          if (!data.skalaPeta && data.skalaKelas && b.type === 'classroom') { b.x /= data.skalaKelas; b.z /= data.skalaKelas; }
+          b.x = Math.round(b.x * rasio * 100) / 100;
+          b.z = Math.round(b.z * rasio * 100) / 100;
         });
         data.skalaPeta = SKALA_KELAS;
       }
