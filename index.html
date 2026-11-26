@@ -802,6 +802,7 @@
     const ISLAND_LIMIT = 36;
     const ROAD_STEP = 3;
     const FLOOR_HEIGHT = 3.5;
+    const SKALA_KELAS = 1.5;   // seluruh peta (gedung, pohon, jalan, alas) 1,5x; orang tetap ukuran semula
     const MAX_LANTAI = 4;
 
     const state = {
@@ -843,6 +844,8 @@
       sd_fence_unit:   { cat: 'props', label: 'Pagar Besi', icon: 'fence', w: 4.0, d: 0.7, stackable: false },
       sd_gate_unit:    { cat: 'props', label: 'Gerbang Besi', icon: 'gate', w: 4.2, d: 0.8, stackable: false },
       sd_front_fence:  { cat: 'props', label: 'Pagar & Plang', icon: 'plang', w: 40, d: 1.2, stackable: false },
+      sd_papan_nama:   { cat: 'props', label: 'Papan Nama Sekolah', icon: 'plang', w: 5.0, d: 0.6, stackable: false },
+      sd_plakat_mutu:  { cat: 'props', label: 'Plakat SD Mutu', icon: 'plang', w: 4.6, d: 0.6, stackable: false },
       sd_mural_wall:   { cat: 'props', label: 'Tembok Mural', icon: 'mural', w: 1.0, d: 34, stackable: false },
       sd_back_wall:    { cat: 'props', label: 'Tembok Hijau', icon: 'wall', w: 1.0, d: 44, stackable: false },
       sd_front_left:   { cat: 'props', label: 'Ruang Depan', icon: 'classroom', w: 9.0, d: 5.4, stackable: false },
@@ -862,6 +865,10 @@
       lamp_post:       { cat: 'props', label: 'Tiang Lampu Halaman', icon: 'lamp', w: 0.8, d: 0.8, stackable: false },
       lamp_front:      { cat: 'props', label: 'Lampu Depan Kelas', icon: 'lamp', w: 0.8, d: 0.8, stackable: false }
     };
+    for (const k of Object.keys(BUILDING_CATALOG)) {
+      if (BUILDING_CATALOG[k].w) BUILDING_CATALOG[k].w *= SKALA_KELAS;
+      if (BUILDING_CATALOG[k].d) BUILDING_CATALOG[k].d *= SKALA_KELAS;
+    }
 
     const STAIR_SIDES = { none: 'Tanpa', right: 'Kanan', left: 'Kiri', front: 'Depan', back: 'Belakang' };
 
@@ -1130,6 +1137,7 @@
     // 4. PULAU SEKOLAH POLIGON ASLI
     // ==========================================
     const groundGroup = new THREE.Group();
+    groundGroup.scale.setScalar(SKALA_KELAS);
     scene.add(groundGroup);
 
     const SCHOOL_POLYGON = [
@@ -1506,9 +1514,14 @@
         g.add(topSlab);
 
         if (type === 'classroom') {
-          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.1), new THREE.MeshStandardMaterial({ color: 0xede0c8, roughness: 0.85 }));
+          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.1), new THREE.MeshStandardMaterial({ color: 0xf3e8d0, roughness: 0.85 }));
           walls.position.set(0, 1.8, -0.55);
-          g.add(walls);
+          // pondasi gelap dan pita oranye seperti gedung di foto
+          const pondasi = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.35, 4.2), new THREE.MeshStandardMaterial({ color: 0xc9b99a, roughness: 0.95 }));
+          pondasi.position.set(0, 0.18, -0.55);
+          const pitaOranye = new THREE.Mesh(new THREE.BoxGeometry(7.62, 0.22, 4.16), new THREE.MeshStandardMaterial({ color: 0xd9a441, roughness: 0.7 }));
+          pitaOranye.position.set(0, 2.95, -0.55);
+          g.add(walls, pondasi, pitaOranye);
 
           if (extraOpts.hasMading) {
             const yWall = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2.7, 0.12), new THREE.MeshStandardMaterial({ color: 0xeab308 }));
@@ -1557,16 +1570,22 @@
             g.add(rack, desk);
           }
 
-          const roof = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.35, 5.9), new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.85 }));
-          roof.position.set(0, FLOOR_HEIGHT + 0.35, 0.15);
-          roof.rotation.x = 0.14;
-          const ridge = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.45, 2.8), new THREE.MeshStandardMaterial({ color: 0x6c2710 }));
-          ridge.position.set(0, FLOOR_HEIGHT + 0.65, -0.9);
-          roofGroup.add(roof, ridge);
+          // atap pelana: segitiga di ujung gedung yang pendek (seperti sketsa), puncak di tengah
+          const atapSh = new THREE.Shape();
+          atapSh.moveTo(-2.4, 0);
+          atapSh.lineTo(2.4, 0);
+          atapSh.lineTo(0, 2.6);
+          atapSh.lineTo(-2.4, 0);
+          const atapGeo = new THREE.ExtrudeGeometry(atapSh, { depth: 8.0, bevelEnabled: false });
+          atapGeo.translate(0, 0, -4.0);
+          atapGeo.rotateY(Math.PI / 2);
+          const atap = new THREE.Mesh(atapGeo, new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.85, side: THREE.DoubleSide }));
+          atap.position.set(0, FLOOR_HEIGHT - 0.2, -0.55);
+          roofGroup.add(atap);
 
           if (extraOpts.roofTitle) {
             const roofSign = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.8, 0.18), new THREE.MeshStandardMaterial({ map: bannerTex }));
-            roofSign.position.set(0, FLOOR_HEIGHT + 1.05, 0.2);
+            roofSign.position.set(0, FLOOR_HEIGHT + 0.7, 2.1);
             roofGroup.add(roofSign);
           }
         }
@@ -1638,14 +1657,16 @@
         g.add(roofGroup);
         g.add(stairsContainer);
         enableShadows(g);
-        return { mesh: g, roofGroup, stairsContainer };
+        g.scale.setScalar(SKALA_KELAS);
+      return { mesh: g, roofGroup, stairsContainer };
       }
 
       if (type === 'stairs') {
         const stairMesh = buildStairSubMesh(stairStyle, 'standalone');
         g.add(stairMesh);
         enableShadows(g);
-        return { mesh: g, roofGroup, stairsContainer };
+        g.scale.setScalar(SKALA_KELAS);
+      return { mesh: g, roofGroup, stairsContainer };
       }
 
       if (type === 'sd_fence_unit') {
@@ -1681,9 +1702,16 @@
           cap.position.set(px, 2.45, 0);
           g.add(pil, cap);
         }
-        const gateLeaf = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.55, 0.1), ironMat);
-        gateLeaf.position.set(0.45, 0.82, 0.16);
-        g.add(gateLeaf);
+        for (const ry of [0.06, 1.58]) {
+          const rail = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.08, 0.1), ironMat);
+          rail.position.set(0.45, ry, 0.16);
+          g.add(rail);
+        }
+        for (let gx = -0.85; gx <= 1.75; gx += 0.3) {
+          const gb = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.6, 0.08), ironMat);
+          gb.position.set(gx, 0.82, 0.16);
+          g.add(gb);
+        }
       }
 
       else if (type === 'sd_mural_wall') {
@@ -1710,6 +1738,45 @@
         }
       }
 
+      else if (type === 'sd_papan_nama') {
+        const tiang = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.4 });
+        for (const px of [-2.2, 2.2]) {
+          const pos = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 2.6, 8), tiang);
+          pos.position.set(px, 1.3, 0);
+          g.add(pos);
+        }
+        const papan = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.5, 0.16), new THREE.MeshStandardMaterial({ map: blueSignTex }));
+        papan.position.set(0, 2.35, 0);
+        g.add(papan);
+      }
+
+      else if (type === 'sd_plakat_mutu') {
+        const plakC = document.createElement('canvas');
+        plakC.width = 1024; plakC.height = 440;
+        const pk = plakC.getContext('2d');
+        pk.fillStyle = '#0b0b0b';
+        pk.fillRect(0, 0, 1024, 440);
+        pk.strokeStyle = '#ca8a04';
+        pk.lineWidth = 10;
+        pk.strokeRect(22, 22, 980, 396);
+        pk.fillStyle = '#facc15';
+        pk.textAlign = 'center';
+        pk.textBaseline = 'middle';
+        pk.font = '900 130px sans-serif';
+        pk.fillText('SD MUTU', 512, 160);
+        pk.font = '700 60px sans-serif';
+        pk.fillText('SD MUHAMMADIYAH 2 PEKAJANGAN', 512, 262);
+        pk.font = '600 52px sans-serif';
+        pk.fillText('DI TANGKIL KULON', 512, 350);
+        const plakTex = new THREE.CanvasTexture(plakC);
+        plakTex.colorSpace = THREE.SRGBColorSpace;
+        const plakHitam = new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.4 });
+        const plakDepan = new THREE.MeshStandardMaterial({ map: plakTex, roughness: 0.5 });
+        const plak = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.0, 0.3), [plakHitam, plakHitam, plakHitam, plakHitam, plakDepan, plakHitam]);
+        plak.position.set(0, 1.0, 0);
+        g.add(plak);
+      }
+
       else if (type === 'sd_front_fence') {
         const wallMat = new THREE.MeshStandardMaterial({ color: 0xe5d3a3, roughness: 0.85 });
         const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.4 });
@@ -1729,6 +1796,7 @@
         }
 
         for (let bx = -19.2; bx <= 4.0; bx += 0.6) {
+          if (Math.abs(bx + 17) < 2.4) continue;     // area plakat hitam
           const bar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.2, 0.08), ironMat);
           bar.position.set(bx, 1.5, 0);
           g.add(bar);
@@ -1737,9 +1805,16 @@
         topRail.position.set(-7.75, 2.08, 0);
         g.add(topRail);
 
-        const gateDoor = new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.6, 0.12), ironMat);
-        gateDoor.position.set(9.7, 0.85, 0.25);
-        g.add(gateDoor);
+        for (const ry of [0.06, 1.62]) {
+          const rail = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.08, 0.1), ironMat);
+          rail.position.set(9.7, ry, 0.25);
+          g.add(rail);
+        }
+        for (let gx = 8.0; gx <= 11.4; gx += 0.3) {
+          const gb = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.6, 0.08), ironMat);
+          gb.position.set(gx, 0.85, 0.25);
+          g.add(gb);
+        }
 
         const signPostL = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 4.2, 8), ironMat);
         signPostL.position.set(-10.5, 2.1, 0.35);
@@ -1748,6 +1823,31 @@
         const bigSign = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.5, 0.16), new THREE.MeshStandardMaterial({ map: blueSignTex }));
         bigSign.position.set(-8.25, 3.05, 0.35);
         g.add(signPostL, signPostR, bigSign);
+
+        const plakC = document.createElement('canvas');
+        plakC.width = 1024; plakC.height = 440;
+        const pk = plakC.getContext('2d');
+        pk.fillStyle = '#0b0b0b';
+        pk.fillRect(0, 0, 1024, 440);
+        pk.strokeStyle = '#ca8a04';
+        pk.lineWidth = 10;
+        pk.strokeRect(22, 22, 980, 396);
+        pk.fillStyle = '#facc15';
+        pk.textAlign = 'center';
+        pk.textBaseline = 'middle';
+        pk.font = '900 130px sans-serif';
+        pk.fillText('SD MUTU', 512, 160);
+        pk.font = '700 60px sans-serif';
+        pk.fillText('SD MUHAMMADIYAH 2 PEKAJANGAN', 512, 262);
+        pk.font = '600 52px sans-serif';
+        pk.fillText('DI TANGKIL KULON', 512, 350);
+        const plakTex = new THREE.CanvasTexture(plakC);
+        plakTex.colorSpace = THREE.SRGBColorSpace;
+        const plakHitam = new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.4 });
+        const plakDepan = new THREE.MeshStandardMaterial({ map: plakTex, roughness: 0.5 });
+        const plak = new THREE.Mesh(new THREE.BoxGeometry(4.6, 2.0, 0.3), [plakHitam, plakHitam, plakHitam, plakHitam, plakDepan, plakHitam]);
+        plak.position.set(-17, 1.5, 0.3);
+        g.add(plak);
       }
 
       else if (type === 'sd_front_left') {
@@ -2007,6 +2107,7 @@
       }
 
       enableShadows(g);
+      g.scale.setScalar(SKALA_KELAS);
       return { mesh: g, roofGroup, stairsContainer };
     }
 
@@ -2265,7 +2366,7 @@
     }
 
     // ===== Tumpukan lantai (maksimal MAX_LANTAI) =====
-    function lantaiY(f) { return (f - 1) * FLOOR_HEIGHT; }
+    function lantaiY(f) { return (f - 1) * FLOOR_HEIGHT * SKALA_KELAS; }
     function anakDari(b) { return state.buildings.find(o => o.parentId === b.id); }
     function akarTumpukan(b) {
       let cur = b;
@@ -2372,11 +2473,11 @@
       if (parentId) segarkanAtapTangga();
 
       if (animatePop) {
-        mesh.scale.set(0.1, 0.1, 0.1);
+        mesh.scale.set(0.1 * SKALA_KELAS, 0.1 * SKALA_KELAS, 0.1 * SKALA_KELAS);
         const start = performance.now();
         function popAnim(now) {
           const t = Math.min(1, (now - start) / 260);
-          mesh.scale.setScalar(1 - Math.pow(1 - t, 3));
+          mesh.scale.setScalar((1 - Math.pow(1 - t, 3)) * SKALA_KELAS);
           if (t < 1) requestAnimationFrame(popAnim);
         }
         requestAnimationFrame(popAnim);
@@ -2742,7 +2843,7 @@
         if (mv.kids.length) roofGroup.visible = false;
         mv.kids.forEach((k, i) => {
           const res = createBuildingMesh(k.type, i + 2, k.stairStyle, k.extraOpts || {});
-          res.mesh.position.y = lantaiY(i + 2);
+          res.mesh.position.y = lantaiY(i + 2) / SKALA_KELAS;
           if (i < mv.kids.length - 1) res.roofGroup.visible = false;
           mesh.add(res.mesh);
         });
@@ -3192,10 +3293,10 @@
     // 10. PRESET KAMERA VIDEO, KEGIATAN & KARTU DETAIL
     // ==========================================
     const CAM_PRESETS = {
-      gate:     { pos: [11, 8, 42],   target: [1, 2.2, 22] },
-      corridor: { pos: [3, 4.5, 25],  target: [-1, 2.2, 4] },
-      yard:     { pos: [10, 12, -2],  target: [-6, 2, -18] },
-      overview: { pos: [24, 42, 44],  target: [-4, 1, 0] }
+      gate:     { pos: [16.5, 12.0, 63.0],   target: [1.5, 3.3, 33.0] },
+      corridor: { pos: [4.5, 6.75, 37.5],  target: [-1.5, 3.3, 6.0] },
+      yard:     { pos: [15.0, 18.0, -3.0],  target: [-9.0, 3.0, -27.0] },
+      overview: { pos: [36.0, 63.0, 66.0],  target: [-6.0, 1.5, 0.0] }
     };
 
     document.querySelectorAll('#cam-bar button').forEach(btn => {
@@ -4038,6 +4139,7 @@
       return {
         app: 'SD Mutu Tangkil Kulon 3D',
         version: 5,
+        skalaPeta: SKALA_KELAS,
         savedAt: new Date().toISOString(),
         timeMode: state.timeMode,
         showLabels: state.showLabels,
@@ -4070,6 +4172,15 @@
     }
 
     function applyWorldData(data) {
+      if (!data.skalaPeta && Array.isArray(data.buildings)) {
+        // denah lama: posisi dikali skala peta sekali (hasil skala gedung kelas sebelumnya dikembalikan dulu)
+        data.buildings.forEach(b => {
+          if (data.skalaKelas && b.type === 'classroom') { b.x /= data.skalaKelas; b.z /= data.skalaKelas; }
+          b.x = Math.round(b.x * SKALA_KELAS * 100) / 100;
+          b.z = Math.round(b.z * SKALA_KELAS * 100) / 100;
+        });
+        data.skalaPeta = SKALA_KELAS;
+      }
       if (typeof data.timeMode === 'number') {
         state.timeMode = data.timeMode;
         applyTimeMode();
@@ -6428,15 +6539,15 @@
 
       // --- Keyframe Kamera & Babak Cerita ---
       const SHOTS = [
-        { t: 0.0,  pos: [30, 34, 48],   tgt: [-2, 1.5, 4] },
-        { t: 6.5,  pos: [10, 7.5, 38],  tgt: [0, 2.2, 20] },
-        { t: 14.0, pos: [2.5, 4.2, 16], tgt: [-3, 2.2, -2] },
-        { t: 18.5, pos: [10, 10.5, -2], tgt: [-3.8, 2.2, -14] },
-        { t: 22.5, pos: [6, 8.5, -3],   tgt: [-2, 1.8, -7] },
-        { t: 26.5, pos: [-7, 7.8, 25],  tgt: [-18, 3.0, 14] },
-        { t: 30.5, pos: [14, 13, 30],   tgt: [-5, 2.0, 2] },
-        { t: 37.5, pos: [-8, 11, 35],   tgt: [-3, 2.0, 0] },
-        { t: 43.0, pos: [24, 38, 44],   tgt: [-4, 1.0, 0] }
+        { t: 0.0,  pos: [45.0, 51.0, 72.0],   tgt: [-3.0, 2.25, 6.0] },
+        { t: 6.5,  pos: [15.0, 11.25, 57.0],  tgt: [0.0, 3.3, 30.0] },
+        { t: 14.0, pos: [3.75, 6.3, 24.0], tgt: [-4.5, 3.3, -3.0] },
+        { t: 18.5, pos: [15.0, 15.75, -3.0], tgt: [-5.7, 3.3, -21.0] },
+        { t: 22.5, pos: [9.0, 12.75, -4.5],   tgt: [-3.0, 2.7, -10.5] },
+        { t: 26.5, pos: [-10.5, 11.7, 37.5],  tgt: [-27.0, 4.5, 21.0] },
+        { t: 30.5, pos: [21.0, 19.5, 45.0],   tgt: [-7.5, 3.0, 3.0] },
+        { t: 37.5, pos: [-12.0, 16.5, 52.5],   tgt: [-4.5, 3.0, 0.0] },
+        { t: 43.0, pos: [36.0, 57.0, 66.0],   tgt: [-6.0, 1.5, 0.0] }
       ];
 
       const CAPTIONS = [
@@ -6656,9 +6767,9 @@
           setActivityMode('play');
           // Pop-in ruang lantai 2 demo sementara (tidak mengganggu save user)
           const res = createBuildingMesh('library', 2, 'blue_steel', {});
-          res.mesh.position.set(-20, FLOOR_HEIGHT, 12.9);
+          res.mesh.position.set(-20 * SKALA_KELAS, FLOOR_HEIGHT, 12.9 * SKALA_KELAS);
           res.mesh.rotation.y = Math.PI / 2;
-          res.mesh.scale.setScalar(0.05);
+          res.mesh.scale.setScalar(0.05 * SKALA_KELAS);
           scene.add(res.mesh);
           ts.tempProp = { mesh: res.mesh, born: t };
         });
@@ -6716,7 +6827,7 @@
         // Animasi pop-in bangunan demo sementara
         if (ts.tempProp) {
           const p = Math.min(1, (ts.t - ts.tempProp.born) / 0.45);
-          ts.tempProp.mesh.scale.setScalar(1 - Math.pow(1 - p, 3));
+          ts.tempProp.mesh.scale.setScalar((1 - Math.pow(1 - p, 3)) * SKALA_KELAS);
         }
 
         // Gambar overlay layar
