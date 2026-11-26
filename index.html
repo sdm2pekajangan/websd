@@ -882,7 +882,9 @@
     const UNIFORM_CATALOG = {
       merah_putih: { label: 'Merah Putih', shirt: 0xffffff, pants: 0xdc2626, tie: 0xdc2626, tieAccent: 0xdc2626, badge: 'SD', isBatik: false },
       batik_hijau: { label: 'Batik Hijau', shirt: 0x15803d, pants: 0x14532d, tie: 0x14532d, tieAccent: 0xfacc15, badge: 'Batik', isBatik: true },
-      hw:          { label: 'Baju HW',     shirt: 0xc79c5e, pants: 0x172554, tie: 0x15803d, tieAccent: 0xfacc15, badge: 'HW', isBatik: false }
+      hw:          { label: 'Baju HW',     shirt: 0x6f9d55, pants: 0x172554, tie: 0x15803d, tieAccent: 0xfacc15, badge: 'HW', isBatik: false },
+      gamis_kotak: { label: 'Gamis Kotak', shirt: 0x7fa968, pants: 0x5f8f4e, tie: 0x4d7c3f, tieAccent: 0xd9f2c4, badge: 'Kotak', isBatik: false },
+      olahraga:    { label: 'Olahraga',    shirt: 0xf97316, pants: 0x1e3a8a, tie: 0x1e3a8a, tieAccent: 0xf97316, badge: 'OR', isBatik: false }
     };
 
     const TEACHER_STYLE_CATALOG = {
@@ -2499,7 +2501,7 @@
     // ==========================================
     function getTodayUniformConfig() {
       const day = new Date().getDay(); // 0=Minggu, 1=Senin, 2=Selasa, 3=Rabu, 4=Kamis, 5=Jumat, 6=Sabtu
-      const allStudentUniforms = ['merah_putih', 'batik_hijau', 'hw'];
+      const allStudentUniforms = ['merah_putih', 'batik_hijau', 'gamis_kotak', 'hw', 'olahraga'];
       const allTeacherStyles = TEACHER_DAFTAR;
 
       if (day === 1 || day === 2) {
@@ -2515,8 +2517,8 @@
         // Rabu & Kamis -> Batik Hijau (Guru: Batik Hijau)
         return {
           dayLabel: day === 3 ? 'Rabu' : 'Kamis',
-          scheduleLabel: 'Batik Hijau',
-          student: 'batik_hijau',
+          scheduleLabel: day === 3 ? 'Batik Hijau' : 'Gamis Kotak',
+          student: day === 3 ? 'batik_hijau' : 'gamis_kotak',
           teacher: day === 3 ? 'putih_hitam' : 'batik_hijau'
         };
       }
@@ -2524,8 +2526,8 @@
         // Jumat & Sabtu -> Baju HW (Guru: Seragam Khaki)
         return {
           dayLabel: day === 5 ? 'Jumat' : 'Sabtu',
-          scheduleLabel: 'Baju HW',
-          student: 'hw',
+          scheduleLabel: day === 5 ? 'Baju HW' : 'Olahraga',
+          student: day === 5 ? 'hw' : 'olahraga',
           teacher: day === 5 ? 'batik_hitam' : 'biru_fgm'
         };
       }
@@ -3862,7 +3864,9 @@
             <option value="random">Seragam: Bebas / Acak</option>
             <option value="merah_putih">Merah Putih</option>
             <option value="batik_hijau">Batik Hijau</option>
-            <option value="hw">Baju HW</option>`;
+            <option value="gamis_kotak">Gamis Kotak</option>
+            <option value="hw">Baju HW</option>
+            <option value="olahraga">Olahraga</option>`;
           selUniform.value = state.studentUniform;
           selUniform.onchange = () => state.studentUniform = selUniform.value;
           row.appendChild(selUniform);
@@ -5915,7 +5919,7 @@
     // Seragam murid mengikuti pengaturan yang sama dengan karakter lain: auto = sesuai jadwal hari ini
     function seragamMurid() {
       const u = state.studentUniform;
-      if (u === 'random') return ['merah_putih', 'batik_hijau', 'hw'][Math.floor(Math.random() * 3)];
+      if (u === 'random') return ['merah_putih', 'batik_hijau', 'gamis_kotak', 'hw', 'olahraga'][Math.floor(Math.random() * 5)];
       if (!u || u === 'auto') return getTodayUniformConfig().student;
       return u;
     }
