@@ -5682,7 +5682,7 @@
       }
 
       controls.update();
-      renderer.render(scene, camera);
+      if (!window.__tsRec) renderer.render(scene, camera);
     }
 
     window.addEventListener('resize', () => {
@@ -6699,11 +6699,16 @@
         controls.update();
       }
 
+      const TS_REC_FPS = 30;
       function loopTeaser(now) {
         if (!ts.playing) return;
         const dt = (now - ts.lastMs) / 1000;
         ts.lastMs = now;
-        ts.t += Math.min(dt, 0.08);
+        if (ts.recording) {
+          ts.t = ts.recFrame / TS_REC_FPS;           // frame rekaman tepat, gerak tetap halus
+        } else {
+          ts.t += Math.min(dt, 0.08);
+        }
 
         stepCues(ts.t);
         updateCamera(ts.t);
@@ -6729,6 +6734,8 @@
           recCtx.fillRect(0, 0, recCanvas.width, recCanvas.height);
           drawCover(recCtx, renderer.domElement, recCanvas.width, recCanvas.height);
           drawTeaserGraphics(recCtx, recCanvas.width, recCanvas.height, ts.t);
+          if (ts.track && ts.track.requestFrame) ts.track.requestFrame();
+          ts.recFrame++;
         }
 
         if (ts.t >= TS_DURATION) {
@@ -6751,7 +6758,9 @@
 
         ts.playing = true;
         ts.recording = !!withRecord;
+        window.__tsRec = !!withRecord;
         ts.t = 0;
+        ts.recFrame = 0;
         ts.triggered.clear();
         ts.lastMs = performance.now();
 
@@ -6770,7 +6779,9 @@
           recCanvas.height = isPort ? 1280 : 720;
           ts.chunks = [];
 
-          const vidStream = recCanvas.captureStream(30);
+          const vidStream = recCanvas.captureStream(0);
+          ts.track = vidStream.getVideoTracks()[0];
+          ts.recFrame = 0;
           if (audioStream) {
             audioStream.getAudioTracks().forEach(tr => vidStream.addTrack(tr));
           }
@@ -6804,6 +6815,7 @@
           ts.recorder.stop();
         }
         ts.recording = false;
+        window.__tsRec = false;
 
         if (ts.tempProp) {
           scene.remove(ts.tempProp.mesh);
