@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avatar Studio SD Mutu - Editor Wajah 3D</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 390px;
+    }
+
+    /* Area Preview 3D (Kiri) */
+    #stage-wrap {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: radial-gradient(circle at 50% 42%, #38bdf8 0%, #0284c7 45%, #0f172a 100%);
+      overflow: hidden;
+    }
+
+    #canvas-box {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #canvas-box:active { cursor: grabbing; }
+
+    .top-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+      flex-wrap: wrap;
+    }
+
+    .top-overlay > * { pointer-events: auto; }
+
+    .badge-brand {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 8px 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+    }
+    .brand-dot.demo { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+
+    .cam-pills {
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 5px;
+      border-radius: 999px;
+    }
+
+    .pill-btn {
+      border: none;
+      background: transparent;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .pill-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .pill-btn.active { background: #2563eb; color: #fff; }
+
+    .bottom-pose-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 6px;
+      border-radius: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Panel Editor (Kanan) */
+    #editor-panel {
+      background: #ffffff;
+      color: #0f172a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e2e8f0;
+      box-shadow: -8px 0 30px rgba(0,0,0,0.25);
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .target-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .select-char {
+      flex: 1;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #fff;
+      outline: none;
+    }
+    .select-char:focus { border-color: #2563eb; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 4px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #64748b;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #ffffff;
+      color: #2563eb;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sec-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .swatch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid #e2e8f0;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    .swatch:hover { transform: scale(1.08); }
+    .swatch.active {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px #bfdbfe;
+      transform: scale(1.1);
+    }
+
+    .opt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .opt-card {
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 11px;
+      padding: 9px 6px;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: 0.14s;
+    }
+    .opt-card:hover { background: #eff6ff; border-color: #93c5fd; }
+    .opt-card.active {
+      background: #dbeafe;
+      border-color: #2563eb;
+      color: #1d4ed8;
+    }
+    .opt-preview {
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 11px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .json-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      padding: 10px;
+      border-radius: 10px;
+      word-break: break-all;
+      line-height: 1.45;
+    }
+
+    .panel-foot {
+      padding: 12px 16px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .foot-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-rand { background: #e2e8f0; color: #1e293b; }
+    .btn-rand:hover { background: #cbd5e1; }
+    .btn-save {
+      flex: 1;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .btn-save:hover { filter: brightness(1.08); }
+    .btn-save:disabled { opacity: 0.6; cursor: wait; }
+
+    #save-status {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+      text-align: center;
+      min-height: 16px;
+    }
+
+    @media (max-width: 860px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 46vh 54vh;
+      }
+      #stage-wrap { height: 46vh; }
+      #editor-panel { height: 54vh; border-left: none; border-top: 1px solid #cbd5e1; }
+    }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- STAGE 3D -->
+  <div id="stage-wrap">
+    <div id="canvas-box"></div>
+
+    <div class="top-overlay">
+      <div class="badge-brand">
+        <span class="brand-dot" id="conn-dot"></span>
+        <div>
+          <div style="font-size:13px;font-weight:800;">Avatar Studio SD Mutu</div>
+          <div style="font-size:11px;color:#cbd5e1;" id="conn-text">Memuat daftar dari Sheet...</div>
+        </div>
+      </div>
+
+      <div class="cam-pills">
+        <button class="pill-btn active" data-cam="face">Fokus Wajah</button>
+        <button class="pill-btn" data-cam="full">Seluruh Badan</button>
+      </div>
+    </div>
+
+    <div class="bottom-pose-bar">
+      <button class="pill-btn active" data-pose="idle">Santai</button>
+      <button class="pill-btn" data-pose="wave">Melambai</button>
+      <button class="pill-btn" data-pose="cheer">Hore!</button>
+      <button class="pill-btn" data-pose="salute">Hormat</button>
+    </div>
+  </div>
+
+  <!-- PANEL EDITOR -->
+  <aside id="editor-panel">
+    <div class="panel-head">
+      <div style="font-size:12px;font-weight:800;color:#64748b;">PILIH WARGA SEKOLAH (LINK SHEET)</div>
+      <div class="target-row">
+        <select id="char-select" class="select-char"></select>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="wajah">Wajah</button>
+      <button class="tab-btn" data-tab="rambut">Rambut/Hijab</button>
+      <button class="tab-btn" data-tab="gaya">Seragam</button>
+      <button class="tab-btn" data-tab="data">Data JSON</button>
+    </div>
+
+    <div class="panel-body" id="panel-body"></div>
+
+    <div class="panel-foot">
+      <div class="foot-btns">
+        <button class="btn btn-rand" id="btn-rand">Acak Gaya</button>
+        <button class="btn btn-save" id="btn-save">Simpan ke Sheet</button>
+      </div>
+      <div id="save-status">Geser layar 3D untuk memutar karakter 360°</div>
+    </div>
+  </aside>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ==========================================
+    // 1. KONEKSI GOOGLE SHEET (SAMA DENGAN PETA 3D)
+    // ==========================================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwoFDqMkCY9KRmH0mRZ--saBEmyGpF4_2lW8ioewN80PpZpvXp0BJLuoasSPf5RPSCP/exec';
+    const LOCAL_CACHE_KEY = 'sd_mutu_avatar_preview_cache_v1';
+
+    // ==========================================
+    // 2. KATALOG GAYA ALA ROBLOX + SD MUTU
+    // ==========================================
+    const SKIN_TONES = [
+      { id: '#fde0c2', name: 'Cerah' },
+      { id: '#fdba74', name: 'Natural' },
+      { id: '#f5b07e', name: 'Kuning Langsat' },
+      { id: '#d9915b', name: 'Sawo Matang' },
+      { id: '#a4643b', name: 'Coklat Hangat' },
+      { id: '#6f4024', name: 'Gelap' }
+    ];
+
+    const EYE_STYLES = [
+      { id: 'bulat',  label: 'Bulat Ceria', icon: '👀' },
+      { id: 'binar',  label: 'Binar Anime', icon: '✨' },
+      { id: 'senang', label: 'Senyum Mata', icon: '😊' },
+      { id: 'kedip',  label: 'Kedip Lucu',  icon: '😉' },
+      { id: 'santai', label: 'Cool Santai', icon: '😎' },
+      { id: 'tekun',  label: 'Fokus Rajin', icon: '🧐' }
+    ];
+
+    const BROW_STYLES = [
+      { id: 'normal', label: 'Normal', icon: '〰️' },
+      { id: 'ramah',  label: 'Ramah',  icon: '⌒' },
+      { id: 'tebal',  label: 'Tebal',  icon: '▬' },
+      { id: 'serius', label: 'Keren',  icon: '╲╱' }
+    ];
+
+    const MOUTH_STYLES = [
+      { id: 'senyum',  label: 'Senyum',     icon: '🙂' },
+      { id: 'ketawa',  label: 'Ketawa',     icon: '😄' },
+      { id: 'melet',   label: 'Melet Lucu', icon: '😛' },
+      { id: 'datar',   label: 'Datar Cool', icon: '😐' },
+      { id: 'o_kaget', label: 'Terkejut',   icon: '😮' },
+      { id: 'kumis',   label: 'Kumis Guru', icon: '🥸' }
+    ];
+
+    const HAIR_STYLES = [
+      { id: 'pendek', label: 'Pendek Rapi' },
+      { id: 'belah',  label: 'Belah Samping' },
+      { id: 'jabrik', label: 'Jabrik Keren' },
+      { id: 'kuncir', label: 'Kuncir Dua' },
+      { id: 'hijab',  label: 'Berhijab' },
+      { id: 'topi',   label: 'Topi Sekolah' }
+    ];
+
+    const HAIR_COLORS = [
+      { id: '#1e1b4b', name: 'Hitam Kebiruan' },
+      { id: '#3f2305', name: 'Coklat Tua' },
+      { id: '#854d0e', name: 'Coklat Terang' },
+      { id: '#f8fafc', name: 'Putih (Hijab/Uban)' },
+      { id: '#15803d', name: 'Hijau SD Mutu' },
+      { id: '#7c2d12', name: 'Marun' },
+      { id: '#1e3a8a', name: 'Biru Navy' },
+      { id: '#ec4899', name: 'Pink Pastel' }
+    ];
+
+    const GLASSES_STYLES = [
+      { id: 'none',  label: 'Tanpa' },
+      { id: 'bulat', label: 'Bulat Klasik' },
+      { id: 'kotak', label: 'Kotak Pintar' },
+      { id: 'hitam', label: 'Kacamata Hitam' }
+    ];
+
+    const STUDENT_UNIFORMS = {
+      merah_putih: { label: 'Merah Putih', shirt: 0xffffff, pants: 0xdc2626, tie: 0xdc2626 },
+      batik_hijau: { label: 'Batik Hijau', shirt: 0x15803d, pants: 0x14532d, tie: 0xfacc15, batik: true },
+      hw:          { label: 'Baju HW',     shirt: 0x6f9d55, pants: 0x172554, tie: 0x15803d },
+      gamis_kotak: { label: 'Gamis Kotak', shirt: 0x7fa968, pants: 0x5f8f4e, tie: 0x4d7c3f },
+      olahraga:    { label: 'Olahraga',    shirt: 0xf97316, pants: 0x1e3a8a, tie: 0x1e3a8a }
+    };
+
+    const TEACHER_UNIFORMS = {
+      khaki:        { label: 'Seragam Khaki', shirt: 0xc79c5e, pants: 0x78350f, tie: 0xfacc15 },
+      gamis_coklat: { label: 'Gamis Coklat',  shirt: 0x7c4a2d, pants: 0x111827, tie: 0xfacc15 },
+      putih_hitam:  { label: 'Putih Hitam',   shirt: 0xf8fafc, pants: 0x111827, tie: 0xfacc15 },
+      batik_hijau:  { label: 'Batik Hijau',   shirt: 0xb7e4c7, pants: 0xf5e6c8, tie: 0xfacc15, batik: true },
+      batik_hitam:  { label: 'Batik Hitam',   shirt: 0x1f2937, pants: 0x111827, tie: 0xfacc15, batik: true },
+      biru_fgm:     { label: 'Biru FGM',      shirt: 0x1d4ed8, pants: 0x111827, tie: 0xfacc15 }
+    };
+
+    const ITEMS = [
+      { id: 'none',   label: 'Kosong' },
+      { id: 'book',   label: 'Buku' },
+      { id: 'ball',   label: 'Bola' },
+      { id: 'bottle', label: 'Botol' }
+    ];
+
+    // ==========================================
+    // 3. STATE EDITOR
+    // ==========================================
+    const editor = {
+      people: [],
+      selectedPersonKey: null,
+      activeTab: 'wajah',
+      camMode: 'face',
+      pose: 'idle',
+      role: 'student',
+      uniform: 'merah_putih',
+      item: 'book',
+      avatar: {
+        kulit: '#fdba74',
+        mata: 'binar',
+        alis: 'ramah',
+        mulut: 'senyum',
+        pipi: true,
+        rambut: 'belah',
+        warnaRambut: '#1e1b4b',
+        kacamata: 'none'
+      }
+    };
+
+    // ==========================================
+    // 4. SETUP THREE.JS STAGE
+    // ==========================================
+    const canvasBox = document.getElementById('canvas-box');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(38, canvasBox.clientWidth / canvasBox.clientHeight, 0.1, 100);
+    camera.position.set(0.55, 1.82, 2.15);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(canvasBox.clientWidth, canvasBox.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    canvasBox.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 1.1;
+    controls.maxDistance = 6.5;
+    controls.maxPolarAngle = Math.PI * 0.56;
+    controls.target.set(0, 1.62, 0);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x334155, 1.1));
+    const keyLight = new THREE.DirectionalLight(0xfffbeb, 1.55);
+    keyLight.position.set(2.5, 4.5, 3.5);
+    keyLight.castShadow = true;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.7);
+    rimLight.position.set(-3, 2.5, -2.5);
+    scene.add(rimLight);
+
+    // Podium pijakan ala Roblox Studio
+    const podium = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.95, 1.05, 0.16, 36),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.3 })
+    );
+    podium.position.y = -0.08;
+    podium.receiveShadow = true;
+    const podiumRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.86, 0.94, 36),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide })
+    );
+    podiumRing.rotation.x = -Math.PI / 2;
+    podiumRing.position.y = 0.005;
+    scene.add(podium, podiumRing);
+
+    // ==========================================
+    // 5. GENERATOR TEKSTUR WAJAH 2D -> 3D (ALA ROBLOX)
+    // ==========================================
+    function createBatikTexture() {
+      const c = document.createElement('canvas');
+      c.width = 128; c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(0, 0, 128, 128);
+      ctx.strokeStyle = '#166534';
+      ctx.lineWidth = 4;
+      for (let x = 0; x <= 128; x += 32) {
+        for (let y = 0; y <= 128; y += 32) {
+          ctx.beginPath();
+          ctx.moveTo(x, y - 12); ctx.lineTo(x + 12, y);
+          ctx.lineTo(x, y + 12); ctx.lineTo(x - 12, y);
+          ctx.closePath(); ctx.stroke();
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath(); ctx.arc(x + 16, y + 16, 3, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+    const batikTex = createBatikTexture();
+
+    function createFaceTexture(av) {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 256, 256);
+
+      // Pipi merona
+      if (av.pipi) {
+        ctx.fillStyle = 'rgba(251, 113, 133, 0.48)';
+        ctx.beginPath(); ctx.ellipse(66, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(190, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Alis
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineCap = 'round';
+      for (const side of [-1, 1]) {
+        const cx = 128 + side * 44;
+        ctx.beginPath();
+        if (av.alis === 'tebal') {
+          ctx.lineWidth = 10;
+          ctx.moveTo(cx - 18, 76); ctx.lineTo(cx + 18, 76);
+        } else if (av.alis === 'serius') {
+          ctx.lineWidth = 7;
+          ctx.moveTo(cx - 18, side === -1 ? 72 : 82);
+          ctx.lineTo(cx + 18, side === -1 ? 82 : 72);
+        } else if (av.alis === 'ramah') {
+          ctx.lineWidth = 6;
+          ctx.moveTo(cx - 18, 78);
+          ctx.quadraticCurveTo(cx, 64, cx + 18, 78);
+        } else {
+          ctx.lineWidth = 6;
+          ctx.moveTo(cx - 16, 76); ctx.lineTo(cx + 16, 76);
+        }
+        ctx.stroke();
+      }
+
+      // Mata
+      for (const side of [-1, 1]) {
+        const cx = 128 + side * 44;
+        const cy = 114;
+
+        if (av.mata === 'senang') {
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(cx, cy + 8, 17, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+        } else if (av.mata === 'kedip' && side === 1) {
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(cx, cy + 6, 16, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+        } else if (av.mata === 'santai') {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.ellipse(cx, cy + 4, 17, 11, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(cx - 20, cy - 4); ctx.lineTo(cx + 20, cy - 4); ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 5, cy + 1, 4.5, 0, Math.PI * 2); ctx.fill();
+        } else if (av.mata === 'binar') {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.ellipse(cx, cy, 17, 22, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 6, cy - 8, 7, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx + 6, cy + 8, 3.5, 0, Math.PI * 2); ctx.fill();
+        } else if (av.mata === 'tekun') {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.ellipse(cx, cy, 18, 17, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 4; ctx.stroke();
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 3, cy - 3, 3, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 4, cy - 5, 4.5, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      // Mulut
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 7;
+      ctx.lineCap = 'round';
+      const my = 172;
+
+      if (av.mulut === 'ketawa') {
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath();
+        ctx.arc(128, my - 4, 28, 0, Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(108, my - 4, 40, 8);
+      } else if (av.mulut === 'melet') {
+        ctx.beginPath();
+        ctx.arc(128, my - 4, 22, 0.1 * Math.PI, 0.9 * Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = '#fb7185';
+        ctx.beginPath();
+        ctx.arc(134, my + 12, 11, 0, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      } else if (av.mulut === 'datar') {
+        ctx.beginPath(); ctx.moveTo(106, my + 4); ctx.lineTo(150, my + 4); ctx.stroke();
+      } else if (av.mulut === 'o_kaget') {
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath(); ctx.ellipse(128, my + 6, 13, 17, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.stroke();
+      } else if (av.mulut === 'kumis') {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.ellipse(112, my - 4, 18, 8, -0.2, 0, Math.PI * 2);
+        ctx.ellipse(144, my - 4, 18, 8, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath(); ctx.arc(128, my + 4, 16, 0.2 * Math.PI, 0.8 * Math.PI); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(128, my - 6, 22, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+      }
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    // ==========================================
+    // 6. PEMBUAT KARAKTER 3D MODULAR
+    // ==========================================
+    let currentChar = null;
+
+    function rebuildCharacter() {
+      if (currentChar) scene.remove(currentChar.group);
+
+      const av = editor.avatar;
+      const isTeacher = editor.role === 'teacher';
+      const uMap = isTeacher ? TEACHER_UNIFORMS : STUDENT_UNIFORMS;
+      const uInfo = uMap[editor.uniform] || Object.values(uMap)[0];
+
+      const group = new THREE.Group();
+      const bodyRoot = new THREE.Group();
+      group.add(bodyRoot);
+
+      const upperBody = new THREE.Group();
+      upperBody.position.set(0, 0.68, 0);
+      bodyRoot.add(upperBody);
+
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 0.98, 0);
+      upperBody.add(headGroup);
+
+      // Kepala
+      const skinMat = new THREE.MeshStandardMaterial({ color: av.kulit, roughness: 0.72 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.30, 24, 20), skinMat);
+      head.castShadow = true;
+      headGroup.add(head);
+
+      // Lapisan tekstur wajah Roblox di depan kepala (+Z)
+      const faceTex = createFaceTexture(av);
+      const facePatch = new THREE.Mesh(
+        new THREE.SphereGeometry(0.304, 24, 18, Math.PI / 2 - 0.56, 1.12, Math.PI / 2 - 0.52, 1.04),
+        new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false })
+      );
+      headGroup.add(facePatch);
+
+      // Rambut / Hijab / Topi
+      const hairMat = new THREE.MeshStandardMaterial({ color: av.warnaRambut, roughness: 0.75 });
+      if (av.rambut === 'hijab') {
+        const hijabTop = new THREE.Mesh(
+          new THREE.SphereGeometry(0.33, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.36),
+          hairMat
+        );
+        hijabTop.position.set(0, 0.03, -0.01);
+        const hijabWrap = new THREE.Mesh(
+          new THREE.SphereGeometry(0.335, 20, 14, Math.PI * 0.78, Math.PI * 1.44, Math.PI * 0.22, Math.PI * 0.68),
+          hairMat
+        );
+        hijabWrap.position.set(0, 0, -0.02);
+        const hijabShawl = new THREE.Mesh(new THREE.ConeGeometry(0.38, 0.46, 16), hairMat);
+        hijabShawl.position.set(0, 0.62, 0);
+        headGroup.add(hijabTop, hijabWrap);
+        upperBody.add(hijabShawl);
+      } else {
+        const hairBase = new THREE.Mesh(
+          new THREE.SphereGeometry(0.322, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.54),
+          hairMat
+        );
+        hairBase.position.set(0, 0.03, -0.02);
+        hairBase.rotation.x = -0.18;
+        headGroup.add(hairBase);
+
+        if (av.rambut === 'belah') {
+          const poni = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.14), hairMat);
+          poni.position.set(-0.06, 0.21, 0.22);
+          poni.rotation.z = -0.18;
+          headGroup.add(poni);
+        } else if (av.rambut === 'jabrik') {
+          for (let i = -2; i <= 2; i++) {
+            const spike = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.22, 6), hairMat);
+            spike.position.set(i * 0.085, 0.34, 0.03 + Math.abs(i) * -0.02);
+            spike.rotation.z = -i * 0.18;
+            headGroup.add(spike);
+          }
+        } else if (av.rambut === 'kuncir') {
+          for (const sx of [-0.34, 0.34]) {
+            const bun = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), hairMat);
+            bun.position.set(sx, 0.12, -0.08);
+            headGroup.add(bun);
+          }
+        } else if (av.rambut === 'topi') {
+          const capMat = new THREE.MeshStandardMaterial({ color: uInfo.pants });
+          const dome = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.42), capMat);
+          dome.position.y = 0.08;
+          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.04, 0.22), capMat);
+          visor.position.set(0, 0.14, 0.30); visor.rotation.x = 0.08;
+          headGroup.add(dome, visor);
+        }
+      }
+
+      // Kacamata
+      if (av.kacamata !== 'none') {
+        const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
+        if (av.kacamata === 'bulat') {
+          const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.015, 8, 16), frameMat);
+          lRim.position.set(-0.095, 0.02, 0.298);
+          const rRim = lRim.clone(); rRim.position.x = 0.095;
+          const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.015), frameMat);
+          bridge.position.set(0, 0.02, 0.298);
+          headGroup.add(lRim, rRim, bridge);
+        } else {
+          const isDark = av.kacamata === 'hitam';
+          const lensMat = new THREE.MeshStandardMaterial({
+            color: isDark ? 0x09090b : 0xbae6fd,
+            transparent: !isDark,
+            opacity: isDark ? 0.95 : 0.35
+          });
+          for (const sx of [-0.095, 0.095]) {
+            const box = new THREE.Mesh(new THREE.BoxGeometry(0.145, 0.095, 0.025), isDark ? frameMat : lensMat);
+            box.position.set(sx, 0.02, 0.298);
+            headGroup.add(box);
+          }
+          const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.018, 0.02), frameMat);
+          bridge.position.set(0, 0.04, 0.298);
+          headGroup.add(bridge);
+        }
+      }
+
+      // Badan & Seragam
+      const shirtMat = uInfo.batik
+        ? new THREE.MeshStandardMaterial({ map: batikTex, color: uInfo.shirt, roughness: 0.8 })
+        : new THREE.MeshStandardMaterial({ color: uInfo.shirt, roughness: 0.8 });
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.68, 0.33), shirtMat);
+      torso.position.y = 0.34;
+      torso.castShadow = true;
+      upperBody.add(torso);
+
+      if (!isTeacher) {
+        const tie = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.34, 0.04), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
+        tie.position.set(0, 0.45, 0.175);
+        const belt = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        belt.position.y = 0.04;
+        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.48, 0.2), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        bag.position.set(0, 0.37, -0.25);
+        const bagStripe = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.1, 0.22), new THREE.MeshStandardMaterial({ color: uInfo.tie }));
+        bagStripe.position.set(0, 0.42, -0.255);
+        upperBody.add(tie, belt, bag, bagStripe);
+      } else {
+        const lanyard = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.22, 0.04), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+        lanyard.position.set(0, 0.42, 0.175);
+        upperBody.add(lanyard);
+      }
+
+      // Lengan & Bawaan
+      const armGeo = new THREE.BoxGeometry(0.15, 0.54, 0.15);
+      armGeo.translate(0, -0.21, 0);
+      const leftArm = new THREE.Mesh(armGeo, shirtMat);
+      leftArm.position.set(-0.36, 0.60, 0);
+      leftArm.castShadow = true;
+      const rightArm = new THREE.Mesh(armGeo, shirtMat);
+      rightArm.position.set(0.36, 0.60, 0);
+      rightArm.castShadow = true;
+      upperBody.add(leftArm, rightArm);
+
+      if (!isTeacher && editor.item !== 'none') {
+        if (editor.item === 'book') {
+          const book = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.28, 0.22), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
+          book.position.set(0.05, -0.42, 0.08);
+          rightArm.add(book);
+        } else if (editor.item === 'ball') {
+          const ball = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshStandardMaterial({ color: 0xea580c }));
+          ball.position.set(0.06, -0.46, 0.05);
+          rightArm.add(ball);
+        } else if (editor.item === 'bottle') {
+          const bottle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.24, 10), new THREE.MeshStandardMaterial({ color: 0x38bdf8 }));
+          bottle.position.set(0.04, -0.44, 0.06);
+          rightArm.add(bottle);
+        }
+      }
+
+      // Rok untuk hijab
+      if (av.rambut === 'hijab') {
+        const skirtH = isTeacher ? 0.56 : 0.45;
+        const skirt = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.28, 0.39, skirtH, 14),
+          new THREE.MeshStandardMaterial({ color: uInfo.pants })
+        );
+        skirt.position.y = isTeacher ? 0.44 : 0.50;
+        bodyRoot.add(skirt);
+      }
+
+      // Kaki & Sepatu
+      function buildLeg(xOff) {
+        const leg = new THREE.Group();
+        leg.position.set(xOff, 0.66, 0);
+        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.38, 0.22), new THREE.MeshStandardMaterial({ color: uInfo.pants }));
+        thigh.position.y = -0.19;
+        const sock = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.16, 0.18), new THREE.MeshStandardMaterial({ color: isTeacher ? uInfo.pants : 0xffffff }));
+        sock.position.y = -0.46;
+        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.28), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+        shoe.position.set(0, -0.58, 0.04);
+        leg.add(thigh, sock, shoe);
+        return leg;
+      }
+
+      const leftLeg = buildLeg(-0.14);
+      const rightLeg = buildLeg(0.14);
+      bodyRoot.add(leftLeg, rightLeg);
+
+      scene.add(group);
+      currentChar = { group, bodyRoot, upperBody, headGroup, leftArm, rightArm, leftLeg, rightLeg };
+    }
+
+    // ==========================================
+    // 7. SINKRONISASI SHEET & CACHE LOKAL
+    // ==========================================
+    const FALLBACK_PEOPLE = [
+      { key: 'student:S001', role: 'student', id: 'S001', name: 'Aisyah (Kelas 1)', avatar: null },
+      { key: 'student:S002', role: 'student', id: 'S002', name: 'Budi (Kelas 2)', avatar: null },
+      { key: 'student:S003', role: 'student', id: 'S003', name: 'Citra (Kelas 4)', avatar: null },
+      { key: 'teacher:GS01', role: 'teacher', id: 'GS01', name: 'Pak Fatur (Guru)', avatar: null },
+      { key: 'teacher:GS02', role: 'teacher', id: 'GS02', name: 'Bu Rina (Guru)', avatar: null }
+    ];
+
+    function readLocalCache() {
+      try { return JSON.parse(localStorage.getItem(LOCAL_CACHE_KEY) || '{}'); } catch { return {}; }
+    }
+
+    function writeLocalCache(key, payload) {
+      try {
+        const cur = readLocalCache();
+        cur[key] = payload;
+        localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(cur));
+      } catch {}
+    }
+
+    async function loadPeopleFromSheet() {
+      const dot = document.getElementById('conn-dot');
+      const txt = document.getElementById('conn-text');
+      const cache = readLocalCache();
+
+      try {
+        const res = await fetch(API_URL + '?action=dunia', { cache: 'no-store' });
+        const data = await res.json();
+        if (!data.ok) throw new Error('Respon tidak ok');
+
+        const list = [];
+        (data.murid || []).forEach(m => {
+          const key = 'student:' + m.id;
+          list.push({
+            key,
+            role: 'student',
+            id: m.id,
+            jk: m.jk || '',
+            name: `${m.nama} (Kls ${m.kelas || '-'})`,
+            avatar: m.avatar || cache[key] || null
+          });
+        });
+        (data.guru || []).forEach(g => {
+          const key = 'teacher:' + g.id;
+          list.push({
+            key,
+            role: 'teacher',
+            id: g.id,
+            jk: g.jk || '',
+            name: `${g.panggilan || g.nama} (Guru)`,
+            avatar: g.avatar || cache[key] || null
+          });
+        });
+
+        editor.people = list.length ? list : FALLBACK_PEOPLE;
+        dot.classList.remove('demo');
+        txt.textContent = `Terhubung ke Sheet (${editor.people.length} warga sekolah)`;
+      } catch {
+        editor.people = FALLBACK_PEOPLE.map(p => ({ ...p, avatar: cache[p.key] || null }));
+        dot.classList.add('demo');
+        txt.textContent = 'Mode Preview Offline (Sheet belum merespon)';
+      }
+
+      renderCharSelect();
+      if (editor.people.length) selectPerson(editor.people[0].key);
+    }
+
+    function renderCharSelect() {
+      const sel = document.getElementById('char-select');
+      sel.innerHTML = editor.people.map(p =>
+        `<option value="${p.key}">${p.role === 'teacher' ? '👩‍🏫 ' : '🎒 '}${p.name}</option>`
+      ).join('');
+      if (editor.selectedPersonKey) sel.value = editor.selectedPersonKey;
+    }
+
+    function selectPerson(key) {
+      const p = editor.people.find(x => x.key === key);
+      if (!p) return;
+      editor.selectedPersonKey = key;
+      editor.role = p.role;
+      editor.uniform = p.role === 'teacher' ? 'khaki' : 'merah_putih';
+
+      if (p.avatar && typeof p.avatar === 'object') {
+        editor.avatar = { ...editor.avatar, ...p.avatar };
+        if (p.avatar.uniform) editor.uniform = p.avatar.uniform;
+        if (p.avatar.item) editor.item = p.avatar.item;
+      } else {
+        // Default sesuai JK jika belum pernah diedit
+        editor.avatar.rambut = p.jk === 'P' ? 'hijab' : 'belah';
+        editor.avatar.warnaRambut = p.jk === 'P' ? '#f8fafc' : '#1e1b4b';
+      }
+
+      rebuildCharacter();
+      renderPanelBody();
+    }
+
+    document.getElementById('char-select').onchange = (e) => selectPerson(e.target.value);
+
+    // ==========================================
+    // 8. RENDER PANEL KANAN
+    // ==========================================
+    function renderPanelBody() {
+      const body = document.getElementById('panel-body');
+      const av = editor.avatar;
+      body.innerHTML = '';
+
+      if (editor.activeTab === 'wajah') {
+        // Warna Kulit
+        body.innerHTML += `<div><div class="sec-title">Warna Kulit</div><div class="swatch-grid" id="sw-skin"></div></div>`;
+        const swSkin = body.querySelector('#sw-skin');
+        SKIN_TONES.forEach(s => {
+          const b = document.createElement('button');
+          b.className = `swatch ${av.kulit === s.id ? 'active' : ''}`;
+          b.style.background = s.id;
+          b.title = s.name;
+          b.onclick = () => { av.kulit = s.id; rebuildCharacter(); renderPanelBody(); };
+          swSkin.appendChild(b);
+        });
+
+        // Mata
+        body.innerHTML += `<div><div class="sec-title">Model Mata</div><div class="opt-grid" id="opt-eye"></div></div>`;
+        const optEye = body.querySelector('#opt-eye');
+        EYE_STYLES.forEach(o => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${av.mata === o.id ? 'active' : ''}`;
+          c.innerHTML = `<span class="opt-preview">${o.icon}</span><span>${o.label}</span>`;
+          c.onclick = () => { av.mata = o.id; rebuildCharacter(); renderPanelBody(); };
+          optEye.appendChild(c);
+        });
+
+        // Alis
+        body.innerHTML += `<div><div class="sec-title">Bentuk Alis</div><div class="opt-grid" id="opt-brow"></div></div>`;
+        const optBrow = body.querySelector('#opt-brow');
+        BROW_STYLES.forEach(o => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${av.alis === o.id ? 'active' : ''}`;
+          c.innerHTML = `<span class="opt-preview">${o.icon}</span><span>${o.label}</span>`;
+          c.onclick = () => { av.alis = o.id; rebuildCharacter(); renderPanelBody(); };
+          optBrow.appendChild(c);
+        });
+
+        // Mulut
+        body.innerHTML += `<div><div class="sec-title">Ekspresi Mulut</div><div class="opt-grid" id="opt-mouth"></div></div>`;
+        const optMouth = body.querySelector('#opt-mouth');
+        MOUTH_STYLES.forEach(o => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${av.mulut === o.id ? 'active' : ''}`;
+          c.innerHTML = `<span class="opt-preview">${o.icon}</span><span>${o.label}</span>`;
+          c.onclick = () => { av.mulut = o.id; rebuildCharacter(); renderPanelBody(); };
+          optMouth.appendChild(c);
+        });
+
+        // Pipi merona
+        const blushBtn = document.createElement('label');
+        blushBtn.className = 'toggle-row';
+        blushBtn.innerHTML = `<span>Pipi Merona</span><input type="checkbox" ${av.pipi ? 'checked' : ''} />`;
+        blushBtn.querySelector('input').onchange = (e) => {
+          av.pipi = e.target.checked;
+          rebuildCharacter();
+        };
+        body.appendChild(blushBtn);
+      }
+
+      else if (editor.activeTab === 'rambut') {
+        body.innerHTML += `<div><div class="sec-title">Gaya Kepala / Hijab</div><div class="opt-grid" id="opt-hair"></div></div>`;
+        const optHair = body.querySelector('#opt-hair');
+        HAIR_STYLES.forEach(o => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${av.rambut === o.id ? 'active' : ''}`;
+          c.innerHTML = `<span>${o.label}</span>`;
+          c.onclick = () => { av.rambut = o.id; rebuildCharacter(); renderPanelBody(); };
+          optHair.appendChild(c);
+        });
+
+        body.innerHTML += `<div><div class="sec-title">Warna Rambut / Hijab</div><div class="swatch-grid" id="sw-hair"></div></div>`;
+        const swHair = body.querySelector('#sw-hair');
+        HAIR_COLORS.forEach(s => {
+          const b = document.createElement('button');
+          b.className = `swatch ${av.warnaRambut === s.id ? 'active' : ''}`;
+          b.style.background = s.id;
+          b.title = s.name;
+          b.onclick = () => { av.warnaRambut = s.id; rebuildCharacter(); renderPanelBody(); };
+          swHair.appendChild(b);
+        });
+
+        body.innerHTML += `<div><div class="sec-title">Kacamata</div><div class="opt-grid" id="opt-glass"></div></div>`;
+        const optGlass = body.querySelector('#opt-glass');
+        GLASSES_STYLES.forEach(o => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${av.kacamata === o.id ? 'active' : ''}`;
+          c.innerHTML = `<span>${o.label}</span>`;
+          c.onclick = () => { av.kacamata = o.id; rebuildCharacter(); renderPanelBody(); };
+          optGlass.appendChild(c);
+        });
+      }
+
+      else if (editor.activeTab === 'gaya') {
+        const uMap = editor.role === 'teacher' ? TEACHER_UNIFORMS : STUDENT_UNIFORMS;
+        body.innerHTML += `<div><div class="sec-title">Seragam ${editor.role === 'teacher' ? 'Guru' : 'Siswa'}</div><div class="opt-grid" id="opt-uni"></div></div>`;
+        const optUni = body.querySelector('#opt-uni');
+        Object.entries(uMap).forEach(([id, info]) => {
+          const c = document.createElement('button');
+          c.className = `opt-card ${editor.uniform === id ? 'active' : ''}`;
+          c.innerHTML = `<span>${info.label}</span>`;
+          c.onclick = () => { editor.uniform = id; rebuildCharacter(); renderPanelBody(); };
+          optUni.appendChild(c);
+        });
+
+        if (editor.role === 'student') {
+          body.innerHTML += `<div><div class="sec-title">Bawaan di Tangan</div><div class="opt-grid" id="opt-item"></div></div>`;
+          const optItem = body.querySelector('#opt-item');
+          ITEMS.forEach(o => {
+            const c = document.createElement('button');
+            c.className = `opt-card ${editor.item === o.id ? 'active' : ''}`;
+            c.innerHTML = `<span>${o.label}</span>`;
+            c.onclick = () => { editor.item = o.id; rebuildCharacter(); renderPanelBody(); };
+            optItem.appendChild(c);
+          });
+        }
+      }
+
+      else if (editor.activeTab === 'data') {
+        const payload = buildSavePayload();
+        body.innerHTML = `
+          <div>
+            <div class="sec-title">Data Ringan yang Disimpan ke Sel Sheet</div>
+            <div class="json-box">${JSON.stringify(payload, null, 2)}</div>
+          </div>
+          <div style="font-size:12px;color:#475569;line-height:1.5;">
+            Saat tombol <b>Simpan ke Sheet</b> diklik, JSON kecil ini dikirim ke Google Apps Script (<code>action: "simpan_avatar"</code>) lalu disimpan ke kolom <code>avatar</code> milik karakter yang dipilih. Peta 3D akan otomatis memperbarui wajah karakter tersebut.
+          </div>
+        `;
+      }
+    }
+
+    function buildSavePayload() {
+      const p = editor.people.find(x => x.key === editor.selectedPersonKey);
+      return {
+        action: 'simpan_avatar',
+        role: p ? p.role : editor.role,
+        id: p ? p.id : 'S001',
+        avatar: {
+          ...editor.avatar,
+          uniform: editor.uniform,
+          item: editor.item
+        }
+      };
+    }
+
+    // ==========================================
+    // 9. AKSI TOMBOL, KAMERA & SIMPAN
+    // ==========================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        editor.activeTab = btn.dataset.tab;
+        renderPanelBody();
+      };
+    });
+
+    const CAM_TARGETS = {
+      face: { pos: new THREE.Vector3(0.45, 1.78, 1.85), tgt: new THREE.Vector3(0, 1.62, 0) },
+      full: { pos: new THREE.Vector3(0.95, 1.35, 3.35), tgt: new THREE.Vector3(0, 1.0, 0) }
+    };
+    let camAnim = null;
+
+    document.querySelectorAll('[data-cam]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('[data-cam]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        editor.camMode = btn.dataset.cam;
+        camAnim = CAM_TARGETS[editor.camMode];
+      };
+    });
+
+    document.querySelectorAll('[data-pose]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('[data-pose]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        editor.pose = btn.dataset.pose;
+      };
+    });
+
+    document.getElementById('btn-rand').onclick = () => {
+      const pick = arr => arr[Math.floor(Math.random() * arr.length)].id;
+      editor.avatar.kulit = pick(SKIN_TONES);
+      editor.avatar.mata = pick(EYE_STYLES);
+      editor.avatar.alis = pick(BROW_STYLES);
+      editor.avatar.mulut = pick(MOUTH_STYLES);
+      editor.avatar.rambut = pick(HAIR_STYLES);
+      editor.avatar.warnaRambut = pick(HAIR_COLORS);
+      editor.avatar.kacamata = pick(GLASSES_STYLES);
+      editor.avatar.pipi = Math.random() > 0.3;
+      rebuildCharacter();
+      renderPanelBody();
+    };
+
+    document.getElementById('btn-save').onclick = async () => {
+      const btn = document.getElementById('btn-save');
+      const status = document.getElementById('save-status');
+      const payload = buildSavePayload();
+      const person = editor.people.find(x => x.key === editor.selectedPersonKey);
+
+      if (person) {
+        person.avatar = payload.avatar;
+        writeLocalCache(person.key, payload.avatar);
+      }
+
+      btn.disabled = true;
+      status.style.color = '#2563eb';
+      status.textContent = 'Mengirim data avatar ke Google Sheet...';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || 'Handler simpan_avatar belum dipasang');
+        status.style.color = '#16a34a';
+        status.textContent = '✅ Tersimpan ke Sheet! Peta 3D akan ikut berubah.';
+      } catch (err) {
+        status.style.color = '#d97706';
+        status.textContent = '💾 Disimpan di cache lokal (tambahkan action simpan_avatar di Apps Script).';
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    // ==========================================
+    // 10. ANIMASI POSE & RENDER LOOP
+    // ==========================================
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const t = clock.elapsedTime;
+
+      if (camAnim) {
+        camera.position.lerp(camAnim.pos, dt * 6);
+        controls.target.lerp(camAnim.tgt, dt * 6);
+        if (camera.position.distanceTo(camAnim.pos) < 0.02) camAnim = null;
+      }
+
+      if (currentChar) {
+        const c = currentChar;
+        const rate = Math.min(1, dt * 8);
+
+        let lArmX = 0, lArmZ = 0, rArmX = 0, rArmZ = 0, bobY = 0;
+
+        if (editor.pose === 'wave') {
+          rArmZ = 2.35 + Math.sin(t * 10) * 0.35;
+          bobY = Math.abs(Math.sin(t * 5)) * 0.04;
+        } else if (editor.pose === 'cheer') {
+          lArmZ = -2.3 + Math.sin(t * 9) * 0.3;
+          rArmZ = 2.3 - Math.sin(t * 9) * 0.3;
+          bobY = Math.abs(Math.sin(t * 7)) * 0.14;
+        } else if (editor.pose === 'salute') {
+          lArmX = -2.35;
+          lArmZ = 0.42;
+        } else {
+          // Idle napas halus
+          lArmZ = -0.06 - Math.sin(t * 2) * 0.03;
+          rArmZ = 0.06 + Math.sin(t * 2) * 0.03;
+          c.headGroup.rotation.y = Math.sin(t * 1.1) * 0.08;
+        }
+
+        c.bodyRoot.position.y = THREE.MathUtils.lerp(c.bodyRoot.position.y, bobY, rate);
+        c.leftArm.rotation.x = THREE.MathUtils.lerp(c.leftArm.rotation.x, lArmX, rate);
+        c.leftArm.rotation.z = THREE.MathUtils.lerp(c.leftArm.rotation.z, lArmZ, rate);
+        c.rightArm.rotation.x = THREE.MathUtils.lerp(c.rightArm.rotation.x, rArmX, rate);
+        c.rightArm.rotation.z = THREE.MathUtils.lerp(c.rightArm.rotation.z, rArmZ, rate);
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = canvasBox.clientWidth / canvasBox.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvasBox.clientWidth, canvasBox.clientHeight);
+    });
+
+    rebuildCharacter();
+    renderPanelBody();
+    animate();
+    loadPeopleFromSheet();
+  </script>
+</body>
+</html>
