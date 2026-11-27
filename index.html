@@ -2286,6 +2286,7 @@
       const gayaRambut = details.avatar ? av.rambut : 'pendek';
       const pakaiKerudung = (isStudent || isTeacher) && (details.acc === 'hijab' || details.acc === 'hijab_glasses');
       const pakaiKacamata = (isStudent || isTeacher) && (details.acc === 'glasses' || details.acc === 'hijab_glasses');
+      const hasHijab = pakaiKerudung; // dipakai bagian rok di bawah
 
       const sideMat = new THREE.MeshStandardMaterial({ color: role === 'robot' ? 0xcbd5e1 : av.kulit, roughness: 0.75 });
       const headMat = role === 'robot'
@@ -2311,7 +2312,20 @@
           const kKanan = kKiri.clone(); kKanan.position.x = 0.28;
           const kBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.4, 0.06), kerudungMat);
           kBelakang.position.set(0, 0, -0.28);
-          headGroup.add(kAtas, kKiri, kKanan, kBelakang);
+          const kLeherDepan = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.08, 0.1), kerudungMat);
+          kLeherDepan.position.set(0, -0.28, 0.24);
+          const kLeherBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.08, 0.1), kerudungMat);
+          kLeherBelakang.position.set(0, -0.28, -0.24);
+          headGroup.add(kAtas, kKiri, kKanan, kBelakang, kLeherDepan, kLeherBelakang);
+          // Bidang segitiga penutup dada (depan & belakang), tepat di luar permukaan baju
+          const bentukBib = new THREE.Shape();
+          bentukBib.moveTo(-0.29, 0); bentukBib.lineTo(0.29, 0); bentukBib.lineTo(0, -0.34); bentukBib.closePath();
+          const bibGeo = new THREE.ExtrudeGeometry(bentukBib, { depth: 0.025, bevelEnabled: false });
+          const bibDepan = new THREE.Mesh(bibGeo, kerudungMat);
+          bibDepan.position.set(0, 0.66, 0.2);
+          const bibBelakang = new THREE.Mesh(bibGeo, kerudungMat);
+          bibBelakang.position.set(0, 0.66, (isStudent ? -0.395 : -0.215));
+          upperBody.add(bibDepan, bibBelakang);
         } else {
           const warnaRambutMat = new THREE.MeshStandardMaterial({ color: av.warnaRambut, roughness: 0.75 });
           if (isStudent && (details.acc === 'hat' || gayaRambut === 'topi')) {
