@@ -589,7 +589,7 @@
       const c = document.createElement('canvas');
       c.width = 256; c.height = 256;
       const ctx = c.getContext('2d');
-      ctx.clearRect(0, 0, 256, 256);
+      ctx.fillStyle = av.kulit; ctx.fillRect(0, 0, 256, 256);
 
       // Pipi merona
       if (av.pipi) {
@@ -733,71 +733,52 @@
       headGroup.position.set(0, 0.98, 0);
       upperBody.add(headGroup);
 
-      // Kepala
-      const skinMat = new THREE.MeshStandardMaterial({ color: av.kulit, roughness: 0.72 });
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.30, 24, 20), skinMat);
+      // Kepala kotak (gaya Minecraft); sisi depan memakai tekstur wajah
+      const sideMat = new THREE.MeshStandardMaterial({ color: av.kulit, roughness: 0.72 });
+      const faceMat = new THREE.MeshStandardMaterial({ map: createFaceTexture(av), roughness: 0.72 });
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), [sideMat, sideMat, sideMat, sideMat, faceMat, sideMat]);
       head.castShadow = true;
       headGroup.add(head);
 
-      // Lapisan tekstur wajah Roblox di depan kepala (+Z)
-      const faceTex = createFaceTexture(av);
-      const facePatch = new THREE.Mesh(
-        new THREE.SphereGeometry(0.304, 24, 18, Math.PI / 2 - 0.56, 1.12, Math.PI / 2 - 0.52, 1.04),
-        new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false })
-      );
-      headGroup.add(facePatch);
-
-      // Rambut / Hijab / Topi
+      // Rambut / Hijab / Topi (kotak, menempel di atas kepala; kerudung tidak menyentuh badan)
       const hairMat = new THREE.MeshStandardMaterial({ color: av.warnaRambut, roughness: 0.75 });
       if (av.rambut === 'hijab') {
-        const hijabTop = new THREE.Mesh(
-          new THREE.SphereGeometry(0.33, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.36),
-          hairMat
-        );
-        hijabTop.position.set(0, 0.03, -0.01);
-        const hijabWrap = new THREE.Mesh(
-          new THREE.SphereGeometry(0.335, 20, 14, Math.PI * 0.78, Math.PI * 1.44, Math.PI * 0.22, Math.PI * 0.68),
-          hairMat
-        );
-        hijabWrap.position.set(0, 0, -0.02);
-        const hijabShawl = new THREE.Mesh(new THREE.ConeGeometry(0.38, 0.46, 16), hairMat);
-        hijabShawl.position.set(0, 0.62, 0);
-        headGroup.add(hijabTop, hijabWrap);
-        upperBody.add(hijabShawl);
+        const kAtas = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.1, 0.56), hairMat);
+        kAtas.position.set(0, 0.27, 0);
+        const kKiri = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.36, 0.56), hairMat);
+        kKiri.position.set(-0.28, 0, 0);
+        const kKanan = kKiri.clone(); kKanan.position.x = 0.28;
+        const kBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.4, 0.06), hairMat);
+        kBelakang.position.set(0, 0, -0.28);
+        headGroup.add(kAtas, kKiri, kKanan, kBelakang);
+      } else if (av.rambut === 'topi') {
+        const capMat = new THREE.MeshStandardMaterial({ color: uInfo.pants });
+        const dome = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.14, 0.54), capMat);
+        dome.position.set(0, 0.31, 0);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.03, 0.2), capMat);
+        visor.position.set(0, 0.27, 0.34);
+        headGroup.add(dome, visor);
       } else {
-        const hairBase = new THREE.Mesh(
-          new THREE.SphereGeometry(0.322, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.54),
-          hairMat
-        );
-        hairBase.position.set(0, 0.03, -0.02);
-        hairBase.rotation.x = -0.18;
-        headGroup.add(hairBase);
-
-        if (av.rambut === 'belah') {
-          const poni = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.14), hairMat);
-          poni.position.set(-0.06, 0.21, 0.22);
-          poni.rotation.z = -0.18;
-          headGroup.add(poni);
-        } else if (av.rambut === 'jabrik') {
-          for (let i = -2; i <= 2; i++) {
-            const spike = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.22, 6), hairMat);
-            spike.position.set(i * 0.085, 0.34, 0.03 + Math.abs(i) * -0.02);
-            spike.rotation.z = -i * 0.18;
-            headGroup.add(spike);
+        const rambutAtas = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.1, 0.53), hairMat);
+        rambutAtas.position.set(0, 0.28, -0.01);
+        headGroup.add(rambutAtas);
+        if (av.rambut === 'jabrik') {
+          for (const sx of [-0.14, 0, 0.14]) {
+            const duri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), hairMat);
+            duri.position.set(sx, 0.4, 0);
+            headGroup.add(duri);
           }
         } else if (av.rambut === 'kuncir') {
-          for (const sx of [-0.34, 0.34]) {
-            const bun = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), hairMat);
-            bun.position.set(sx, 0.12, -0.08);
-            headGroup.add(bun);
+          for (const sx of [-0.3, 0.3]) {
+            const kuncir = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.12), hairMat);
+            kuncir.position.set(sx, 0.16, -0.02);
+            headGroup.add(kuncir);
           }
-        } else if (av.rambut === 'topi') {
-          const capMat = new THREE.MeshStandardMaterial({ color: uInfo.pants });
-          const dome = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.42), capMat);
-          dome.position.y = 0.08;
-          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.04, 0.22), capMat);
-          visor.position.set(0, 0.14, 0.30); visor.rotation.x = 0.08;
-          headGroup.add(dome, visor);
+        } else {
+          const poni = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.07, 0.06), hairMat);
+          poni.position.set(av.rambut === 'belah' ? -0.04 : 0, 0.2, 0.26);
+          poni.rotation.z = av.rambut === 'belah' ? -0.12 : 0;
+          headGroup.add(poni);
         }
       }
 
@@ -806,10 +787,10 @@
         const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
         if (av.kacamata === 'bulat') {
           const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.015, 8, 16), frameMat);
-          lRim.position.set(-0.095, 0.02, 0.298);
+          lRim.position.set(-0.095, 0.02, 0.262);
           const rRim = lRim.clone(); rRim.position.x = 0.095;
           const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.015), frameMat);
-          bridge.position.set(0, 0.02, 0.298);
+          bridge.position.set(0, 0.02, 0.262);
           headGroup.add(lRim, rRim, bridge);
         } else {
           const isDark = av.kacamata === 'hitam';
@@ -820,11 +801,11 @@
           });
           for (const sx of [-0.095, 0.095]) {
             const box = new THREE.Mesh(new THREE.BoxGeometry(0.145, 0.095, 0.025), isDark ? frameMat : lensMat);
-            box.position.set(sx, 0.02, 0.298);
+            box.position.set(sx, 0.02, 0.262);
             headGroup.add(box);
           }
           const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.018, 0.02), frameMat);
-          bridge.position.set(0, 0.04, 0.298);
+          bridge.position.set(0, 0.04, 0.262);
           headGroup.add(bridge);
         }
       }
