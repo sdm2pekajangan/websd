@@ -1026,7 +1026,7 @@
 
       if (editor.activeTab === 'wajah') {
         // Warna Kulit
-        body.innerHTML += `<div><div class="sec-title">Warna Kulit</div><div class="swatch-grid" id="sw-skin"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Warna Kulit</div><div class="swatch-grid" id="sw-skin"></div></div>`);
         const swSkin = body.querySelector('#sw-skin');
         SKIN_TONES.forEach(s => {
           const b = document.createElement('button');
@@ -1038,7 +1038,7 @@
         });
 
         // Mata
-        body.innerHTML += `<div><div class="sec-title">Model Mata</div><div class="opt-grid" id="opt-eye"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Model Mata</div><div class="opt-grid" id="opt-eye"></div></div>`);
         const optEye = body.querySelector('#opt-eye');
         EYE_STYLES.forEach(o => {
           const c = document.createElement('button');
@@ -1049,7 +1049,7 @@
         });
 
         // Alis
-        body.innerHTML += `<div><div class="sec-title">Bentuk Alis</div><div class="opt-grid" id="opt-brow"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Bentuk Alis</div><div class="opt-grid" id="opt-brow"></div></div>`);
         const optBrow = body.querySelector('#opt-brow');
         BROW_STYLES.forEach(o => {
           const c = document.createElement('button');
@@ -1060,7 +1060,7 @@
         });
 
         // Mulut
-        body.innerHTML += `<div><div class="sec-title">Ekspresi Mulut</div><div class="opt-grid" id="opt-mouth"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Ekspresi Mulut</div><div class="opt-grid" id="opt-mouth"></div></div>`);
         const optMouth = body.querySelector('#opt-mouth');
         MOUTH_STYLES.forEach(o => {
           const c = document.createElement('button');
@@ -1082,7 +1082,7 @@
       }
 
       else if (editor.activeTab === 'rambut') {
-        body.innerHTML += `<div><div class="sec-title">Gaya Kepala / Hijab</div><div class="opt-grid" id="opt-hair"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Gaya Kepala / Hijab</div><div class="opt-grid" id="opt-hair"></div></div>`);
         const optHair = body.querySelector('#opt-hair');
         HAIR_STYLES.forEach(o => {
           const c = document.createElement('button');
@@ -1092,7 +1092,7 @@
           optHair.appendChild(c);
         });
 
-        body.innerHTML += `<div><div class="sec-title">Warna Rambut / Hijab</div><div class="swatch-grid" id="sw-hair"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Warna Rambut / Hijab</div><div class="swatch-grid" id="sw-hair"></div></div>`);
         const swHair = body.querySelector('#sw-hair');
         HAIR_COLORS.forEach(s => {
           const b = document.createElement('button');
@@ -1103,7 +1103,7 @@
           swHair.appendChild(b);
         });
 
-        body.innerHTML += `<div><div class="sec-title">Kacamata</div><div class="opt-grid" id="opt-glass"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Kacamata</div><div class="opt-grid" id="opt-glass"></div></div>`);
         const optGlass = body.querySelector('#opt-glass');
         GLASSES_STYLES.forEach(o => {
           const c = document.createElement('button');
@@ -1116,7 +1116,7 @@
 
       else if (editor.activeTab === 'gaya') {
         const uMap = editor.role === 'teacher' ? TEACHER_UNIFORMS : STUDENT_UNIFORMS;
-        body.innerHTML += `<div><div class="sec-title">Seragam ${editor.role === 'teacher' ? 'Guru' : 'Siswa'}</div><div class="opt-grid" id="opt-uni"></div></div>`;
+        body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Seragam ${editor.role === 'teacher' ? 'Guru' : 'Siswa'}</div><div class="opt-grid" id="opt-uni"></div></div>`);
         const optUni = body.querySelector('#opt-uni');
         Object.entries(uMap).forEach(([id, info]) => {
           const c = document.createElement('button');
@@ -1127,7 +1127,7 @@
         });
 
         if (editor.role === 'student') {
-          body.innerHTML += `<div><div class="sec-title">Bawaan di Tangan</div><div class="opt-grid" id="opt-item"></div></div>`;
+          body.insertAdjacentHTML('beforeend', `<div><div class="sec-title">Bawaan di Tangan</div><div class="opt-grid" id="opt-item"></div></div>`);
           const optItem = body.querySelector('#opt-item');
           ITEMS.forEach(o => {
             const c = document.createElement('button');
