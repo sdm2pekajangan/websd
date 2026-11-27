@@ -2114,6 +2114,129 @@
     // ==========================================
     // 7. MODEL 3D KARAKTER (GURU & MURID BERHIJAB + ARTIKULASI SHALAT & HORMAT)
     // ==========================================
+    function buatTeksturWajah(av) {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = av.kulit; ctx.fillRect(0, 0, 256, 256);
+
+      // Pipi merona
+      if (av.pipi) {
+        ctx.fillStyle = 'rgba(251, 113, 133, 0.48)';
+        ctx.beginPath(); ctx.ellipse(66, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(190, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Alis
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineCap = 'round';
+      for (const side of [-1, 1]) {
+        const cx = 128 + side * 44;
+        ctx.beginPath();
+        if (av.alis === 'tebal') {
+          ctx.lineWidth = 10;
+          ctx.moveTo(cx - 18, 76); ctx.lineTo(cx + 18, 76);
+        } else if (av.alis === 'serius') {
+          ctx.lineWidth = 7;
+          ctx.moveTo(cx - 18, side === -1 ? 72 : 82);
+          ctx.lineTo(cx + 18, side === -1 ? 82 : 72);
+        } else if (av.alis === 'ramah') {
+          ctx.lineWidth = 6;
+          ctx.moveTo(cx - 18, 78);
+          ctx.quadraticCurveTo(cx, 64, cx + 18, 78);
+        } else {
+          ctx.lineWidth = 6;
+          ctx.moveTo(cx - 16, 76); ctx.lineTo(cx + 16, 76);
+        }
+        ctx.stroke();
+      }
+
+      // Mata
+      for (const side of [-1, 1]) {
+        const cx = 128 + side * 44;
+        const cy = 114;
+
+        if (av.mata === 'senang') {
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(cx, cy + 8, 17, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+        } else if (av.mata === 'kedip' && side === 1) {
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(cx, cy + 6, 16, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+        } else if (av.mata === 'santai') {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.ellipse(cx, cy + 4, 17, 11, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(cx - 20, cy - 4); ctx.lineTo(cx + 20, cy - 4); ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 5, cy + 1, 4.5, 0, Math.PI * 2); ctx.fill();
+        } else if (av.mata === 'binar') {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.ellipse(cx, cy, 17, 22, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 6, cy - 8, 7, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx + 6, cy + 8, 3.5, 0, Math.PI * 2); ctx.fill();
+        } else if (av.mata === 'tekun') {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.ellipse(cx, cy, 18, 17, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 4; ctx.stroke();
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 3, cy - 3, 3, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(cx - 4, cy - 5, 4.5, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      // Mulut
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 7;
+      ctx.lineCap = 'round';
+      const my = 172;
+
+      if (av.mulut === 'ketawa') {
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath();
+        ctx.arc(128, my - 4, 28, 0, Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(108, my - 4, 40, 8);
+      } else if (av.mulut === 'melet') {
+        ctx.beginPath();
+        ctx.arc(128, my - 4, 22, 0.1 * Math.PI, 0.9 * Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = '#fb7185';
+        ctx.beginPath();
+        ctx.arc(134, my + 12, 11, 0, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      } else if (av.mulut === 'datar') {
+        ctx.beginPath(); ctx.moveTo(106, my + 4); ctx.lineTo(150, my + 4); ctx.stroke();
+      } else if (av.mulut === 'o_kaget') {
+        ctx.fillStyle = '#991b1b';
+        ctx.beginPath(); ctx.ellipse(128, my + 6, 13, 17, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.stroke();
+      } else if (av.mulut === 'kumis') {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.ellipse(112, my - 4, 18, 8, -0.2, 0, Math.PI * 2);
+        ctx.ellipse(144, my - 4, 18, 8, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath(); ctx.arc(128, my + 4, 16, 0.2 * Math.PI, 0.8 * Math.PI); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(128, my - 6, 22, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+      }
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
     function createCharacterMesh(role, shirtColor, details = {}) {
       const group = new THREE.Group();
       group.rotation.order = 'YXZ';
@@ -2157,96 +2280,79 @@
       hitbox.userData.isHitbox = true;
       group.add(hitbox);
 
-      // Kepala (Wajah menghadap +Z)
-      const headGeo = role === 'robot' ? new THREE.BoxGeometry(0.54, 0.5, 0.54) : new THREE.SphereGeometry(0.30, 14, 14);
-      const head = new THREE.Mesh(headGeo, new THREE.MeshStandardMaterial({ color: skinColor }));
+      // Kepala kotak (gaya Minecraft); wajah, rambut, dan kerudung mengikuti avatar bila ada
+      const av = Object.assign({ kulit: '#fdba74', mata: 'bulat', alis: 'ramah', mulut: 'senyum', pipi: true, kacamata: 'none', rambut: 'pendek', warnaRambut: '#1e1b4b' }, details.avatar || {});
+      if (!details.avatar) av.warnaRambut = ['#1e1b4b', '#3f2305', '#0f172a'][(details.hairIdx || 0) % 3];
+      const gayaRambut = details.avatar ? av.rambut : 'pendek';
+      const pakaiKerudung = (isStudent || isTeacher) && (details.acc === 'hijab' || details.acc === 'hijab_glasses');
+      const pakaiKacamata = (isStudent || isTeacher) && (details.acc === 'glasses' || details.acc === 'hijab_glasses');
+
+      const sideMat = new THREE.MeshStandardMaterial({ color: role === 'robot' ? 0xcbd5e1 : av.kulit, roughness: 0.75 });
+      const headMat = role === 'robot'
+        ? sideMat
+        : [sideMat, sideMat, sideMat, sideMat, new THREE.MeshStandardMaterial({ map: buatTeksturWajah(av), roughness: 0.75 }), sideMat];
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), headMat);
       headGroup.add(head);
-
-      const eyeMat = new THREE.MeshBasicMaterial({ color: role === 'robot' ? 0x22d3ee : 0x0f172a });
-      const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.044, 8, 8), eyeMat);
-      leftEye.position.set(-0.095, 0.02, 0.275);
-      const rightEye = leftEye.clone();
-      rightEye.position.x = 0.095;
-      headGroup.add(leftEye, rightEye);
-
-      if (role !== 'robot') {
-        const cheekMat = new THREE.MeshBasicMaterial({ color: 0xfb7185 });
-        const lCheek = new THREE.Mesh(new THREE.SphereGeometry(0.036, 6, 6), cheekMat);
-        lCheek.position.set(-0.155, -0.06, 0.245);
-        const rCheek = lCheek.clone();
-        rCheek.position.x = 0.155;
-        headGroup.add(lCheek, rCheek);
-      }
-
-      const hasHijab = (isStudent || isTeacher) && (details.acc === 'hijab' || details.acc === 'hijab_glasses');
-      const hasGlasses = (isStudent || isTeacher) && (details.acc === 'glasses' || details.acc === 'hijab_glasses');
 
       if (role === 'robot') {
         const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 6), new THREE.MeshStandardMaterial({ color: 0x64748b }));
         ant.position.y = 0.36;
         headGroup.add(ant);
       } else {
-        if (hasHijab) {
-          let hijabColor = 0xf8fafc;
-          if (isStudent) {
-            hijabColor = details.uniform === 'hw'
-              ? 0x78350f
-              : (details.uniform === 'batik_hijau' ? 0x166534 : 0xf8fafc);
-          } else if (isTeacher) {
-            hijabColor = tInfo ? tInfo.hijabColor : 0xf1f5f9;
-          }
-          const hijabMat = new THREE.MeshStandardMaterial({ color: hijabColor, roughness: 0.75 });
-
-          const hijabTop = new THREE.Mesh(
-            new THREE.SphereGeometry(0.33, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.35),
-            hijabMat
-          );
-          hijabTop.position.set(0, 0.03, -0.01);
-          headGroup.add(hijabTop);
-
-          const hijabWrap = new THREE.Mesh(
-            new THREE.SphereGeometry(0.335, 16, 12, Math.PI * 0.78, Math.PI * 1.44, Math.PI * 0.22, Math.PI * 0.68),
-            hijabMat
-          );
-          hijabWrap.position.set(0, 0, -0.02);
-          headGroup.add(hijabWrap);
-
-          const hijabShawl = new THREE.Mesh(
-            new THREE.ConeGeometry(0.38, 0.46, 12),
-            hijabMat
-          );
-          hijabShawl.position.set(0, 0.62, 0.0);
-          upperBody.add(hijabShawl);
+        if (pakaiKerudung) {
+          let warnaKerudung = 0xf8fafc;
+          if (isStudent) warnaKerudung = details.uniform === 'hw' ? 0x78350f : (details.uniform === 'batik_hijau' ? 0x166534 : 0xf8fafc);
+          else if (isTeacher) warnaKerudung = tInfo ? tInfo.hijabColor : 0xf1f5f9;
+          const kerudungMat = new THREE.MeshStandardMaterial({ color: warnaKerudung, roughness: 0.75 });
+          const kAtas = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.1, 0.56), kerudungMat);
+          kAtas.position.set(0, 0.27, 0);
+          const kKiri = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.36, 0.56), kerudungMat);
+          kKiri.position.set(-0.28, 0, 0);
+          const kKanan = kKiri.clone(); kKanan.position.x = 0.28;
+          const kBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.4, 0.06), kerudungMat);
+          kBelakang.position.set(0, 0, -0.28);
+          headGroup.add(kAtas, kKiri, kKanan, kBelakang);
         } else {
-          const hairColors = [0x1e1b4b, 0x3f2305, 0x0f172a];
-          const hair = new THREE.Mesh(
-            new THREE.SphereGeometry(0.32, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.52),
-            new THREE.MeshStandardMaterial({ color: hairColors[(details.hairIdx || 0) % hairColors.length] })
-          );
-          hair.position.set(0, 0.03, -0.02);
-          hair.rotation.x = -0.18;
-          headGroup.add(hair);
-
-          if (isStudent && details.acc === 'hat') {
-            const capColor = uInfo.pants;
-            const capDome = new THREE.Mesh(
-              new THREE.SphereGeometry(0.34, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.42),
-              new THREE.MeshStandardMaterial({ color: capColor })
-            );
-            capDome.position.y = 0.08;
-            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.04, 0.22), new THREE.MeshStandardMaterial({ color: capColor }));
-            visor.position.set(0, 0.14, 0.30); visor.rotation.x = 0.08;
-            headGroup.add(capDome, visor);
+          const warnaRambutMat = new THREE.MeshStandardMaterial({ color: av.warnaRambut, roughness: 0.75 });
+          if (isStudent && (details.acc === 'hat' || gayaRambut === 'topi')) {
+            const capMat = new THREE.MeshStandardMaterial({ color: uInfo.pants });
+            const dome = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.14, 0.54), capMat);
+            dome.position.set(0, 0.31, 0);
+            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.03, 0.2), capMat);
+            visor.position.set(0, 0.27, 0.34);
+            headGroup.add(dome, visor);
+          } else {
+            const rambutAtas = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.1, 0.53), warnaRambutMat);
+            rambutAtas.position.set(0, 0.28, -0.01);
+            headGroup.add(rambutAtas);
+            if (gayaRambut === 'jabrik') {
+              for (const sx of [-0.14, 0, 0.14]) {
+                const duri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), warnaRambutMat);
+                duri.position.set(sx, 0.4, 0);
+                headGroup.add(duri);
+              }
+            } else if (gayaRambut === 'kuncir') {
+              for (const sx of [-0.3, 0.3]) {
+                const kuncir = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.12), warnaRambutMat);
+                kuncir.position.set(sx, 0.16, -0.02);
+                headGroup.add(kuncir);
+              }
+            } else {
+              const poni = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.07, 0.06), warnaRambutMat);
+              poni.position.set(gayaRambut === 'belah' ? -0.04 : 0, 0.2, 0.26);
+              poni.rotation.z = gayaRambut === 'belah' ? -0.12 : 0;
+              headGroup.add(poni);
+            }
           }
         }
 
-        if (hasGlasses) {
+        if (pakaiKacamata) {
           const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
           const lRim = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.014, 6, 12), frameMat);
-          lRim.position.set(-0.095, 0.02, 0.295);
+          lRim.position.set(-0.095, 0.02, 0.262);
           const rRim = lRim.clone(); rRim.position.x = 0.095;
           const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.015, 0.015), frameMat);
-          bridge.position.set(0, 0.02, 0.295);
+          bridge.position.set(0, 0.02, 0.262);
           headGroup.add(lRim, rRim, bridge);
         }
       }
@@ -6001,6 +6107,16 @@
           ? (Math.random() < 0.5 ? 'hijab' : 'hijab_glasses')
           : ['glasses', 'none'][Math.floor(Math.random() * 2)];
         detail = { uniform: seragamGuru(), acc, hairIdx: Math.floor(Math.random() * 3) };
+      }
+      if (detail && d.avatar && typeof d.avatar === 'object') {
+        // Avatar dari editor: wajah, rambut, seragam, dan kerudung mengikuti pilihan itu
+        detail.avatar = d.avatar;
+        if (d.avatar.uniform) detail.uniform = d.avatar.uniform;
+        if (role === 'student' && d.avatar.item) detail.item = d.avatar.item;
+        const pakaiKacamata = !!d.avatar.kacamata && d.avatar.kacamata !== 'none';
+        if (d.avatar.rambut === 'hijab') detail.acc = pakaiKacamata ? 'hijab_glasses' : 'hijab';
+        else if (d.avatar.rambut === 'topi' && role === 'student') detail.acc = 'hat';
+        else detail.acc = pakaiKacamata ? 'glasses' : 'none';
       }
       addCharacter(role, role === 'student' ? (d.nama || 'Murid') : (d.panggilan || d.nama || 'Guru'), x, z, null, detail);
       const ch = state.characters[state.characters.length - 1];
