@@ -2123,8 +2123,8 @@
       // Pipi merona
       if (av.pipi) {
         ctx.fillStyle = 'rgba(251, 113, 133, 0.48)';
-        ctx.beginPath(); ctx.ellipse(66, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(190, 152, 22, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(66, 152, 26, 16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(190, 152, 26, 16, 0, 0, Math.PI * 2); ctx.fill();
       }
 
       // Alis
@@ -2185,9 +2185,9 @@
           ctx.beginPath(); ctx.arc(cx - 3, cy - 3, 3, 0, Math.PI * 2); ctx.fill();
         } else {
           ctx.fillStyle = '#0f172a';
-          ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff';
-          ctx.beginPath(); ctx.arc(cx - 4, cy - 5, 4.5, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(cx - 6, cy - 7, 7, 0, Math.PI * 2); ctx.fill();
         }
       }
 
@@ -2249,7 +2249,8 @@
       bodyRoot.add(upperBody);
 
       const headGroup = new THREE.Group();
-      headGroup.position.set(0, 0.98, 0);
+      headGroup.position.set(0, 1.02, 0);
+      headGroup.scale.setScalar(1.3); // kepala lebih besar (gaya chibi)
       upperBody.add(headGroup);
 
       const isStudent = role === 'student';
@@ -2283,7 +2284,8 @@
       // Kepala kotak (gaya Minecraft); wajah, rambut, dan kerudung mengikuti avatar bila ada
       const av = Object.assign({ kulit: '#fdba74', mata: 'bulat', alis: 'ramah', mulut: 'senyum', pipi: true, kacamata: 'none', rambut: 'pendek', warnaRambut: '#1e1b4b' }, details.avatar || {});
       if (!details.avatar) av.warnaRambut = ['#1e1b4b', '#3f2305', '#0f172a'][(details.hairIdx || 0) % 3];
-      const gayaRambut = details.avatar ? av.rambut : 'pendek';
+      const gayaRambut = details.avatar ? (av.rambut === 'topi' ? 'pendek' : av.rambut) : 'pendek';
+      const kepalaW = details.avatar ? (av.kepala || (av.rambut === 'topi' ? 'topi' : 'none')) : ((isStudent && details.acc === 'hat') ? 'topi' : 'none');
       const pakaiKerudung = (isStudent || isTeacher) && (details.acc === 'hijab' || details.acc === 'hijab_glasses');
       const pakaiKacamata = (isStudent || isTeacher) && (details.acc === 'glasses' || details.acc === 'hijab_glasses');
       const hasHijab = pakaiKerudung; // dipakai bagian rok di bawah
@@ -2305,13 +2307,13 @@
           if (isStudent) warnaKerudung = details.uniform === 'hw' ? 0x78350f : (details.uniform === 'batik_hijau' ? 0x166534 : 0xf8fafc);
           else if (isTeacher) warnaKerudung = tInfo ? tInfo.hijabColor : 0xf1f5f9;
           const kerudungMat = new THREE.MeshStandardMaterial({ color: warnaKerudung, roughness: 0.75 });
-          const kAtas = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.1, 0.56), kerudungMat);
-          kAtas.position.set(0, 0.27, 0);
-          const kKiri = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.36, 0.56), kerudungMat);
-          kKiri.position.set(-0.28, 0, 0);
-          const kKanan = kKiri.clone(); kKanan.position.x = 0.28;
-          const kBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.4, 0.06), kerudungMat);
-          kBelakang.position.set(0, 0, -0.28);
+          const kAtas = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.12, 0.6), kerudungMat);
+          kAtas.position.set(0, 0.28, 0);
+          const kKiri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.63, 0.56), kerudungMat);
+          kKiri.position.set(-0.29, 0.015, 0);
+          const kKanan = kKiri.clone(); kKanan.position.x = 0.29;
+          const kBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.63, 0.06), kerudungMat);
+          kBelakang.position.set(0, 0.015, -0.28);
           const kLeherDepan = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.08, 0.1), kerudungMat);
           kLeherDepan.position.set(0, -0.28, 0.24);
           const kLeherBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.08, 0.1), kerudungMat);
@@ -2328,35 +2330,51 @@
           upperBody.add(bibDepan, bibBelakang);
         } else {
           const warnaRambutMat = new THREE.MeshStandardMaterial({ color: av.warnaRambut, roughness: 0.75 });
-          if (isStudent && (details.acc === 'hat' || gayaRambut === 'topi')) {
-            const capMat = new THREE.MeshStandardMaterial({ color: uInfo.pants });
-            const dome = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.14, 0.54), capMat);
-            dome.position.set(0, 0.31, 0);
-            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.03, 0.2), capMat);
-            visor.position.set(0, 0.27, 0.34);
-            headGroup.add(dome, visor);
-          } else {
-            const rambutAtas = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.1, 0.53), warnaRambutMat);
-            rambutAtas.position.set(0, 0.28, -0.01);
-            headGroup.add(rambutAtas);
-            if (gayaRambut === 'jabrik') {
-              for (const sx of [-0.14, 0, 0.14]) {
-                const duri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), warnaRambutMat);
-                duri.position.set(sx, 0.4, 0);
-                headGroup.add(duri);
-              }
-            } else if (gayaRambut === 'kuncir') {
-              for (const sx of [-0.3, 0.3]) {
-                const kuncir = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.14, 0.12), warnaRambutMat);
-                kuncir.position.set(sx, 0.16, -0.02);
-                headGroup.add(kuncir);
-              }
-            } else {
-              const poni = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.07, 0.06), warnaRambutMat);
-              poni.position.set(gayaRambut === 'belah' ? -0.04 : 0, 0.2, 0.26);
-              poni.rotation.z = gayaRambut === 'belah' ? -0.12 : 0;
-              headGroup.add(poni);
+          const rAtas = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.12, 0.6), warnaRambutMat);
+          rAtas.position.set(0, 0.28, 0);
+          const rKiri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.5, 0.56), warnaRambutMat);
+          rKiri.position.set(-0.29, 0.05, 0);
+          const rKanan = rKiri.clone(); rKanan.position.x = 0.29;
+          const rBelakang = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.55, 0.06), warnaRambutMat);
+          rBelakang.position.set(0, 0, -0.28);
+          headGroup.add(rAtas, rKiri, rKanan, rBelakang);
+          if (gayaRambut === 'jabrik') {
+            for (const sx of [-0.14, 0, 0.14]) {
+              const duri = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.14, 0.08), warnaRambutMat);
+              duri.position.set(sx, 0.4, 0);
+              headGroup.add(duri);
             }
+          } else if (gayaRambut === 'kuncir') {
+            const ekor = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.34, 0.14), warnaRambutMat);
+            ekor.position.set(0, -0.05, -0.38);
+            headGroup.add(ekor);
+          } else {
+            const poni = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.07, 0.06), warnaRambutMat);
+            poni.position.set(gayaRambut === 'belah' ? -0.04 : 0, 0.2, 0.26);
+            poni.rotation.z = gayaRambut === 'belah' ? -0.12 : 0;
+            headGroup.add(poni);
+          }
+          const rambutMatW = warnaRambutMat;
+          const kepalaMat = new THREE.MeshStandardMaterial({ color: pantsColor });
+          if (kepalaW === 'topi') {
+            const kubah = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.14, 0.62), kepalaMat);
+            kubah.position.set(0, 0.37, 0);
+            const visor = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, 0.22), kepalaMat);
+            visor.position.set(0, 0.32, 0.38);
+            headGroup.add(kubah, visor);
+          } else if (kepalaW === 'peci') {
+            const peci = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.33, 0.14, 14), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+            peci.position.set(0, 0.37, 0);
+            headGroup.add(peci);
+          } else if (kepalaW === 'blangkon') {
+            const blMat = new THREE.MeshStandardMaterial({ color: 0x7c2d12 });
+            const pita = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.12, 0.64), blMat);
+            pita.position.set(0, 0.32, 0);
+            const garis = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.03, 0.66), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+            garis.position.set(0, 0.39, 0);
+            const simpul = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.14, 0.12), blMat);
+            simpul.position.set(0, 0.32, -0.36);
+            headGroup.add(pita, garis, simpul);
           }
         }
 
