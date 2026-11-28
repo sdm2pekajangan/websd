@@ -798,7 +798,7 @@
     // ==========================================
     // 1. KONFIGURASI & CATALOG
     // ==========================================
-    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v9'; // v9: denah default baru (tanpa sisa denah lama di browser)
+    const STORAGE_KEY = 'sd_mutu_tangkil_3d_v10'; // v10: denah default 28 Nov (tanpa sisa denah lama di browser)
     const SKALA_KELAS = 1.4;   // seluruh peta (gedung, pohon, jalan, alas) 1,5x; orang tetap ukuran semula
     const ISLAND_LIMIT = 36 * SKALA_KELAS;
     const ROAD_STEP = 3;
@@ -1498,6 +1498,40 @@
       });
     }
 
+    // Interior ruang kelas: 15 meja + kursi, papan tulis di dinding belakang, meja & kursi guru, lemari. Semua putih.
+    function buatInterierKelas() {
+      const putih = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+      const grp = new THREE.Group();
+      const kotak = (w, h, d, x, y, z) => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), putih);
+        m.position.set(x, y, z);
+        grp.add(m);
+      };
+      const kolomX = [-2.5, -1.25, 0, 1.25, 2.5];
+      const barisZ = [0.3, -0.7, -1.7];
+      for (const z of barisZ) {
+        for (const x of kolomX) {
+          kotak(0.7, 0.05, 0.42, x, 0.75, z);            // meja
+          kotak(0.1, 0.72, 0.3, x, 0.37, z);             // kaki meja
+          kotak(0.36, 0.05, 0.34, x, 0.45, z + 0.4);     // dudukan kursi
+          kotak(0.36, 0.45, 0.05, x, 0.72, z + 0.58);    // sandaran kursi
+          kotak(0.06, 0.42, 0.34, x, 0.22, z + 0.4);     // kaki kursi
+        }
+      }
+      // Papan tulis di dinding belakang (depan kelas)
+      kotak(3.6, 1.3, 0.05, 0, 1.65, -2.31);
+      kotak(3.4, 1.1, 0.03, 0, 1.65, -2.27);
+      // Meja & kursi guru di dekat papan tulis
+      kotak(0.7, 0.05, 0.5, 3.2, 0.75, -1.9);
+      kotak(0.1, 0.72, 0.42, 3.2, 0.37, -1.9);
+      kotak(0.42, 0.05, 0.42, 3.2, 0.45, -1.35);
+      kotak(0.42, 0.5, 0.05, 3.2, 0.72, -1.12);
+      kotak(0.06, 0.42, 0.36, 3.2, 0.22, -1.35);
+      // Lemari di dinding kiri
+      for (const z of [-1.5, 0.0]) kotak(0.6, 1.8, 0.8, -3.22, 0.9, z);
+      return grp;
+    }
+
     function createBuildingMesh(type, floor = 1, stairStyle = 'blue_steel', extraOpts = {}) {
       const g = new THREE.Group();
       const roofGroup = new THREE.Group();
@@ -1514,14 +1548,26 @@
         g.add(topSlab);
 
         if (type === 'classroom') {
-          const walls = new THREE.Mesh(new THREE.BoxGeometry(7.52, 3.1, 4.1), new THREE.MeshStandardMaterial({ color: 0xf3e8d0, roughness: 0.85 }));
-          walls.position.set(0, 1.8, -0.55);
+          // Dinding dibuat terpisah (belakang, kiri, kanan, depan dengan pintu) supaya interior terlihat
+          const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3e8d0, roughness: 0.85 });
+          const walls = new THREE.Group();
+          const dinding = (w, h, d, x, y, z) => {
+            const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+            m.position.set(x, y, z);
+            walls.add(m);
+          };
+          dinding(7.52, 3.1, 0.25, 0, 1.8, -2.475);      // belakang
+          dinding(0.25, 3.1, 4.1, -3.635, 1.8, -0.55);   // kiri
+          dinding(0.25, 3.1, 4.1, 3.635, 1.8, -0.55);    // kanan
+          dinding(2.5, 3.1, 0.25, -2.55, 1.8, 1.375);    // depan kiri
+          dinding(2.5, 3.1, 0.25, 2.55, 1.8, 1.375);     // depan kanan
+          dinding(2.6, 0.9, 0.25, 0, 2.65, 1.375);       // ambang pintu
           // pondasi gelap dan pita oranye seperti gedung di foto
-          const pondasi = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.35, 4.2), new THREE.MeshStandardMaterial({ color: 0xc9b99a, roughness: 0.95 }));
-          pondasi.position.set(0, 0.18, -0.55);
+          const pondasi = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.35, 3.9), new THREE.MeshStandardMaterial({ color: 0xc9b99a, roughness: 0.95 }));
+          pondasi.position.set(0, 0.18, -0.7);
           const pitaOranye = new THREE.Mesh(new THREE.BoxGeometry(7.62, 0.22, 4.16), new THREE.MeshStandardMaterial({ color: 0xd9a441, roughness: 0.7 }));
           pitaOranye.position.set(0, 2.95, -0.55);
-          g.add(walls, pondasi, pitaOranye);
+          g.add(walls, pondasi, pitaOranye, buatInterierKelas());
 
           if (extraOpts.hasMading) {
             const yWall = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2.7, 0.12), new THREE.MeshStandardMaterial({ color: 0xeab308 }));
@@ -4387,1174 +4433,155 @@
       "app": "SD Mutu Tangkil Kulon 3D",
       "version": 5,
       "skalaPeta": 1.4,
-      "savedAt": "2026-11-27T13:23:52.062Z",
+      "savedAt": "2026-11-28T00:49:43.418Z",
       "timeMode": 0,
       "showLabels": false,
       "buildings": [
-        {
-          "id": "b_2f_base",
-          "type": "classroom",
-          "x": -15.5,
-          "z": 16.14,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "front",
-          "stairStyle": "blue_steel",
-          "extraOpts": {
-            "hasMading": true
-          }
-        },
-        {
-          "id": "b_west_north",
-          "type": "classroom",
-          "x": -15.5,
-          "z": 5.5,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_north_1",
-          "type": "classroom",
-          "x": -15.68,
-          "z": -38.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_north_2",
-          "type": "classroom",
-          "x": -5.04,
-          "z": -38.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "none",
-          "stairStyle": "concrete",
-          "extraOpts": {
-            "roofTitle": true
-          }
-        },
-        {
-          "id": "b_north_3",
-          "type": "classroom",
-          "x": 5.6,
-          "z": -38.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_toren",
-          "type": "sd_toren_wc",
-          "x": -26,
-          "z": -19,
-          "rotation": 4.71238898038469,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_flag",
-          "type": "flagpole",
-          "x": -5.6,
-          "z": -23.1,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684399_ceut",
-          "type": "tree_mango",
-          "x": -30.8,
-          "z": -40.6,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684400_wihq",
-          "type": "tree_palm",
-          "x": 12.6,
-          "z": -41.3,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684401_uxfw",
-          "type": "tree_cemara",
-          "x": 22.4,
-          "z": -38.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684402_50mu",
-          "type": "tree_mango",
-          "x": 16.8,
-          "z": -40.6,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684402_hjtq",
-          "type": "tree_palm",
-          "x": 21,
-          "z": -42,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684402_lzbj",
-          "type": "tree_cemara",
-          "x": -32.2,
-          "z": -35.7,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684404_g1ko",
-          "type": "tree_mango",
-          "x": 21,
-          "z": -28,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684405_gd4g",
-          "type": "tree_palm",
-          "x": 18.2,
-          "z": -14,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795352684405_6iy7",
-          "type": "tree_cemara",
-          "x": 20.3,
-          "z": -35,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795440180955_mhnr",
-          "type": "classroom",
-          "x": -15.5,
-          "z": 26.78,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "none",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795440778607_1y2x",
-          "type": "sd_carport",
-          "x": -15,
-          "z": 36.5,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795440848180_wacs",
-          "type": "sd_bike_shed",
-          "x": -13.5,
-          "z": -2.5,
-          "rotation": 3.141592653589793,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605657294_ejth",
-          "type": "tree_cemara",
-          "x": -26.6,
-          "z": -41.3,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605658778_h6i0",
-          "type": "tree_cemara",
-          "x": -32.2,
-          "z": -11.2,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605685317_erjj",
-          "type": "tree_palm",
-          "x": -35,
-          "z": -21.7,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605690253_6lyn",
-          "type": "tree_cemara",
-          "x": -31.5,
-          "z": -7,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605738853_lhdn",
-          "type": "bush_hedge",
-          "x": -35.7,
-          "z": -32.2,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605744867_b2ho",
-          "type": "bush_hedge",
-          "x": -35.7,
-          "z": -40.6,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605798770_qg0v",
-          "type": "grass_tuft",
-          "x": -32.2,
-          "z": -30.8,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605800118_h5iz",
-          "type": "grass_tuft",
-          "x": -29.4,
-          "z": -25.9,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605811931_9mlb",
-          "type": "bush_round",
-          "x": -35,
-          "z": -25.9,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795605927919_g5ca",
-          "type": "sd_back_wall",
-          "x": -3.5,
-          "z": -45.5,
-          "rotation": 1.5707963267948966,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "lampu_halaman_5",
-          "type": "lamp_post",
-          "x": 10.5,
-          "z": 41,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "lampu_depan_1",
-          "type": "lamp_front",
-          "x": -14.5,
-          "z": 44,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "lampu_depan_2",
-          "type": "lamp_front",
-          "x": 10,
-          "z": -10,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "lampu_depan_3",
-          "type": "lamp_front",
-          "x": -3.5,
-          "z": 43.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795779480293_gi4g",
-          "type": "sd_front_fence",
-          "x": -2,
-          "z": 42.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795779634819_i842",
-          "type": "sd_mural_wall",
-          "x": 8,
-          "z": 17,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795440207472_19n7",
-          "type": "classroom",
-          "x": -15.5,
-          "z": 26.78,
-          "rotation": 1.5707963267948966,
-          "floor": 2,
-          "parentId": "b_1795440180955_mhnr",
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795785315891_zmen",
-          "type": "tree_mango",
-          "x": -20.5,
-          "z": -27.5,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795785325847_3ssk",
-          "type": "tree_mango",
-          "x": -19,
-          "z": 42,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795785329271_uacq",
-          "type": "tree_mango",
-          "x": 10,
-          "z": 48,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        },
-        {
-          "id": "b_1795785782971_futu",
-          "type": "stairs",
-          "x": -10,
-          "z": 30,
-          "rotation": 0,
-          "floor": 1,
-          "parentId": null,
-          "stairSide": "right",
-          "stairStyle": "blue_steel",
-          "extraOpts": {}
-        }
+        {"id": "b_2f_base", "type": "classroom", "x": -15.5, "z": 26.78, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "none", "stairStyle": "blue_steel", "extraOpts": {"hasMading": true}},
+        {"id": "b_west_north", "type": "classroom", "x": -15.5, "z": 5.5, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_north_1", "type": "classroom", "x": -15.68, "z": -38.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_north_2", "type": "classroom", "x": -5.04, "z": -38.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "none", "stairStyle": "concrete", "extraOpts": {"roofTitle": true}},
+        {"id": "b_north_3", "type": "classroom", "x": 5.6, "z": -38.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_toren", "type": "sd_toren_wc", "x": -29, "z": -20, "rotation": 4.71238898038469, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_flag", "type": "flagpole", "x": -5.6, "z": -23.1, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684399_ceut", "type": "tree_mango", "x": -30.8, "z": -40.6, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684400_wihq", "type": "tree_palm", "x": 12.6, "z": -41.3, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684401_uxfw", "type": "tree_cemara", "x": 22.4, "z": -38.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_50mu", "type": "tree_mango", "x": 16.8, "z": -40.6, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_hjtq", "type": "tree_palm", "x": 21, "z": -42, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684402_lzbj", "type": "tree_cemara", "x": -32.2, "z": -35.7, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684404_g1ko", "type": "tree_mango", "x": 21, "z": -28, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_gd4g", "type": "tree_palm", "x": 18.2, "z": -14, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795352684405_6iy7", "type": "tree_cemara", "x": 20.3, "z": -35, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440180955_mhnr", "type": "classroom", "x": -15.5, "z": 16.14, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "none", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440778607_1y2x", "type": "sd_carport", "x": -15, "z": 36.5, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440848180_wacs", "type": "sd_bike_shed", "x": -16, "z": -13.5, "rotation": 3.141592653589793, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605657294_ejth", "type": "tree_cemara", "x": -26.6, "z": -41.3, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605658778_h6i0", "type": "tree_cemara", "x": -32.2, "z": -11.2, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605685317_erjj", "type": "tree_palm", "x": -35, "z": -21.7, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605690253_6lyn", "type": "tree_cemara", "x": -31.5, "z": -7, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605738853_lhdn", "type": "bush_hedge", "x": -35.7, "z": -32.2, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605744867_b2ho", "type": "bush_hedge", "x": -35.7, "z": -40.6, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605798770_qg0v", "type": "grass_tuft", "x": -32.2, "z": -30.8, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605800118_h5iz", "type": "grass_tuft", "x": -29.4, "z": -25.9, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605811931_9mlb", "type": "bush_round", "x": -35, "z": -25.9, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795605927919_g5ca", "type": "sd_back_wall", "x": -3.5, "z": -45.5, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "lampu_halaman_5", "type": "lamp_post", "x": 10.5, "z": 41, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "lampu_depan_1", "type": "lamp_front", "x": -14.5, "z": 44, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "lampu_depan_2", "type": "lamp_front", "x": 10, "z": -10, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "lampu_depan_3", "type": "lamp_front", "x": -3.5, "z": 43.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795779480293_gi4g", "type": "sd_front_fence", "x": -3.5, "z": 48, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795779634819_i842", "type": "sd_mural_wall", "x": 8, "z": 17, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795785315891_zmen", "type": "tree_mango", "x": -20.5, "z": -27.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795785325847_3ssk", "type": "tree_mango", "x": -19, "z": 42, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795785329271_uacq", "type": "tree_mango", "x": 14.5, "z": 47.5, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795785782971_futu", "type": "stairs", "x": -10, "z": 30, "rotation": 0, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795787152841_f7xf", "type": "classroom", "x": -15.5, "z": -5.14, "rotation": 1.5707963267948966, "floor": 1, "parentId": null, "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}},
+        {"id": "b_1795440207472_19n7", "type": "classroom", "x": -15.5, "z": 26.78, "rotation": 1.5707963267948966, "floor": 2, "parentId": "b_2f_base", "stairSide": "right", "stairStyle": "blue_steel", "extraOpts": {}}
       ],
       "roads": [
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": 0,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -24,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -21,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -18,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 12,
-          "z": -30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 12,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 9,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 6,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 3,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": 0,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -3,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -6,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -12,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -15,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -24,
-          "z": -9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -21,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -24,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -27,
-          "z": -3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -24,
-          "z": -3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -21,
-          "z": -3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -18,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -15,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -12,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": -3,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 33,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 27,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 30,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 24,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 21,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 18,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 15,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 12,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 9,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 6,
-          "rotation": 0
-        },
-        {
-          "type": "paving",
-          "x": -9,
-          "z": 3,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -9,
-          "z": -9,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -6,
-          "z": -6,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -9,
-          "z": -12,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -6,
-          "z": -12,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -3,
-          "z": -12,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -3,
-          "z": -9,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": 0,
-          "z": -12,
-          "rotation": 0
-        },
-        {
-          "type": "plaza",
-          "x": -3,
-          "z": -15,
-          "rotation": 0
-        }
+        {"type": "paving", "x": -6, "z": 33, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 30, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 30, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 33, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 30, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 33, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 30, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 33, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 30, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 33, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 27, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 27, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 27, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 27, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 27, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 24, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 21, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 24, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 24, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 24, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 24, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 21, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 21, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 18, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 21, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 21, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 3, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 6, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 9, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 12, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 15, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 18, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 3, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 6, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 9, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 12, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 15, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 18, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 3, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 9, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 12, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 15, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 6, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 3, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 6, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 9, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 12, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 15, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 18, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 3, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 6, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 9, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 12, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 15, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 18, "rotation": 0},
+        {"type": "paving", "x": 0, "z": 0, "rotation": 0},
+        {"type": "paving", "x": 3, "z": 0, "rotation": 0},
+        {"type": "paving", "x": 6, "z": 0, "rotation": 0},
+        {"type": "paving", "x": -3, "z": 0, "rotation": 0},
+        {"type": "paving", "x": -6, "z": 0, "rotation": 0},
+        {"type": "paving", "x": -24, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -21, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -18, "z": -33, "rotation": 0},
+        {"type": "paving", "x": 12, "z": -30, "rotation": 0},
+        {"type": "paving", "x": 12, "z": -33, "rotation": 0},
+        {"type": "paving", "x": 9, "z": -33, "rotation": 0},
+        {"type": "paving", "x": 6, "z": -33, "rotation": 0},
+        {"type": "paving", "x": 3, "z": -33, "rotation": 0},
+        {"type": "paving", "x": 0, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -3, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -6, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -9, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -12, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -15, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -33, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -30, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -27, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -12, "rotation": 0},
+        {"type": "paving", "x": -24, "z": -9, "rotation": 0},
+        {"type": "paving", "x": -21, "z": -6, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -9, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -6, "rotation": 0},
+        {"type": "paving", "x": -24, "z": -6, "rotation": 0},
+        {"type": "paving", "x": -27, "z": -3, "rotation": 0},
+        {"type": "paving", "x": -24, "z": -3, "rotation": 0},
+        {"type": "paving", "x": -21, "z": -3, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 24, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 21, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 18, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 15, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 12, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 9, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 6, "rotation": 0},
+        {"type": "paving", "x": -9, "z": 3, "rotation": 0},
+        {"type": "plaza", "x": -9, "z": -9, "rotation": 0},
+        {"type": "plaza", "x": -6, "z": -6, "rotation": 0},
+        {"type": "plaza", "x": -9, "z": -12, "rotation": 0},
+        {"type": "plaza", "x": -6, "z": -12, "rotation": 0},
+        {"type": "plaza", "x": -3, "z": -12, "rotation": 0},
+        {"type": "plaza", "x": -3, "z": -9, "rotation": 0},
+        {"type": "plaza", "x": 0, "z": -12, "rotation": 0},
+        {"type": "plaza", "x": -3, "z": -15, "rotation": 0}
       ],
       "characters": []
     };
@@ -5946,13 +4973,13 @@
       if (state.activityMode === 'free') {
         for (let i = 0; i < state.characters.length; i++) {
           const a = state.characters[i];
-          if (a.soloAction || a.greetCooldown > 0 || a.state === 'wave') continue;
+          if (a.soloAction || a.greetCooldown > 0 || a.state === 'wave' || a.kelasFase) continue;
 
           const nearby = [];
           for (let j = 0; j < state.characters.length; j++) {
             if (i === j) continue;
             const b = state.characters[j];
-            if (b.soloAction || b.greetCooldown > 0 || b.state === 'wave') continue;
+            if (b.soloAction || b.greetCooldown > 0 || b.state === 'wave' || b.kelasFase) continue;
             if (Math.hypot(a.x - b.x, a.z - b.z) < 2.6) {
               nearby.push(b);
             }
@@ -5967,6 +4994,10 @@
       if (state.activityMode === 'thanks' && clock.elapsedTime > state.thanksUntil) setActivityMode('free');
       turUpdate(dt);
       for (const ch of state.characters) {
+        if (ch.setor !== 'tidak' && urusKelas(ch, dt, elapsed)) {
+          if (state.showLabels && ch.mesh.visible) aturLabelKarakter(ch);
+          continue;
+        }
         if (ch.linked && !ch.mesh.visible) continue; // karakter tersembunyi (mis. murid tidak hadir) tidak perlu dianimasikan
         ch.stateTimer -= dt;
         if (ch.greetCooldown > 0) ch.greetCooldown -= dt;
@@ -6413,6 +5444,7 @@
       return terbaik || pickRandomWalkPoint(ch.x, ch.z);
     }
     function duniaTitikJalan(ch) {
+      if (ch.role === 'teacher') return titikKantor();
       const tahan = ch.setor === 'belum' && (ch.role === 'teacher' || ch.role === 'student');
       if (!tahan) return Math.random() < 0.8 ? duniaJelajah(ch) : pickRandomWalkPoint(ch.x, ch.z);
       let pusat = GERBANG_PUSAT, r = 1.6;
@@ -6428,6 +5460,167 @@
       return pickRandomWalkPoint(ch.x, ch.z);
     }
 
+    // ===== JADWAL KELAS =====
+    // Saat jam kelas, murid berjalan ke pintu kelasnya lalu memudar (hilang) dan berada di dalam kelas.
+    // Guru berkeliling di sekitar kantor, sesekali masuk kelas lalu keluar lagi.
+    const SESI_KELAS = [{ mulai: '07:30', selesai: '10:30' }];   // ubah sesuai jadwal sekolah (zona waktu Jakarta)
+    const KANTOR_PUSAT = { x: 4, z: 13 }, KANTOR_R = 3.5;        // area kantor guru (perkiraan, ubah sesuai denah)
+    const FADE_KELAS = 0.2;                                      // detik, sesuai token motion 200ms
+    let kelasPaksa = null;                                       // uji coba: ?kelas=1 (paksa jam kelas) / ?kelas=0
+    try {
+      const q = new URLSearchParams(location.search).get('kelas');
+      if (q === '1') kelasPaksa = true; else if (q === '0') kelasPaksa = false;
+    } catch (e) { /* abaikan */ }
+
+    function sedangJamKelas() {
+      if (kelasPaksa !== null) return kelasPaksa;
+      try {
+        const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+        const m = (+p.find(x => x.type === 'hour').value) * 60 + (+p.find(x => x.type === 'minute').value);
+        return SESI_KELAS.some(s => {
+          const [h1, m1] = s.mulai.split(':').map(Number), [h2, m2] = s.selesai.split(':').map(Number);
+          return m >= h1 * 60 + m1 && m < h2 * 60 + m2;
+        });
+      } catch (e) { return false; }
+    }
+
+    // Titik pintu depan bangunan kelas (di luar dinding depan, mengikuti rotasi bangunan)
+    function pintuRuang(b) {
+      const r = b.rotation || 0;
+      // Mulai dari dinding depan, mundur keluar sampai titik tidak menabrak bangunan
+      for (let d = 2.0; d <= 6; d += 0.5) {
+        const x = b.x + Math.sin(r) * d, z = b.z + Math.cos(r) * d;
+        if (!isPointBlocked(x, z, 0.4)) return { x, z };
+      }
+      return { x: b.x + Math.sin(r) * 4, z: b.z + Math.cos(r) * 4 };
+    }
+    function bangunanRuang(id) { return state.buildings.find(q => q.id === id) || null; }
+
+    function titikKantor() {
+      for (let k = 0; k < 12; k++) {
+        const a = Math.random() * Math.PI * 2, rr = KANTOR_R * Math.sqrt(Math.random());
+        const x = KANTOR_PUSAT.x + Math.cos(a) * rr, z = KANTOR_PUSAT.z + Math.sin(a) * rr;
+        if (!isPointBlocked(x, z, 0.5)) return { x, z };
+      }
+      return { x: KANTOR_PUSAT.x, z: KANTOR_PUSAT.z };
+    }
+
+    // Siapkan material agar bisa dibuat transparan (sekali per karakter)
+    function siapkanFadeKarakter(ch) {
+      if (ch.fadeSiap) return;
+      ch.fadeSiap = true;
+      ch.mesh.traverse(o => {
+        if (!o.isMesh || !o.material || o.userData.isHitbox) return;
+        const kon = m => { const c = m.clone(); c.transparent = true; return c; };
+        o.material = Array.isArray(o.material) ? o.material.map(kon) : kon(o.material);
+      });
+    }
+    function setTransparansiKarakter(ch, a) {
+      ch.mesh.traverse(o => {
+        if (!o.isMesh || !o.material || o.userData.isHitbox) return;
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.opacity = a; });
+      });
+    }
+    function aturLabelKarakter(ch) {
+      tempVec.set(ch.x, 2.4, ch.z);
+      tempVec.project(camera);
+      if (tempVec.z < 1) {
+        ch.labelEl.style.left = `${(tempVec.x * 0.5 + 0.5) * window.innerWidth}px`;
+        ch.labelEl.style.top = `${(-tempVec.y * 0.5 + 0.5) * window.innerHeight}px`;
+        ch.labelEl.style.opacity = '1';
+      } else {
+        ch.labelEl.style.opacity = '0';
+      }
+    }
+
+    // Mengatur murid & guru pada jam kelas. Mengembalikan true jika karakter sedang diatur jadwal kelas.
+    // Fase: undefined (bebas) -> ke_pintu -> menghilang -> di_dalam -> muncul -> bebas
+    function urusKelas(ch, dt, elapsed) {
+      if (ch.role !== 'student' && ch.role !== 'teacher') return false;
+      if (ch.setor === 'tidak') return false;             // tidak hadir: tetap di rumah
+      const sesi = sedangJamKelas();
+      const d = ch.dunia || {};
+
+      // Mulai menuju kelas
+      if (!ch.kelasFase) {
+        if (!sesi) return false;
+        let b = null;
+        if (ch.role === 'student') {
+          b = bangunanRuang(KELAS_BANGUNAN[ch.kelas]);
+        } else {
+          // Guru: sekitar 1 kali per 25 detik masuk kelas secara acak, selebihnya di kantor
+          if (Math.random() > dt / 25) return false;
+          const ids = [1, 2, 3, 4, 5, 6].map(n => KELAS_BANGUNAN[n]);
+          b = bangunanRuang(ids[Math.floor(Math.random() * ids.length)]);
+        }
+        if (!b) return false;
+        ch.kelasRuang = b.id;
+        ch.kelasFase = 'ke_pintu';
+      }
+
+      if (ch.kelasFase === 'ke_pintu') {
+        const b = bangunanRuang(ch.kelasRuang);
+        if (!sesi || !b) { ch.kelasFase = undefined; return false; }
+        const p = pintuRuang(b);
+        moveCharacterToward(ch, p.x, p.z, ch.baseSpeed * 2.2, dt, elapsed);
+        if (Math.hypot(p.x - ch.x, p.z - ch.z) < 0.35) {
+          siapkanFadeKarakter(ch);
+          ch.kelasSisaCincin = !!(d.cincin && d.cincin.visible);
+          if (d.cincin) d.cincin.visible = false;
+          ch.fadeT = 0;
+          ch.kelasFase = 'menghilang';
+        }
+        return true;
+      }
+
+      if (ch.kelasFase === 'menghilang') {
+        ch.fadeT += dt;
+        const a = Math.max(0, 1 - ch.fadeT / FADE_KELAS);
+        setTransparansiKarakter(ch, a);
+        if (a <= 0) {
+          ch.mesh.visible = false;
+          ch.labelEl.style.display = 'none';
+          ch.kelasFase = 'di_dalam';
+          ch.dalamTimer = 20 + Math.random() * 25;     // guru: lama di dalam kelas
+        }
+        return true;
+      }
+
+      if (ch.kelasFase === 'di_dalam') {
+        if (ch.role === 'teacher') ch.dalamTimer -= dt;
+        if (!sesi || (ch.role === 'teacher' && ch.dalamTimer <= 0)) {
+          const b = bangunanRuang(ch.kelasRuang);
+          if (!b) { ch.kelasFase = undefined; ch.mesh.visible = true; setTransparansiKarakter(ch, 1); ch.labelEl.style.display = ''; return false; }
+          const p = pintuRuang(b);
+          ch.x = p.x; ch.z = p.z;
+          ch.mesh.position.set(ch.x, 0, ch.z);
+          ch.mesh.visible = true;
+          ch.labelEl.style.display = '';
+          setTransparansiKarakter(ch, 0);
+          ch.fadeT = 0;
+          ch.kelasFase = 'muncul';
+        }
+        return true;
+      }
+
+      if (ch.kelasFase === 'muncul') {
+        ch.fadeT += dt;
+        setTransparansiKarakter(ch, Math.min(1, ch.fadeT / FADE_KELAS));
+        if (ch.fadeT >= FADE_KELAS) {
+          setTransparansiKarakter(ch, 1);
+          if (d.cincin && ch.kelasSisaCincin) d.cincin.visible = true;
+          ch.kelasFase = undefined;
+          const pt = duniaTitikJalan(ch);
+          ch.targetX = pt.x; ch.targetZ = pt.z;
+          ch.state = 'walk';
+          ch.stateTimer = 4 + Math.random() * 6;
+          return false;
+        }
+        return true;
+      }
+      return false;
+    }
+
     function duniaBuang(ch) {
       scene.remove(ch.mesh);
       if (ch.dunia && ch.dunia.cincin) scene.remove(ch.dunia.cincin);
@@ -6440,8 +5633,9 @@
       const d = ch.dunia, s = m.setor;     // s undefined = status disembunyikan
       ch.setor = s;
       const tampil = s !== 'tidak';        // tidak hadir: di rumah, tidak tampil
-      ch.mesh.visible = tampil;
-      ch.labelEl.style.display = tampil ? '' : 'none';
+      const sembunyi = ch.kelasFase === 'di_dalam';   // sedang di dalam kelas
+      ch.mesh.visible = tampil && !sembunyi;
+      ch.labelEl.style.display = (tampil && !sembunyi) ? '' : 'none';
       d.star.visible = s === 'lancar' || s === 'ulang';
       d.star.material = s === 'ulang' ? matBintangPerak : matBintangEmas;
       tintChar(ch, s === 'belum' ? 0.6 : 0);
